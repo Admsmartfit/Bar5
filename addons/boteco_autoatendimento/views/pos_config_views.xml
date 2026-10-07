@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pos_config_view_form_boteco_autoatendimento" model="ir.ui.view">
+        <field name="name">pos.config.form.boteco.autoatendimento</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="boteco_pos.pos_config_view_form_boteco"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='boteco']" position="inside">
+                <group string="Tablet e QR">
+                    <field name="boteco_limite_qr"/>
+                    <field name="boteco_exigir_rede"/>
+                    <field name="boteco_descanso_segundos"/>
+                    <field name="currency_id" invisible="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_dispositivo_view_list" model="ir.ui.view">
+        <field name="name">boteco.dispositivo.list</field>
+        <field name="model">boteco.dispositivo</field>
+        <field name="arch" type="xml">
+            <list string="Aparelhos" decoration-muted="not active" decoration-warning="estado == 'pendente'">
+                <field name="create_date" string="Desde"/>
+                <field name="name"/>
+                <field name="tipo"/>
+                <field name="mesa_id"/>
+                <field name="estado" widget="badge" decoration-success="estado == 'aprovado'" decoration-warning="estado == 'pendente'"/>
+                <field name="aprovado_por_id"/>
+                <field name="ip" optional="hide"/>
+                <field name="active" column_invisible="1"/>
+                <button name="action_gerar_link_tablet" type="object" string="Link do tablet" icon="fa-tablet"
+                        invisible="tipo != 'tablet'"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_dispositivo_view_form" model="ir.ui.view">
+        <field name="name">boteco.dispositivo.form</field>
+        <field name="model">boteco.dispositivo</field>
+        <field name="arch" type="xml">
+            <form string="Aparelho">
+                <header>
+                    <button name="action_gerar_link_tablet" type="object" string="Abrir link do tablet" class="btn-primary"
+                            invisible="tipo != 'tablet' or not id"/>
+                    <field name="estado" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <h1><field name="name"/></h1>
+                    <group>
+                        <group>
+                            <field name="tipo"/>
+                            <field name="mesa_id"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="aprovado_por_id"/>
+                            <field name="aprovado_em"/>
+                            <field name="ip"/>
+                            <field name="navegador"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" invisible="tipo != 'tablet'">
+                        Abra o link no tablet da mesa e fixe a tela (Android: "Fixar app"; iPad: "Acesso guiado").
+                        Sair do cardápio pede o PIN do gerente.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_tablets" model="ir.actions.act_window">
+        <field name="name">Tablets das mesas</field>
+        <field name="res_model">boteco.dispositivo</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('tipo', '=', 'tablet')]</field>
+        <field name="context">{'default_tipo': 'tablet', 'default_estado': 'aprovado'}</field>
+        <field name="help" type="html">
+            <p>Cadastre um tablet para cada mesa que tiver tablet fixo e abra o link gerado nele.</p>
+        </field>
+    </record>
+    <record id="action_boteco_celulares" model="ir.actions.act_window">
+        <field name="name">Celulares do QR</field>
+        <field name="res_model">boteco.dispositivo</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('tipo', '=', 'celular')]</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+</odoo>

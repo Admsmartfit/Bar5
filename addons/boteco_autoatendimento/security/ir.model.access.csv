@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boteco_dispositivo_garcom,boteco.dispositivo garcom,model_boteco_dispositivo,boteco_base.group_garcom,1,0,0,0
+access_boteco_dispositivo_gerente,boteco.dispositivo gerente,model_boteco_dispositivo,boteco_base.group_gerente,1,1,1,0
+access_boteco_dispositivo_dono,boteco.dispositivo dono,model_boteco_dispositivo,boteco_base.group_dono,1,1,1,1

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_autoatendimento.SelfOrderIndex" t-inherit="pos_self_order.selfOrderIndex" t-inherit-mode="extension">
+        <xpath expr="//MainComponentsContainer" position="before">
+            <BotecoMesa t-if="selfIsReady and selfOrder.botecoMesa"/>
+        </xpath>
+    </t>
+
+    <t t-name="boteco_autoatendimento.BotecoMesa">
+        <t t-if="ativo">
+            <!-- Ofertas relâmpago no topo -->
+            <div t-if="ofertas.length and !state.descanso" class="bt-ofertas">
+                <button t-foreach="ofertas" t-as="oferta" t-key="oferta.id" class="bt-oferta" t-on-click="() => this.adicionar(oferta.product_id)">
+                    <span class="bt-oferta__raio">⚡</span>
+                    <span class="bt-oferta__nome" t-esc="oferta.nome"/>
+                    <span class="bt-oferta__de" t-esc="formatar(oferta.preco_normal)"/>
+                    <span class="bt-oferta__por" t-esc="formatar(oferta.preco)"/>
+                    <span class="bt-oferta__resta">restam <t t-esc="oferta.restante"/></span>
+                </button>
+            </div>
+
+            <div t-if="aviso" class="bt-aviso" t-att-data-tipo="aviso.tipo" t-esc="aviso.texto"/>
+
+            <!-- Barra fixa -->
+            <nav class="bt-barra" aria-label="Atendimento da mesa">
+                <button class="bt-barra__btn" t-att-class="{'ativo': mesa.chamou_garcom}" t-on-click="() => this.chamar('garcom')">
+                    <span class="bt-barra__icone">🙋</span><span>Chamar garçom</span>
+                </button>
+                <button class="bt-barra__btn" t-on-click="() => this.abrirPedirDeNovo()" t-att-disabled="mesa.estado !== 'aprovado'">
+                    <span class="bt-barra__icone">🔁</span><span>Pedir de novo</span>
+                </button>
+                <button class="bt-barra__btn" t-on-click="() => this.abrirConta()" t-att-disabled="mesa.estado !== 'aprovado'">
+                    <span class="bt-barra__icone">🧾</span><span>Minha conta</span>
+                </button>
+                <button class="bt-barra__btn bt-barra__btn--conta" t-att-class="{'ativo': mesa.pediu_conta}"
+                        t-on-click="() => this.chamar('conta')" t-att-disabled="mesa.estado !== 'aprovado'">
+                    <span class="bt-barra__icone">💳</span><span>Pedir a conta</span>
+                </button>
+                <button t-if="mesa.tablet" class="bt-barra__sair" t-on-click="() => this.abrirSaida()" aria-label="Gerente">⚙</button>
+            </nav>
+
+            <!-- Painéis -->
+            <div t-if="state.painel" class="bt-painel-fundo" t-on-click.self="() => this.fechar()">
+                <div class="bt-painel">
+                    <t t-if="state.painel === 'conta'">
+                        <h2>Minha conta – Mesa <t t-esc="mesa.mesa"/></h2>
+                        <div t-if="!mesa.conta or !mesa.conta.itens.length" class="bt-vazio">Nada pedido ainda.</div>
+                        <ul t-else="" class="bt-lista">
+                            <li t-foreach="mesa.conta.itens" t-as="item" t-key="item_index">
+                                <span class="bt-lista__qtd" t-esc="item.quantidade"/>
+                                <span class="bt-lista__nome" t-esc="item.nome"/>
+                                <span class="bt-status" t-att-data-status="item.status" t-esc="item.status"/>
+                                <span class="bt-lista__valor" t-esc="formatar(item.total)"/>
+                            </li>
+                        </ul>
+                        <div t-if="mesa.conta" class="bt-totais">
+                            <div><span>Consumo</span><span t-esc="formatar(mesa.conta.consumo)"/></div>
+                            <div t-if="mesa.conta.taxa"><span>Serviço (<t t-esc="mesa.conta.taxa_pct"/>%)</span><span t-esc="formatar(mesa.conta.taxa)"/></div>
+                            <div t-if="mesa.conta.couvert"><span>Couvert artístico</span><span t-esc="formatar(mesa.conta.couvert)"/></div>
+                            <div class="bt-totais__total"><span>Total parcial</span><span t-esc="formatar(mesa.conta.total)"/></div>
+                        </div>
+                    </t>
+                    <t t-elif="state.painel === 'denovo'">
+                        <h2>Pedir de novo</h2>
+                        <div t-if="!mesa.pedir_de_novo or !mesa.pedir_de_novo.length" class="bt-vazio">As bebidas que a mesa pedir aparecem aqui.</div>
+                        <div class="bt-denovo">
+                            <button t-foreach="mesa.pedir_de_novo" t-as="b" t-key="b.product_id" class="bt-denovo__item"
+                                    t-on-click="() => this.adicionar(b.product_id)">
+                                <img t-attf-src="/web/image/product.product/{{b.product_id}}/image_128" alt=""/>
+                                <span t-esc="b.nome"/>
+                                <b>+1</b>
+                            </button>
+                        </div>
+                    </t>
+                    <t t-elif="state.painel === 'sair'">
+                        <h2>Gerente: PIN para sair</h2>
+                        <div class="bt-pin-pontos"><t t-esc="'●'.repeat(state.pin.length) or '—'"/></div>
+                        <div t-if="state.erroPin" class="bt-aviso" data-tipo="erro" t-esc="state.erroPin"/>
+                        <div class="bt-teclado">
+                            <button t-foreach="['1','2','3','4','5','6','7','8','9','apagar','0']" t-as="t" t-key="t"
+                                    t-on-click="() => this.tecla(t)"><t t-if="t === 'apagar'">⌫</t><t t-else="" t-esc="t"/></button>
+                            <button class="ok" t-on-click="() => this.confirmarSaida()">OK</button>
+                        </div>
+                    </t>
+                    <button class="bt-fechar" t-on-click="() => this.fechar()">Fechar</button>
+                </div>
+            </div>
+
+            <!-- Tela de descanso (tablet parado) -->
+            <div t-if="state.descanso" class="bt-descanso" t-on-click="() => this.state.descanso = false">
+                <div class="bt-descanso__titulo">Toque para pedir 🍺</div>
+                <div class="bt-descanso__ofertas">
+                    <div t-foreach="ofertas" t-as="oferta" t-key="oferta.id" class="bt-descanso__oferta">
+                        <div>⚡ <t t-esc="oferta.nome"/></div>
+                        <div class="bt-descanso__preco" t-esc="formatar(oferta.preco)"/>
+                    </div>
+                    <div t-if="selfOrder.botecoCardapio?.happyAtivo" class="bt-descanso__oferta">É happy hour! Preços especiais agora.</div>
+                </div>
+            </div>
+        </t>
+    </t>
+</templates>

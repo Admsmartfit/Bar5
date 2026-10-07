@@ -1,0 +1,79 @@
+// Barra fixa e painéis do tablet/QR. Textos >= 16 px, alvos >= 56 px, contraste AA.
+.bt-barra {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1040;
+    display: flex; gap: 6px; padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    background: #111827; box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25);
+}
+body { padding-bottom: 84px; }
+.bt-barra__btn {
+    flex: 1; min-height: 64px; border: 0; border-radius: 12px; background: #1f2937; color: #f9fafb;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 15px; font-weight: 700;
+    &.ativo { background: #eab308; color: #111; }
+    &--conta { background: #7c3aed; }
+    &--conta.ativo { background: #a78bfa; color: #111; }
+    &[disabled] { opacity: 0.45; }
+}
+.bt-barra__icone { font-size: 22px; line-height: 1; }
+.bt-barra__sair { width: 40px; border: 0; background: transparent; color: #6b7280; font-size: 18px; }
+
+.bt-ofertas { display: flex; gap: 8px; overflow-x: auto; padding: 8px; background: #fef3c7; }
+.bt-oferta {
+    flex: 0 0 auto; display: grid; grid-template-columns: auto 1fr; gap: 0 8px; text-align: left;
+    border: 2px solid #f59e0b; border-radius: 12px; background: #fff; padding: 8px 12px; min-height: 56px; font-size: 16px;
+}
+.bt-oferta__raio { grid-row: span 3; font-size: 26px; align-self: center; }
+.bt-oferta__nome { font-weight: 800; }
+.bt-oferta__de { text-decoration: line-through; color: #6b7280; font-size: 14px; }
+.bt-oferta__por { font-weight: 900; color: #b45309; font-size: 18px; }
+.bt-oferta__resta { font-size: 13px; color: #92400e; grid-column: 2; }
+
+.bt-aviso {
+    margin: 8px; padding: 12px 14px; border-radius: 12px; font-size: 16px; font-weight: 600;
+    background: #dbeafe; color: #1e3a8a;
+    &[data-tipo="erro"] { background: #fee2e2; color: #7f1d1d; }
+}
+
+.bt-painel-fundo { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: 1050; display: flex; align-items: flex-end; }
+.bt-painel {
+    width: 100%; max-height: 85vh; overflow-y: auto; background: #fff; color: #111827;
+    border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); font-size: 17px;
+    h2 { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+}
+.bt-vazio { color: #6b7280; padding: 16px 0; }
+.bt-lista { list-style: none; padding: 0; margin: 0; }
+.bt-lista li { display: grid; grid-template-columns: 36px 1fr auto auto; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+.bt-lista__qtd { font-weight: 800; }
+.bt-lista__valor { font-weight: 700; }
+.bt-status {
+    font-size: 13px; padding: 3px 8px; border-radius: 999px; background: #e5e7eb; color: #374151; white-space: nowrap;
+    &[data-status="preparando"] { background: #fde68a; color: #78350f; }
+    &[data-status="a caminho"] { background: #bbf7d0; color: #14532d; }
+    &[data-status="entregue"] { background: #d1fae5; color: #065f46; }
+    &[data-status="esperando o garçom"] { background: #fecaca; color: #7f1d1d; }
+}
+.bt-totais { margin-top: 12px; div { display: flex; justify-content: space-between; padding: 4px 0; } }
+.bt-totais__total { font-weight: 900; font-size: 20px; border-top: 2px solid #111827; margin-top: 6px; padding-top: 8px !important; }
+.bt-denovo { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.bt-denovo__item {
+    display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; min-height: 140px;
+    border: 2px solid #e5e7eb; border-radius: 14px; background: #fff; font-size: 16px;
+    img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; }
+    b { color: #16a34a; font-size: 18px; }
+}
+.bt-fechar { width: 100%; min-height: 56px; margin-top: 14px; border: 0; border-radius: 12px; background: #e5e7eb; font-size: 18px; font-weight: 700; }
+.bt-pin-pontos { font-size: 32px; text-align: center; letter-spacing: 8px; min-height: 44px; }
+.bt-teclado {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    button { min-height: 64px; font-size: 26px; font-weight: 700; border: 0; border-radius: 12px; background: #f3f4f6; }
+    .ok { background: #16a34a; color: #fff; }
+}
+
+.bt-descanso {
+    position: fixed; inset: 0; z-index: 1060; background: linear-gradient(160deg, #111827, #78350f);
+    color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; text-align: center;
+}
+.bt-descanso__titulo { font-size: 44px; font-weight: 900; animation: bt-respirar 2.5s infinite; }
+.bt-descanso__ofertas { display: grid; gap: 12px; font-size: 24px; }
+.bt-descanso__oferta { background: rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 16px 24px; }
+.bt-descanso__preco { font-size: 36px; font-weight: 900; color: #fde68a; }
+@keyframes bt-respirar { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }

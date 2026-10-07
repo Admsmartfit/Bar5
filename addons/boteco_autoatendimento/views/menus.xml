@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_boteco_tablets" name="Tablets das mesas" parent="boteco_pos.menu_boteco_salao" sequence="40"
+              action="action_boteco_tablets"/>
+    <menuitem id="menu_boteco_celulares" name="Celulares do QR" parent="boteco_pos.menu_boteco_salao" sequence="50"
+              action="action_boteco_celulares"/>
+</odoo>
