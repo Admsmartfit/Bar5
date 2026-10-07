@@ -1,0 +1,15 @@
+# /etc/wireguard/wg0.conf no mini PC do bar
+[Interface]
+Address = 10.8.0.1/24
+ListenPort = 51820
+PrivateKey = <conteúdo de /etc/wireguard/servidor.key>
+
+# Tablet da cozinha central
+[Peer]
+PublicKey = <chave pública do tablet>
+AllowedIPs = 10.8.0.2/32
+
+# Celular do dono
+[Peer]
+PublicKey = <chave pública do celular>
+AllowedIPs = 10.8.0.3/32
