@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_kds.KdsTela">
+        <div class="o_boteco_kds" t-att-data-modo="modo">
+            <header class="o_boteco_kds__topo">
+                <div class="o_boteco_kds__titulo" t-esc="titulo"/>
+                <div class="o_boteco_kds__contadores">
+                    <span class="chip chip--fila">Fila <b t-esc="contadores.fila"/></span>
+                    <span class="chip chip--preparando">Preparando <b t-esc="contadores.preparando"/></span>
+                    <span class="chip chip--pronto">Prontos <b t-esc="contadores.prontos"/></span>
+                </div>
+                <div class="o_boteco_kds__acoes">
+                    <span t-if="!state.conectado" class="chip chip--erro">Sem conexão – tentando de novo…</span>
+                    <button class="btn btn-lg btn-secondary" t-on-click="() => this.alternarTelaCheia()">
+                        <t t-if="state.telaCheia">Sair da tela cheia</t><t t-else="">Tela cheia</t>
+                    </button>
+                </div>
+            </header>
+
+            <div t-foreach="state.impressorasParadas" t-as="imp" t-key="imp.id" class="o_boteco_kds__alerta">
+                🖨 <t t-esc="imp.mensagem"/>
+                <t t-if="state.esperandoImpressao"> (<t t-esc="state.esperandoImpressao"/> ticket(s) esperando – saem sozinhos quando ela voltar)</t>
+            </div>
+
+            <div t-foreach="state.cancelamentos" t-as="c" t-key="c.id" class="o_boteco_kds__cancelado" t-on-click="() => this.fecharCancelamento(c.id)">
+                <b>CANCELADO – <t t-esc="c.mesa"/>:</b>
+                <t t-foreach="c.itens" t-as="i" t-key="i.id"> <t t-esc="formatarQtd(i.quantidade)"/>× <t t-esc="i.nome"/>;</t>
+                <span class="ms-2 small">(toque para fechar)</span>
+            </div>
+
+            <div t-if="!state.carregando and !ticketsVisiveis.length" class="o_boteco_kds__vazio">
+                <t t-if="modo === 'expedicao'">Nada pronto esperando entrega.</t>
+                <t t-else="">Nenhum pedido na fila. 🍺</t>
+            </div>
+
+            <main class="o_boteco_kds__grade">
+                <t t-foreach="ticketsVisiveis" t-as="ticket" t-key="ticket.id">
+                    <article class="o_boteco_kds__cartao" t-att-data-tempo="corTempo(ticket)" t-att-data-estado="ticket.estado"
+                             t-on-click="() => this.tocarCartao(ticket)"
+                             t-on-pointerdown="() => this.inicioToque(ticket)"
+                             t-on-pointerup="() => this.fimToque()" t-on-pointerleave="() => this.fimToque()">
+                        <div class="cartao__topo">
+                            <span class="cartao__mesa" t-esc="ticket.mesa"/>
+                            <span class="cartao__tempo" t-esc="cronometro(ticket)"/>
+                        </div>
+                        <div class="cartao__info">
+                            <span class="cartao__estado" t-esc="rotuloEstado(ticket.estado)"/>
+                            <span t-esc="rotuloOrigem(ticket.origem)"/>
+                            <span t-if="ticket.garcom" t-esc="ticket.garcom"/>
+                            <span t-if="setor === 'todos'" class="text-uppercase" t-esc="ticket.setor"/>
+                        </div>
+                        <ul class="cartao__itens">
+                            <li t-foreach="ticket.itens" t-as="item" t-key="item.id">
+                                <span class="item__qtd" t-esc="formatarQtd(item.quantidade)"/>
+                                <span class="item__nome" t-esc="item.nome"/>
+                                <div t-if="item.atributos" class="item__atributos">+ <t t-esc="item.atributos"/></div>
+                                <div t-if="item.nota" class="item__nota" t-esc="item.nota"/>
+                            </li>
+                        </ul>
+                        <div t-if="ticket.nota_geral" class="item__nota">OBS: <t t-esc="ticket.nota_geral"/></div>
+                        <div class="cartao__rodape" t-esc="rotuloAcao(ticket)"/>
+
+                        <div t-if="state.menu === ticket.id" class="cartao__menu" t-on-click.stop="() => {}">
+                            <button class="btn btn-light btn-lg" t-on-click.stop="() => this.reimprimir(ticket.id)">🖨 Reimprimir</button>
+                            <button t-if="ticket.estado !== 'aguardando'" class="btn btn-light btn-lg" t-on-click.stop="() => this.voltarEstado(ticket.id)">↩ Voltar etapa</button>
+                            <button class="btn btn-secondary btn-lg" t-on-click.stop="() => this.state.menu = null">Fechar</button>
+                        </div>
+                    </article>
+                </t>
+            </main>
+
+            <div t-if="state.desfazer" class="o_boteco_kds__desfazer">
+                <span><t t-esc="state.desfazer.mesa"/> atualizada.</span>
+                <button class="btn btn-warning btn-lg" t-on-click="() => this.desfazer()">Desfazer</button>
+            </div>
+        </div>
+    </t>
+</templates>

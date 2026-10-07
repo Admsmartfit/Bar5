@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_kds_tempo_view_pivot" model="ir.ui.view">
+        <field name="name">boteco.kds.tempo.pivot</field>
+        <field name="model">boteco.kds.tempo</field>
+        <field name="arch" type="xml">
+            <pivot string="Tempos de produção" sample="1">
+                <field name="product_id" type="row"/>
+                <field name="hora" type="col"/>
+                <field name="minutos_preparo" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="boteco_kds_tempo_view_graph" model="ir.ui.view">
+        <field name="name">boteco.kds.tempo.graph</field>
+        <field name="model">boteco.kds.tempo</field>
+        <field name="arch" type="xml">
+            <graph string="Tempo médio por hora" type="line" sample="1">
+                <field name="hora"/>
+                <field name="minutos_preparo" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="boteco_kds_tempo_view_search" model="ir.ui.view">
+        <field name="name">boteco.kds.tempo.search</field>
+        <field name="model">boteco.kds.tempo</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <field name="setor_id"/>
+                <filter name="ultimos_7" string="Últimos 7 dias" domain="[('dia', '&gt;=', (context_today() - relativedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter name="atrasados" string="Passou de 30 min" domain="[('atrasado', '=', True)]"/>
+                <group>
+                    <filter name="por_produto" string="Produto" context="{'group_by': 'product_id'}"/>
+                    <filter name="por_hora" string="Hora" context="{'group_by': 'hora'}"/>
+                    <filter name="por_setor" string="Setor" context="{'group_by': 'setor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_boteco_kds_tempo" model="ir.actions.act_window">
+        <field name="name">Tempos de produção</field>
+        <field name="res_model">boteco.kds.tempo</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="context">{'search_default_ultimos_7': 1}</field>
+    </record>
+</odoo>

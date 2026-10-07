@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Telas de produção (client action OWL), uma por setor -->
+    <record id="action_kds_chapa" model="ir.actions.client">
+        <field name="name">Fila da chapa</field>
+        <field name="tag">boteco_kds.tela</field>
+        <field name="params" eval="{'setor': 'chapa'}"/>
+    </record>
+    <record id="action_kds_bar" model="ir.actions.client">
+        <field name="name">Fila do bar</field>
+        <field name="tag">boteco_kds.tela</field>
+        <field name="params" eval="{'setor': 'bar'}"/>
+    </record>
+    <record id="action_kds_todos" model="ir.actions.client">
+        <field name="name">Produção (todos os setores)</field>
+        <field name="tag">boteco_kds.tela</field>
+        <field name="params" eval="{'setor': 'todos'}"/>
+    </record>
+    <record id="action_kds_prontos" model="ir.actions.client">
+        <field name="name">Prontos para entregar</field>
+        <field name="tag">boteco_kds.tela</field>
+        <field name="params" eval="{'setor': 'todos', 'modo': 'expedicao'}"/>
+    </record>
+
+    <!-- Histórico de tickets -->
+    <record id="boteco_kds_pedido_view_list" model="ir.ui.view">
+        <field name="name">boteco.kds.pedido.list</field>
+        <field name="model">boteco.kds.pedido</field>
+        <field name="arch" type="xml">
+            <list string="Tickets de produção" create="false"
+                  decoration-danger="minutos_preparo &gt; 20" decoration-muted="estado == 'entregue'">
+                <field name="criado_em"/>
+                <field name="setor_id"/>
+                <field name="mesa"/>
+                <field name="tipo"/>
+                <field name="origem"/>
+                <field name="garcom_id"/>
+                <field name="estado" widget="badge"/>
+                <field name="minutos_preparo" widget="float_time" string="Preparo"/>
+                <field name="minutos_entrega" widget="float_time" string="Entrega"/>
+                <field name="impressoes"/>
+                <button name="kds_reimprimir" type="object" string="Reimprimir" icon="fa-print"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_kds_pedido_view_form" model="ir.ui.view">
+        <field name="name">boteco.kds.pedido.form</field>
+        <field name="model">boteco.kds.pedido</field>
+        <field name="arch" type="xml">
+            <form string="Ticket de produção" create="false">
+                <header>
+                    <button name="kds_reimprimir" type="object" string="Reimprimir" class="btn-primary"/>
+                    <field name="estado" widget="statusbar" statusbar_visible="aguardando,preparando,pronto,entregue"/>
+                </header>
+                <sheet>
+                    <h2><field name="titulo"/></h2>
+                    <group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="setor_id"/>
+                            <field name="tipo"/>
+                            <field name="origem"/>
+                            <field name="garcom_id"/>
+                        </group>
+                        <group>
+                            <field name="criado_em"/>
+                            <field name="preparando_em"/>
+                            <field name="pronto_em"/>
+                            <field name="entregue_em"/>
+                        </group>
+                    </group>
+                    <field name="item_ids">
+                        <list>
+                            <field name="quantidade"/>
+                            <field name="nome"/>
+                            <field name="atributos"/>
+                            <field name="nota"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="boteco_kds_pedido_view_search" model="ir.ui.view">
+        <field name="name">boteco.kds.pedido.search</field>
+        <field name="model">boteco.kds.pedido</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="mesa"/>
+                <field name="order_id"/>
+                <filter name="abertos" string="Em produção" domain="[('estado', 'in', ('aguardando', 'preparando'))]"/>
+                <filter name="atrasados" string="Acima de 20 min" domain="[('minutos_preparo', '>', 20)]"/>
+                <group>
+                    <filter name="por_setor" string="Setor" context="{'group_by': 'setor_id'}"/>
+                    <filter name="por_dia" string="Dia" context="{'group_by': 'criado_em:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_boteco_kds_pedido" model="ir.actions.act_window">
+        <field name="name">Tickets de produção</field>
+        <field name="res_model">boteco.kds.pedido</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

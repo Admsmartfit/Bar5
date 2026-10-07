@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_impressao_job_view_list" model="ir.ui.view">
+        <field name="name">boteco.impressao.job.list</field>
+        <field name="model">boteco.impressao.job</field>
+        <field name="arch" type="xml">
+            <list string="Fila de impressão" create="false" decoration-warning="estado == 'esperando'" decoration-muted="estado == 'impresso'">
+                <header>
+                    <button name="action_tentar_de_novo" type="object" string="Tentar de novo" class="btn-primary"/>
+                </header>
+                <field name="create_date" string="Criado em"/>
+                <field name="name"/>
+                <field name="impressora_id"/>
+                <field name="estado" widget="badge" decoration-warning="estado == 'esperando'" decoration-success="estado == 'impresso'"/>
+                <field name="tentativas"/>
+                <field name="ultimo_erro"/>
+                <field name="impresso_em"/>
+                <button name="action_reimprimir" type="object" string="Reimprimir" icon="fa-print"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_boteco_impressao_job" model="ir.actions.act_window">
+        <field name="name">Fila de impressão</field>
+        <field name="res_model">boteco.impressao.job</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_esperando': 1}</field>
+    </record>
+    <record id="boteco_impressao_job_view_search" model="ir.ui.view">
+        <field name="name">boteco.impressao.job.search</field>
+        <field name="model">boteco.impressao.job</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="impressora_id"/>
+                <filter name="esperando" string="Esperando" domain="[('estado', '=', 'esperando')]"/>
+            </search>
+        </field>
+    </record>
+</odoo>

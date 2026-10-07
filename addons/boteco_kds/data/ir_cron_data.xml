@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="cron_reenviar_impressao" model="ir.cron">
+        <field name="name">Boteco: reenviar tickets que esperam a impressora</field>
+        <field name="model_id" ref="model_boteco_impressao_job"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_reenviar()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+    </record>
+    <record id="cron_alertar_atrasos" model="ir.cron">
+        <field name="name">Boteco: alertar pedidos acima de 30 minutos</field>
+        <field name="model_id" ref="model_boteco_kds_pedido"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_alertar_atrasos()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+    </record>
+</odoo>
