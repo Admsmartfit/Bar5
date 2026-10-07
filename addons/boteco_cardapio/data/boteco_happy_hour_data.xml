@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Padrão do plano de negócios: quarta a domingo, 17h às 21h -->
+    <record id="happy_hour_padrao" model="boteco.happy.hour">
+        <field name="name">Happy hour</field>
+        <field name="hora_inicio">17.0</field>
+        <field name="hora_fim">21.0</field>
+        <field name="qua" eval="True"/>
+        <field name="qui" eval="True"/>
+        <field name="sex" eval="True"/>
+        <field name="sab" eval="True"/>
+        <field name="dom" eval="True"/>
+    </record>
+</odoo>

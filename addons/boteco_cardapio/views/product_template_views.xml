@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cadastro rápido: tudo o que o cardápio precisa numa tela só (meta: < 1 minuto) -->
+    <record id="product_template_view_form_rapido" model="ir.ui.view">
+        <field name="name">product.template.form.boteco.rapido</field>
+        <field name="model">product.template</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="Item do cardápio" class="o_boteco_cadastro_rapido">
+                <header>
+                    <button name="action_boteco_acabou" type="object" string="Acabou" class="btn-danger"
+                            invisible="boteco_esgotado or not id"/>
+                    <button name="action_boteco_voltou" type="object" string="Voltou (tem de novo)" class="btn-success"
+                            invisible="not boteco_esgotado"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning mb-2" role="alert" invisible="boteco_fiscal_ok or not id">
+                        <strong>Falta dado fiscal:</strong> <field name="boteco_fiscal_pendencias" readonly="1" class="d-inline"/>.
+                        A nota não poderá ser emitida depois sem isso.
+                    </div>
+                    <div class="alert alert-danger mb-2" role="alert" invisible="not boteco_esgotado">
+                        Marcado como <strong>ACABOU</strong>: não aparece no tablet nem no QR.
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar o_boteco_foto" options="{'preview_image': 'image_256'}"/>
+                    <div class="oe_title">
+                        <label for="name" string="Nome no cardápio"/>
+                        <h1><field name="name" placeholder="Ex.: Porção de bolinho de bacalhau" required="1"/></h1>
+                        <field name="boteco_descricao_curta" placeholder="Descrição curta (aparece no tablet)"/>
+                    </div>
+                    <group>
+                        <group string="Preço e onde aparece">
+                            <field name="list_price" string="Preço" widget="monetary"/>
+                            <field name="boteco_preco_happy" string="Preço no happy hour" widget="monetary"/>
+                            <field name="pos_categ_ids" string="Categoria no tablet" widget="many2many_tags"
+                                   options="{'color_field': 'color', 'no_create_edit': True}"/>
+                            <field name="boteco_setor_id" string="Vai para" options="{'no_create': True}"/>
+                            <field name="boteco_tempo_preparo" invisible="not boteco_setor_id"/>
+                        </group>
+                        <group string="Marcações">
+                            <field name="boteco_maior_18" widget="boolean_toggle"/>
+                            <field name="boteco_destaque" widget="boolean_toggle"/>
+                            <field name="available_in_pos" string="Vende no salão" widget="boolean_toggle"/>
+                            <field name="self_order_available" string="Aparece no tablet/QR" widget="boolean_toggle"/>
+                            <field name="boteco_esgotado" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Dados fiscais (para a nota emitida depois)">
+                        <group>
+                            <field name="categ_id" string="Categoria (traz o padrão fiscal)"/>
+                            <field name="boteco_ncm" placeholder="0000.00.00"/>
+                            <field name="boteco_cfop" placeholder="5102"/>
+                            <field name="boteco_cst_csosn" placeholder="102"/>
+                        </group>
+                        <group>
+                            <field name="boteco_origem"/>
+                            <field name="boteco_unidade_fiscal"/>
+                            <field name="boteco_cest" placeholder="Só se tiver ST"/>
+                            <field name="boteco_fiscal_ok" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Adicionais (ex.: ponto da carne, molho extra +R$ 3)">
+                        <field name="attribute_line_ids" nolabel="1" colspan="2" context="{'show_attribute': False}">
+                            <list editable="bottom">
+                                <field name="attribute_id" string="Pergunta"/>
+                                <field name="value_ids" string="Opções" widget="many2many_tags"
+                                       options="{'no_create_edit': True, 'color_field': 'color'}"
+                                       context="{'default_attribute_id': attribute_id}"/>
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="product_template_view_kanban_cardapio" model="ir.ui.view">
+        <field name="name">product.template.kanban.boteco</field>
+        <field name="model">product.template</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <kanban class="o_boteco_cardapio_kanban" sample="1">
+                <field name="id"/>
+                <field name="boteco_esgotado"/>
+                <field name="boteco_fiscal_ok"/>
+                <field name="boteco_maior_18"/>
+                <field name="boteco_preco_happy"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card" class="flex-row">
+                        <aside class="o_kanban_aside_full">
+                            <field name="image_128" widget="image" options="{'img_class': 'object-fit-cover w-100 h-100'}" alt="Foto"/>
+                        </aside>
+                        <main class="ps-2">
+                            <field name="name" class="fw-bold fs-5"/>
+                            <div>
+                                <field name="list_price" widget="monetary"/>
+                                <span t-if="record.boteco_preco_happy.raw_value" class="ms-2 text-success">
+                                    HH <field name="boteco_preco_happy" widget="monetary"/>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                <span t-if="record.boteco_esgotado.raw_value" class="badge text-bg-danger">ACABOU</span>
+                                <span t-if="record.boteco_maior_18.raw_value" class="badge text-bg-dark">+18</span>
+                                <span t-if="!record.boteco_fiscal_ok.raw_value" class="badge text-bg-warning">fiscal pendente</span>
+                                <field name="boteco_setor_id" class="badge text-bg-light"/>
+                            </div>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="product_template_view_list_cardapio" model="ir.ui.view">
+        <field name="name">product.template.list.boteco</field>
+        <field name="model">product.template</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Cardápio" decoration-warning="not boteco_fiscal_ok" decoration-muted="boteco_esgotado">
+                <field name="name"/>
+                <field name="pos_categ_ids" widget="many2many_tags" optional="show"/>
+                <field name="boteco_setor_id" optional="show"/>
+                <field name="list_price" widget="monetary"/>
+                <field name="boteco_preco_happy" widget="monetary" optional="show"/>
+                <field name="boteco_maior_18" optional="show"/>
+                <field name="boteco_esgotado" widget="boolean_toggle" optional="show"/>
+                <field name="boteco_ncm" optional="hide"/>
+                <field name="boteco_cfop" optional="hide"/>
+                <field name="boteco_cst_csosn" optional="hide"/>
+                <field name="boteco_fiscal_pendencias" optional="show"/>
+                <field name="boteco_fiscal_ok" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="product_template_view_search_cardapio" model="ir.ui.view">
+        <field name="name">product.template.search.boteco</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='filter_to_sell']" position="before">
+                <filter name="boteco_cardapio" string="No cardápio" domain="[('available_in_pos', '=', True)]"/>
+                <filter name="boteco_acabou" string="Acabou" domain="[('boteco_esgotado', '=', True)]"/>
+                <filter name="boteco_happy" string="Com happy hour" domain="[('boteco_preco_happy', '>', 0)]"/>
+                <filter name="boteco_maior_18" string="+18" domain="[('boteco_maior_18', '=', True)]"/>
+                <filter name="boteco_fiscal_pendente" string="Sem dados fiscais" domain="[('boteco_fiscal_ok', '=', False)]"/>
+                <separator/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter name="boteco_por_setor" string="Setor" context="{'group_by': 'boteco_setor_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Aba "Boteco" e "Fiscal" também no formulário completo do Odoo -->
+    <record id="product_template_view_form_inherit_boteco" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.boteco</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning mb-0 rounded-0" role="alert" invisible="boteco_fiscal_ok or not id">
+                    <strong>Dados fiscais pendentes:</strong> <field name="boteco_fiscal_pendencias" readonly="1" class="d-inline"/>
+                </div>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Boteco" name="boteco">
+                    <group>
+                        <group string="Cardápio">
+                            <field name="boteco_descricao_curta"/>
+                            <field name="boteco_preco_happy" widget="monetary"/>
+                            <field name="boteco_maior_18"/>
+                            <field name="boteco_destaque"/>
+                            <field name="boteco_esgotado"/>
+                        </group>
+                        <group string="Produção">
+                            <field name="boteco_setor_id"/>
+                            <field name="boteco_tempo_preparo"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="Fiscal" name="boteco_fiscal">
+                    <group>
+                        <group>
+                            <field name="boteco_ncm"/>
+                            <field name="boteco_cest"/>
+                            <field name="boteco_cfop"/>
+                        </group>
+                        <group>
+                            <field name="boteco_cst_csosn"/>
+                            <field name="boteco_origem"/>
+                            <field name="boteco_unidade_fiscal"/>
+                            <field name="boteco_fiscal_ok"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_boteco_cardapio" model="ir.actions.act_window">
+        <field name="name">Cardápio</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('sale_ok', '=', True)]</field>
+        <field name="context">{'default_available_in_pos': True, 'default_sale_ok': True, 'default_type': 'consu', 'search_default_boteco_cardapio': 1}</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'kanban', 'view_id': ref('product_template_view_kanban_cardapio')}),
+            Command.create({'view_mode': 'list', 'view_id': ref('product_template_view_list_cardapio')}),
+            Command.create({'view_mode': 'form', 'view_id': ref('product_template_view_form_rapido')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cadastre o primeiro item do cardápio</p>
+            <p>Foto, nome, preço, categoria e para onde vai (bar ou chapa). Leva menos de um minuto.</p>
+        </field>
+    </record>
+
+    <!-- Relatório "Produtos sem dados fiscais" -->
+    <record id="action_boteco_produtos_sem_fiscal" model="ir.actions.act_window">
+        <field name="name">Produtos sem dados fiscais</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('sale_ok', '=', True), ('boteco_fiscal_ok', '=', False)]</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'list', 'view_id': ref('product_template_view_list_cardapio')}),
+            Command.create({'view_mode': 'form', 'view_id': ref('product_template_view_form_rapido')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nenhuma pendência fiscal!</p>
+            <p>Todos os produtos à venda têm NCM, CFOP, CST/CSOSN e origem.</p>
+        </field>
+    </record>
+
+    <!-- "Acabou" direto da lista (ação em massa) -->
+    <record id="action_server_acabou" model="ir.actions.server">
+        <field name="name">Marcar "Acabou"</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list,kanban</field>
+        <field name="state">code</field>
+        <field name="code">records.action_boteco_acabou()</field>
+    </record>
+    <record id="action_server_voltou" model="ir.actions.server">
+        <field name="name">Marcar "Voltou"</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list,kanban</field>
+        <field name="state">code</field>
+        <field name="code">records.action_boteco_voltou()</field>
+    </record>
+</odoo>

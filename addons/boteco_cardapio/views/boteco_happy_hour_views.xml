@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_happy_hour_view_list" model="ir.ui.view">
+        <field name="name">boteco.happy.hour.list</field>
+        <field name="model">boteco.happy.hour</field>
+        <field name="arch" type="xml">
+            <list string="Happy hour" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="seg" widget="boolean_toggle"/>
+                <field name="ter" widget="boolean_toggle"/>
+                <field name="qua" widget="boolean_toggle"/>
+                <field name="qui" widget="boolean_toggle"/>
+                <field name="sex" widget="boolean_toggle"/>
+                <field name="sab" widget="boolean_toggle"/>
+                <field name="dom" widget="boolean_toggle"/>
+                <field name="hora_inicio" widget="float_time"/>
+                <field name="hora_fim" widget="float_time"/>
+                <field name="resumo"/>
+                <field name="active" widget="boolean_toggle"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_boteco_happy_hour" model="ir.actions.act_window">
+        <field name="name">Happy hour</field>
+        <field name="res_model">boteco.happy.hour</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p>Dias e horário do happy hour. O preço de cada produto fica no cadastro dele ("Preço no happy hour").</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_cardapio_planilha_view_form" model="ir.ui.view">
+        <field name="name">boteco.cardapio.planilha.form</field>
+        <field name="model">boteco.cardapio.planilha</field>
+        <field name="arch" type="xml">
+            <form string="Cardápio por planilha">
+                <p>
+                    <b>Exportar</b> baixa o cardápio atual em Excel (serve de modelo).
+                    <b>Importar</b> cria os itens novos e atualiza os existentes (pelo Código ou pelo Nome).
+                </p>
+                <group>
+                    <field name="so_cardapio"/>
+                    <field name="arquivo" filename="nome_arquivo"/>
+                    <field name="nome_arquivo" invisible="1"/>
+                </group>
+                <group invisible="not resultado" string="Resultado">
+                    <field name="resultado" nolabel="1" colspan="2"/>
+                </group>
+                <footer>
+                    <button name="action_importar" type="object" string="Importar" class="btn-primary" invisible="not arquivo"/>
+                    <button name="action_exportar" type="object" string="Exportar" class="btn-secondary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boteco_cardapio_planilha" model="ir.actions.act_window">
+        <field name="name">Importar / exportar cardápio</field>
+        <field name="res_model">boteco.cardapio.planilha</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_category_form_view_boteco" model="ir.ui.view">
+        <field name="name">product.category.form.boteco</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Padrões do boteco (preenchem o cadastro de produto)" name="boteco_padroes">
+                    <group>
+                        <field name="boteco_ncm_padrao"/>
+                        <field name="boteco_cfop_padrao"/>
+                        <field name="boteco_cst_csosn_padrao"/>
+                    </group>
+                    <group>
+                        <field name="boteco_origem_padrao"/>
+                        <field name="boteco_unidade_fiscal_padrao"/>
+                        <field name="boteco_setor_padrao_id"/>
+                        <field name="boteco_maior_18_padrao"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

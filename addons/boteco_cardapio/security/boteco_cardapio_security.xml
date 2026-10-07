@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="regra_happy_hour_empresa" model="ir.rule">
+        <field name="name">Happy hour: empresas permitidas</field>
+        <field name="model_id" ref="model_boteco_happy_hour"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="regra_oferta_empresa" model="ir.rule">
+        <field name="name">Oferta relâmpago: empresas permitidas</field>
+        <field name="model_id" ref="model_boteco_oferta_relampago"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

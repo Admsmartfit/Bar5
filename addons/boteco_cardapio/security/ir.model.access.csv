@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boteco_happy_hour_user,boteco.happy.hour usuario,model_boteco_happy_hour,base.group_user,1,0,0,0
+access_boteco_happy_hour_gerente,boteco.happy.hour gerente,model_boteco_happy_hour,boteco_base.group_gerente,1,1,1,0
+access_boteco_happy_hour_dono,boteco.happy.hour dono,model_boteco_happy_hour,boteco_base.group_dono,1,1,1,1
+access_boteco_oferta_user,boteco.oferta.relampago usuario,model_boteco_oferta_relampago,base.group_user,1,0,0,0
+access_boteco_oferta_gerente,boteco.oferta.relampago gerente,model_boteco_oferta_relampago,boteco_base.group_gerente,1,1,1,0
+access_boteco_oferta_dono,boteco.oferta.relampago dono,model_boteco_oferta_relampago,boteco_base.group_dono,1,1,1,1
+access_boteco_cardapio_planilha_gerente,boteco.cardapio.planilha gerente,model_boteco_cardapio_planilha,boteco_base.group_gerente,1,1,1,1

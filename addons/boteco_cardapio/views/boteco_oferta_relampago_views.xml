@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_oferta_relampago_view_list" model="ir.ui.view">
+        <field name="name">boteco.oferta.relampago.list</field>
+        <field name="model">boteco.oferta.relampago</field>
+        <field name="arch" type="xml">
+            <list string="Ofertas relâmpago" decoration-success="estado == 'ativa'" decoration-muted="estado in ('esgotada', 'encerrada')">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="preco_normal" string="De"/>
+                <field name="preco" string="Por"/>
+                <field name="limite"/>
+                <field name="vendidos"/>
+                <field name="restante"/>
+                <field name="fim"/>
+                <field name="estado" widget="badge" decoration-success="estado == 'ativa'" decoration-danger="estado == 'esgotada'"/>
+                <button name="action_lancar_agora" type="object" string="Lançar agora" icon="fa-bolt" class="btn-primary"
+                        invisible="estado != 'rascunho'"/>
+                <button name="action_encerrar" type="object" string="Encerrar" icon="fa-stop" invisible="estado != 'ativa'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="boteco_oferta_relampago_view_form" model="ir.ui.view">
+        <field name="name">boteco.oferta.relampago.form</field>
+        <field name="model">boteco.oferta.relampago</field>
+        <field name="arch" type="xml">
+            <form string="Oferta relâmpago">
+                <header>
+                    <button name="action_lancar_agora" type="object" string="Lançar agora" class="btn-primary btn-lg"
+                            invisible="estado != 'rascunho'"/>
+                    <button name="action_encerrar" type="object" string="Encerrar" invisible="estado != 'ativa'"/>
+                    <field name="estado" widget="statusbar" statusbar_visible="rascunho,ativa,esgotada"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" placeholder="Ex.: Balde de 6 long necks"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="product_id" readonly="estado != 'rascunho'"/>
+                            <field name="preco_normal"/>
+                            <field name="preco" readonly="estado != 'rascunho'"/>
+                            <field name="limite" readonly="estado != 'rascunho'"/>
+                        </group>
+                        <group>
+                            <field name="duracao_min" readonly="estado != 'rascunho'"/>
+                            <field name="inicio" readonly="1"/>
+                            <field name="fim"/>
+                            <field name="vendidos"/>
+                            <field name="restante"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boteco_oferta_relampago" model="ir.actions.act_window">
+        <field name="name">Ofertas relâmpago</field>
+        <field name="res_model">boteco.oferta.relampago</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Prepare uma oferta relâmpago</p>
+            <p>Produto, preço e quantidade. Toque em "Lançar agora" e ela vai para o topo do tablet; some sozinha quando esgota.</p>
+        </field>
+    </record>
+</odoo>

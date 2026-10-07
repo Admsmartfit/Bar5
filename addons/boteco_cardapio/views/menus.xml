@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_boteco_cardapio" name="Cardápio" parent="boteco_base.menu_boteco_root" sequence="20"
+              groups="boteco_base.group_gerente"/>
+    <menuitem id="menu_boteco_cardapio_itens" name="Itens do cardápio" parent="menu_boteco_cardapio" sequence="10"
+              action="action_boteco_cardapio"/>
+    <menuitem id="menu_boteco_ofertas" name="Ofertas relâmpago" parent="menu_boteco_cardapio" sequence="20"
+              action="action_boteco_oferta_relampago"/>
+    <menuitem id="menu_boteco_happy_hour" name="Happy hour" parent="menu_boteco_cardapio" sequence="30"
+              action="action_boteco_happy_hour"/>
+    <menuitem id="menu_boteco_sem_fiscal" name="Produtos sem dados fiscais" parent="menu_boteco_cardapio" sequence="40"
+              action="action_boteco_produtos_sem_fiscal"/>
+    <menuitem id="menu_boteco_planilha" name="Importar / exportar planilha" parent="menu_boteco_cardapio" sequence="50"
+              action="action_boteco_cardapio_planilha"/>
+    <menuitem id="menu_boteco_categorias_pdv" name="Categorias do tablet" parent="menu_boteco_cardapio" sequence="60"
+              action="point_of_sale.product_pos_category_action"/>
+    <menuitem id="menu_boteco_mesas" name="Mesas e plantas" parent="menu_boteco_cardapio" sequence="70"
+              action="pos_restaurant.action_restaurant_floor_form"/>
+</odoo>
