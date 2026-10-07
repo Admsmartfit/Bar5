@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boteco_equipamento_user,boteco.equipamento usuario,model_boteco_equipamento,base.group_user,1,0,0,0
+access_boteco_equipamento_gerente,boteco.equipamento gerente,model_boteco_equipamento,boteco_base.group_gerente,1,1,1,0
+access_boteco_equipamento_cozinheiro,boteco.equipamento cozinheiro,model_boteco_equipamento,boteco_base.group_cozinheiro,1,0,0,0
+access_boteco_temperatura_cozinheiro,boteco.temperatura cozinheiro,model_boteco_temperatura,boteco_base.group_cozinheiro,1,1,1,0
+access_boteco_temperatura_gerente,boteco.temperatura gerente,model_boteco_temperatura,boteco_base.group_gerente,1,1,1,0
+access_boteco_plano_producao,boteco.plano.producao,model_boteco_plano_producao,mrp.group_mrp_user,1,1,1,1
+access_boteco_plano_producao_linha,boteco.plano.producao.linha,model_boteco_plano_producao_linha,mrp.group_mrp_user,1,1,1,1
+access_boteco_rastreio_user,boteco.rastreio,model_boteco_rastreio,stock.group_stock_user,1,1,1,1

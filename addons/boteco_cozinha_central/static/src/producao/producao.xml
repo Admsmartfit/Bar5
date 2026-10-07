@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_cozinha.TelaProducao">
+        <div class="o_boteco_producao">
+            <t t-if="!state.aberta">
+                <header class="prod__topo">
+                    <h1>Produção do dia</h1>
+                    <button class="btn btn-secondary btn-lg" t-on-click="() => this.carregar()">Atualizar</button>
+                </header>
+                <div t-if="!state.producoes.length" class="prod__vazio">Nenhuma produção para hoje. O gerente cria pelo "Plano de produção".</div>
+                <div class="prod__grade">
+                    <button t-foreach="state.producoes" t-as="p" t-key="p.id" class="prod__cartao" t-att-data-estado="p.estado"
+                            t-on-click="() => this.abrir(p)">
+                        <img t-att-src="p.imagem" alt=""/>
+                        <div class="prod__nome" t-esc="p.produto"/>
+                        <div class="prod__qtd"><t t-esc="p.quantidade"/> <t t-esc="p.unidade"/></div>
+                        <div class="prod__estado"><t t-if="p.estado === 'fazendo'">Fazendo</t><t t-else="">Na fila</t></div>
+                    </button>
+                </div>
+            </t>
+            <t t-else="">
+                <t t-set="p" t-value="state.aberta"/>
+                <header class="prod__topo">
+                    <button class="btn btn-secondary btn-lg" t-on-click="() => this.voltar()">‹ Voltar</button>
+                    <h1 t-esc="p.produto"/>
+                </header>
+
+                <div t-if="state.resultado" class="prod__pronto">
+                    <div class="prod__pronto-titulo">✔ Produção finalizada</div>
+                    <div>Lote <b t-esc="state.resultado.lote"/> · Validade <b t-esc="state.resultado.validade"/></div>
+                    <div>Rendimento: <b t-esc="state.resultado.rendimento"/>%</div>
+                    <div t-if="state.resultado.etiqueta">Etiqueta enviada para a impressora. Cole no saco a vácuo.</div>
+                    <div t-else="" class="text-warning">Sem impressora de etiquetas cadastrada no armazém.</div>
+                    <button class="btn btn-success btn-lg mt-3" t-on-click="() => this.voltar()">Próxima produção</button>
+                </div>
+
+                <div t-else="" class="prod__detalhe">
+                    <section class="prod__info">
+                        <div class="prod__meta">Receita para <b><t t-esc="p.quantidade"/> <t t-esc="p.unidade"/></b> · <t t-esc="p.conservacao"/></div>
+                        <h2>Insumos</h2>
+                        <ul>
+                            <li t-foreach="p.insumos" t-as="i" t-key="i_index"><b t-esc="i.quantidade"/> <t t-esc="i.unidade"/> – <t t-esc="i.nome"/></li>
+                        </ul>
+                        <div t-if="p.modo_preparo" class="prod__preparo" t-out="p.modo_preparo"/>
+                    </section>
+                    <section class="prod__acoes">
+                        <button t-if="p.estado !== 'fazendo'" class="prod__btn prod__btn--iniciar" t-on-click="() => this.iniciar()">Iniciar</button>
+                        <t t-else="">
+                            <div class="prod__peso"><span t-esc="state.peso || '0'"/> <small t-esc="p.unidade"/></div>
+                            <div class="prod__teclado">
+                                <button t-foreach="teclas" t-as="t" t-key="t" t-on-click="() => this.tecla(t)">
+                                    <t t-if="t === 'apagar'">⌫</t><t t-else="" t-esc="t"/>
+                                </button>
+                            </div>
+                            <button class="prod__btn prod__btn--finalizar" t-att-disabled="state.enviando" t-on-click="() => this.finalizar()">
+                                Finalizar e imprimir etiqueta
+                            </button>
+                        </t>
+                    </section>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

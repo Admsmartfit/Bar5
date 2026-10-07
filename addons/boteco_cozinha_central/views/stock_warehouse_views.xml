@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_warehouse_form_boteco_cozinha" model="ir.ui.view">
+        <field name="name">stock.warehouse.form.boteco.cozinha</field>
+        <field name="model">stock.warehouse</field>
+        <field name="inherit_id" ref="boteco_base.stock_warehouse_view_form_boteco"/>
+        <field name="arch" type="xml">
+            <field name="boteco_tipo_unidade" position="after">
+                <field name="boteco_impressora_etiqueta_id"/>
+            </field>
+        </field>
+    </record>
+</odoo>

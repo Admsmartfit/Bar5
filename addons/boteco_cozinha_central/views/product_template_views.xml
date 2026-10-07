@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_cozinha" model="ir.ui.view">
+        <field name="name">product.template.form.boteco.cozinha</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Cozinha central" name="boteco_cozinha">
+                    <group>
+                        <group>
+                            <field name="boteco_produzido_cozinha"/>
+                            <field name="boteco_conservacao" invisible="not boteco_produzido_cozinha"/>
+                            <field name="boteco_dias_cobertura" invisible="not boteco_produzido_cozinha"/>
+                        </group>
+                        <group invisible="not boteco_produzido_cozinha">
+                            <field name="expiration_time" string="Validade congelado (dias)"/>
+                            <field name="boteco_validade_resfriado_dias"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

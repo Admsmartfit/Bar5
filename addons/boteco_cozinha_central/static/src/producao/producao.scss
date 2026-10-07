@@ -1,0 +1,36 @@
+// Tablet da cozinha: alvos de 64 px, texto grande, alto contraste.
+.o_boteco_producao {
+    min-height: 100%; padding: 14px; background: #f8fafc; font-size: 18px;
+    h1 { font-size: 28px; font-weight: 800; margin: 0; }
+    h2 { font-size: 20px; font-weight: 700; margin-top: 12px; }
+    .btn-lg { min-height: 64px; min-width: 64px; font-weight: 700; }
+    .prod__topo { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .prod__vazio { color: #64748b; font-size: 22px; text-align: center; margin-top: 60px; }
+    .prod__grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .prod__cartao {
+        display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 14px; min-height: 220px;
+        border: 3px solid #cbd5e1; border-radius: 16px; background: #fff; font-size: 18px;
+        &[data-estado="fazendo"] { border-color: #eab308; background: #fefce8; }
+        img { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; }
+    }
+    .prod__nome { font-weight: 800; text-align: center; }
+    .prod__qtd { font-size: 22px; }
+    .prod__estado { font-size: 15px; color: #475569; }
+    .prod__detalhe { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 800px) { .prod__detalhe { grid-template-columns: 1fr; } }
+    .prod__info, .prod__acoes { background: #fff; border-radius: 16px; padding: 16px; border: 1px solid #e2e8f0; }
+    .prod__preparo { margin-top: 12px; font-size: 17px; }
+    .prod__btn {
+        width: 100%; min-height: 96px; border: 0; border-radius: 16px; font-size: 28px; font-weight: 900; color: #fff;
+        &--iniciar { background: #2563eb; }
+        &--finalizar { background: #16a34a; margin-top: 12px; }
+        &[disabled] { opacity: 0.6; }
+    }
+    .prod__peso { font-size: 56px; font-weight: 900; text-align: center; font-variant-numeric: tabular-nums; }
+    .prod__teclado {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+        button { min-height: 72px; font-size: 32px; font-weight: 800; border-radius: 14px; border: 2px solid #cbd5e1; background: #f1f5f9; }
+    }
+    .prod__pronto { background: #dcfce7; border: 3px solid #16a34a; border-radius: 16px; padding: 20px; font-size: 22px; }
+    .prod__pronto-titulo { font-size: 32px; font-weight: 900; color: #166534; }
+}

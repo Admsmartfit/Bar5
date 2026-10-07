@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Planilha de controle de temperatura (Vigilância Sanitária): selecione os registros do mês e imprima -->
+    <record id="report_temperatura" model="ir.actions.report">
+        <field name="name">Planilha de temperatura</field>
+        <field name="model">boteco.temperatura</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">boteco_cozinha_central.temperatura_documento</field>
+        <field name="report_file">boteco_cozinha_central.temperatura_documento</field>
+        <field name="binding_model_id" ref="model_boteco_temperatura"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="temperatura_documento">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <h2>Controle de temperatura de equipamentos de frio</h2>
+                    <p>
+                        <b t-esc="docs[:1].company_id.name"/> · CNPJ <t t-esc="docs[:1].company_id.vat"/>
+                        <t t-if="docs[:1].company_id.boteco_registro_sanitario"> · Registro <t t-esc="docs[:1].company_id.boteco_registro_sanitario"/></t>
+                    </p>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr><th>Data/hora</th><th>Equipamento</th><th>Faixa</th><th class="text-end">°C</th><th>Situação</th><th>Ação corretiva</th><th>Responsável</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="docs.sorted('data')" t-as="r">
+                                <td><span t-field="r.data"/></td>
+                                <td t-esc="r.equipamento_id.name"/>
+                                <td><t t-esc="r.equipamento_id.temperatura_min"/> a <t t-esc="r.equipamento_id.temperatura_max"/></td>
+                                <td class="text-end" t-esc="'%.1f' % r.temperatura"/>
+                                <td t-att-style="'color:#b91c1c;font-weight:bold' if r.fora_da_faixa else ''" t-esc="'FORA' if r.fora_da_faixa else 'OK'"/>
+                                <td t-esc="r.acao_corretiva or ''"/>
+                                <td t-esc="r.responsavel_id.name"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top:50px;border-top:1px solid #000;width:45%;text-align:center">Responsável técnico</div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_rastreio_view_form" model="ir.ui.view">
+        <field name="name">boteco.rastreio.form</field>
+        <field name="model">boteco.rastreio</field>
+        <field name="arch" type="xml">
+            <form string="Rastreio de lote">
+                <group>
+                    <field name="codigo" placeholder="CC261007-001"/>
+                </group>
+                <div class="alert alert-danger" invisible="not erro"><field name="erro" readonly="1"/></div>
+                <group invisible="not lot_id">
+                    <group>
+                        <field name="lot_id"/>
+                        <field name="produto"/>
+                    </group>
+                    <group>
+                        <field name="fabricacao"/>
+                        <field name="validade"/>
+                    </group>
+                </group>
+                <group invisible="not lot_id">
+                    <field name="clientes"/>
+                    <field name="destinos"/>
+                    <field name="insumos"/>
+                </group>
+                <footer>
+                    <button name="action_buscar" type="object" string="Buscar" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_rastreio" model="ir.actions.act_window">
+        <field name="name">Rastreio de lote</field>
+        <field name="res_model">boteco.rastreio</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

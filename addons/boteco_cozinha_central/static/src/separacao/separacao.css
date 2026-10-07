@@ -1,0 +1,14 @@
+#bt-separacao { max-width: 760px; margin: 0 auto; padding: 12px; }
+.bt-dica { color: var(--bt-texto-suave); }
+.bt-leitura { display: flex; gap: 8px; }
+.bt-leitura input { flex: 1; min-height: 56px; font-size: 20px; padding: 0 12px; border-radius: 12px; border: 2px solid var(--bt-borda); }
+#bt-video { width: 100%; max-height: 260px; margin-top: 8px; border-radius: 12px; background: #000; }
+.bt-msg { min-height: 32px; margin: 10px 0; font-weight: 700; font-size: 18px; }
+.bt-msg[data-ok="1"] { color: #15803d; }
+.bt-msg[data-ok="0"] { color: #b91c1c; }
+.bt-itens { list-style: none; padding: 0; display: grid; gap: 8px; }
+.bt-item { border: 2px solid var(--bt-borda); border-radius: 12px; padding: 10px; background: var(--bt-superficie); }
+.bt-item.completo { border-color: var(--bt-pronto); }
+.bt-item__nome { font-weight: 700; font-size: 18px; }
+.bt-item__lote { color: var(--bt-texto-suave); font-size: 15px; }
+.bt-concluir { width: 100%; margin-top: 14px; min-height: 64px; font-size: 20px; }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_boteco_cozinha" name="Cozinha central" parent="boteco_base.menu_boteco_root" sequence="45"
+              groups="boteco_base.group_cozinheiro,boteco_base.group_gerente"/>
+    <menuitem id="menu_tela_producao" name="Produção do dia" parent="menu_boteco_cozinha" sequence="10"
+              action="action_tela_producao"/>
+    <menuitem id="menu_plano_producao" name="Plano de produção" parent="menu_boteco_cozinha" sequence="20"
+              action="action_boteco_plano_producao"/>
+    <menuitem id="menu_receitas" name="Receitas" parent="menu_boteco_cozinha" sequence="30"
+              action="mrp.mrp_bom_form_action"/>
+    <menuitem id="menu_lotes" name="Lotes e validades" parent="menu_boteco_cozinha" sequence="40"
+              action="action_boteco_lotes"/>
+    <menuitem id="menu_transferencias" name="Transferências e entregas" parent="menu_boteco_cozinha" sequence="50"
+              action="stock.action_picking_tree_all"/>
+    <menuitem id="menu_temperaturas" name="Temperaturas" parent="menu_boteco_cozinha" sequence="60"
+              action="action_boteco_temperatura"/>
+    <menuitem id="menu_equipamentos" name="Freezers e câmaras" parent="menu_boteco_cozinha" sequence="70"
+              action="action_boteco_equipamento"/>
+    <menuitem id="menu_rastreio" name="Rastreio de lote" parent="menu_boteco_cozinha" sequence="80"
+              action="action_boteco_rastreio"/>
+</odoo>

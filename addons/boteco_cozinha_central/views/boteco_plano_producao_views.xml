@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_plano_producao_view_form" model="ir.ui.view">
+        <field name="name">boteco.plano.producao.form</field>
+        <field name="model">boteco.plano.producao</field>
+        <field name="arch" type="xml">
+            <form string="Plano de produção">
+                <p>Sugestão pela saída média no mesmo dia da semana (últimas 4 semanas), pedidos B2B em aberto e estoque.</p>
+                <group>
+                    <field name="data"/>
+                </group>
+                <field name="linha_ids">
+                    <list editable="bottom" create="false" decoration-bf="quantidade &gt; 0">
+                        <field name="product_id" readonly="1"/>
+                        <field name="bom_id" readonly="1"/>
+                        <field name="media_saida" readonly="1"/>
+                        <field name="dias_cobertura" readonly="1"/>
+                        <field name="pedidos_b2b" readonly="1"/>
+                        <field name="estoque" readonly="1"/>
+                        <field name="em_producao" readonly="1"/>
+                        <field name="quantidade"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_calcular" type="object" string="Calcular" class="btn-secondary"/>
+                    <button name="action_criar_producoes" type="object" string="Criar produções" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_plano_producao" model="ir.actions.server">
+        <field name="name">Plano de produção</field>
+        <field name="model_id" ref="model_boteco_plano_producao"/>
+        <field name="state">code</field>
+        <field name="code">action = env["boteco.plano.producao"].create({}).action_calcular()</field>
+    </record>
+</odoo>

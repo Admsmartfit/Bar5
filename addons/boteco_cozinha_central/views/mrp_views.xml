@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_bom_form_boteco" model="ir.ui.view">
+        <field name="name">mrp.bom.form.boteco</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Receita (cozinha)" name="boteco_receita">
+                    <group>
+                        <field name="boteco_perda_esperada"/>
+                        <field name="boteco_tempo_preparo_min"/>
+                    </group>
+                    <field name="boteco_modo_preparo" placeholder="Passo a passo, com fotos se quiser"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_production_form_boteco" model="ir.ui.view">
+        <field name="name">mrp.production.form.boteco</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_boteco_reimprimir_etiqueta" type="object" string="Reimprimir etiqueta"
+                        invisible="state != 'done' or not lot_producing_id"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Rendimento" name="boteco_rendimento">
+                    <group>
+                        <field name="boteco_iniciado_em"/>
+                        <field name="boteco_peso_real"/>
+                        <field name="boteco_rendimento_pct"/>
+                        <field name="boteco_rendimento_esperado_pct"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_production_list_boteco" model="ir.ui.view">
+        <field name="name">mrp.production.list.boteco</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="product_qty" position="after">
+                <field name="boteco_peso_real" optional="show"/>
+                <field name="boteco_rendimento_pct" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_tela_producao" model="ir.actions.client">
+        <field name="name">Produção do dia</field>
+        <field name="tag">boteco_cozinha.producao</field>
+    </record>
+</odoo>

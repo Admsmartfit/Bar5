@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="tela_separacao" name="Boteco: separação lendo QR">
+        &lt;!DOCTYPE html&gt;
+        <html lang="pt-BR" data-tema="claro">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title>Separação – Boteco</title>
+                <t t-call-assets="boteco_cozinha_central.assets_separacao" t-js="false"/>
+            </head>
+            <body>
+                <header class="bt-topo">
+                    <div class="bt-topo__marca">Separar <t t-esc="picking.name"/></div>
+                    <a class="bt-botao bt-botao--secundario" t-attf-href="/odoo/action-stock.action_picking_tree_all/#{picking.id}"
+                       style="line-height:48px;text-decoration:none">Sair</a>
+                </header>
+                <main id="bt-separacao" t-att-data-id="picking.id">
+                    <p class="bt-dica">Leia o QR de cada etiqueta (leitor ou câmera). Lote vencido é recusado.</p>
+                    <div class="bt-leitura">
+                        <input id="bt-codigo" type="text" autocomplete="off" placeholder="Código do lote" autofocus="autofocus"/>
+                        <button id="bt-camera" type="button" class="bt-botao bt-botao--secundario">📷 Câmera</button>
+                    </div>
+                    <video id="bt-video" playsinline="playsinline" hidden="hidden"></video>
+                    <div id="bt-msg" class="bt-msg"/>
+                    <ul id="bt-itens" class="bt-itens"/>
+                    <button id="bt-concluir" type="button" class="bt-botao bt-concluir">Concluir separação</button>
+                </main>
+                <t t-call-assets="boteco_cozinha_central.assets_separacao" t-css="false"/>
+            </body>
+        </html>
+    </template>
+</odoo>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Código do lote: CC + data de fabricação + número do dia. Ex.: CC261007-003 -->
+    <record id="sequencia_lote_cozinha" model="ir.sequence">
+        <field name="name">Lote da cozinha central</field>
+        <field name="code">boteco.lote.cozinha</field>
+        <field name="prefix">CC%(y)s%(month)s%(day)s-</field>
+        <field name="padding">3</field>
+        <field name="use_date_range" eval="True"/>
+    </record>
+</odoo>
