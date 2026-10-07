@@ -1,0 +1,16 @@
+// Faixa fixa em todas as telas do banco de treino: impossível confundir com o sistema de verdade.
+body::before {
+    content: "MODO TREINAMENTO – nada aqui vale de verdade";
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2147483647;
+    background: #dc2626;
+    color: #fff;
+    font: 700 14px/1 system-ui, sans-serif;
+    padding: 6px 14px;
+    border-radius: 0 0 10px 10px;
+    pointer-events: none;
+    letter-spacing: 0.04em;
+}

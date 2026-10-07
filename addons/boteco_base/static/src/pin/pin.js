@@ -55,8 +55,10 @@
         pontos.classList.remove("tremer");
         void pontos.offsetWidth; // reinicia a animação
         pontos.classList.add("tremer");
-        if (navigator.vibrate) {
-            navigator.vibrate(200);
+        try {
+            navigator.vibrate?.(200);
+        } catch {
+            // sem vibração
         }
         pin = "";
         desenharPontos();

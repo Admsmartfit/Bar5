@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- No treino não há alerta ao gerente nem cobrança de verdade -->
+    <function model="ir.cron" name="write">
+        <value model="ir.cron" search="[('cron_name', 'in', [
+            'Boteco: alertar pedidos acima de 30 minutos',
+            'Boteco: gerar mensalidades da assessoria',
+            'Boteco: alertar bares clientes que pararam de comprar'])]"/>
+        <value eval="{'active': False}"/>
+    </function>
+</odoo>

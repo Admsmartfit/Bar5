@@ -148,8 +148,9 @@ class ResUsers(models.Model):
                 % (JANELA_BLOQUEIO_MIN, MAX_TENTATIVAS)
             )
         if not user._boteco_pin_confere(credential.get("pin")):
+            # Conta antes de gravar: a gravação é num cursor separado, que esta transação não enxerga
+            restantes = MAX_TENTATIVAS - Tentativa._falhas_recentes(user.id, "login") - 1
             Tentativa._registrar_isolado(user.id, "login", False, ip)
-            restantes = MAX_TENTATIVAS - Tentativa._falhas_recentes(user.id, "login")
             if restantes <= 0:
                 raise AccessDenied(_("PIN bloqueado por %s minutos. Chame o gerente.") % JANELA_BLOQUEIO_MIN)
             raise AccessDenied(_("PIN errado. Restam %s tentativas.") % restantes)

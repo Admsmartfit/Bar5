@@ -73,6 +73,7 @@ class BotecoAutorizacao(models.Model):
             gerente = self._gerente_pelo_pin(pin, permissao)
             ip = self.env["res.users"]._boteco_ip()
             if not gerente:
+                falhas_antes = Tentativa._falhas_recentes(solicitante.id, "autorizacao")
                 Tentativa._registrar_isolado(solicitante.id, "autorizacao", False, ip)
                 self.env["boteco.auditoria"].registrar(
                     "autorizacao_negada",
@@ -81,7 +82,7 @@ class BotecoAutorizacao(models.Model):
                     referencia=referencia,
                     valor=valor,
                 )
-                restantes = MAX_TENTATIVAS - Tentativa._falhas_recentes(solicitante.id, "autorizacao")
+                restantes = MAX_TENTATIVAS - falhas_antes - 1
                 return {
                     "erro": _("PIN não confere ou essa pessoa não pode autorizar isso. Restam %s tentativas.")
                     % max(restantes, 0),
