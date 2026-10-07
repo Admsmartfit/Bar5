@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="cron_mensalidades" model="ir.cron">
+        <field name="name">Boteco: gerar mensalidades da assessoria</field>
+        <field name="model_id" ref="model_boteco_contrato_assessoria"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_gerar_mensalidades()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+    <record id="cron_pedidos_recorrentes" model="ir.cron">
+        <field name="name">Boteco: gerar pedidos recorrentes B2B</field>
+        <field name="model_id" ref="model_boteco_b2b_recorrencia"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_gerar_pedidos()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+    <record id="cron_clientes_parados" model="ir.cron">
+        <field name="name">Boteco: alertar bares clientes que pararam de comprar</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_alertar_clientes_parados()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+</odoo>

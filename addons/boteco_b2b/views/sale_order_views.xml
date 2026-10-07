@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_form_b2b" model="ir.ui.view">
+        <field name="name">sale.order.form.boteco.b2b</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <field name="payment_term_id" position="after">
+                <field name="boteco_kg_total"/>
+                <field name="boteco_recorrencia_id" invisible="not boteco_recorrencia_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_pedidos_b2b" model="ir.actions.act_window">
+        <field name="name">Pedidos de outros bares</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="domain">[('partner_id.commercial_partner_id.boteco_cliente_b2b', '=', True)]</field>
+        <field name="context">{'search_default_my_quotation': 0}</field>
+        <field name="help" type="html"><p>Escolha o bar cliente, os produtos e os quilos, e a data de entrega.</p></field>
+    </record>
+</odoo>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="categoria_tira_gosto_b2b" model="product.category">
+        <field name="name">Tira-gosto (venda a bares)</field>
+    </record>
+
+    <!-- Tabela padrão do plano de negócios: R$ 42/kg. Cada cliente pode ter a sua. -->
+    <record id="tabela_b2b_padrao" model="product.pricelist">
+        <field name="name">Bares clientes – R$ 42/kg</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="tabela_b2b_padrao_regra" model="product.pricelist.item">
+        <field name="pricelist_id" ref="tabela_b2b_padrao"/>
+        <field name="applied_on">2_product_category</field>
+        <field name="categ_id" ref="categoria_tira_gosto_b2b"/>
+        <field name="compute_price">fixed</field>
+        <field name="fixed_price">42.0</field>
+    </record>
+
+    <record id="produto_implantacao" model="product.product">
+        <field name="name">Implantação do sistema e assessoria</field>
+        <field name="type">service</field>
+        <field name="list_price">3500.0</field>
+        <field name="sale_ok" eval="True"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="available_in_pos" eval="False"/>
+        <field name="taxes_id" eval="[Command.clear()]"/>
+        <field name="default_code">ASSESS-IMPL</field>
+    </record>
+    <record id="produto_mensalidade" model="product.product">
+        <field name="name">Mensalidade de assessoria</field>
+        <field name="type">service</field>
+        <field name="list_price">450.0</field>
+        <field name="sale_ok" eval="True"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="available_in_pos" eval="False"/>
+        <field name="taxes_id" eval="[Command.clear()]"/>
+        <field name="default_code">ASSESS-MENS</field>
+    </record>
+
+    <record id="sequencia_contrato" model="ir.sequence">
+        <field name="name">Contrato de assessoria</field>
+        <field name="code">boteco.contrato.assessoria</field>
+        <field name="prefix">ASS/%(year)s/</field>
+        <field name="padding">3</field>
+    </record>
+</odoo>

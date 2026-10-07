@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boteco_recorrencia_comercial,boteco.b2b.recorrencia comercial,model_boteco_b2b_recorrencia,boteco_base.group_comercial,1,1,1,1
+access_boteco_recorrencia_linha_comercial,boteco.b2b.recorrencia.linha comercial,model_boteco_b2b_recorrencia_linha,boteco_base.group_comercial,1,1,1,1
+access_boteco_contrato_comercial,boteco.contrato.assessoria comercial,model_boteco_contrato_assessoria,boteco_base.group_comercial,1,0,0,0
+access_boteco_contrato_dono,boteco.contrato.assessoria dono,model_boteco_contrato_assessoria,boteco_base.group_dono,1,1,1,1

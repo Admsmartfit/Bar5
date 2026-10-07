@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="report_romaneio" model="ir.actions.report">
+        <field name="name">Romaneio de entrega</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">boteco_b2b.romaneio_documento</field>
+        <field name="report_file">boteco_b2b.romaneio_documento</field>
+        <field name="print_report_name">'Romaneio - %s' % object.name</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="romaneio_documento">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="p">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Romaneio de entrega <t t-esc="p.name"/></h2>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <b>Cliente:</b> <t t-esc="p.partner_id.commercial_partner_id.name"/><br/>
+                                <b>CNPJ:</b> <t t-esc="p.partner_id.commercial_partner_id.vat or '-'"/><br/>
+                                <b>Endereço:</b> <t t-esc="p.partner_id.contact_address or ''"/>
+                            </div>
+                            <div class="col-6">
+                                <b>Pedido:</b> <t t-esc="p.origin or ''"/><br/>
+                                <b>Data:</b> <span t-field="p.scheduled_date"/>
+                            </div>
+                        </div>
+                        <table class="table table-sm table-bordered">
+                            <thead><tr><th>Produto</th><th>Lote</th><th>Validade</th><th class="text-end">Quantidade</th></tr></thead>
+                            <tbody>
+                                <t t-foreach="p.move_ids" t-as="m">
+                                    <t t-set="linhas" t-value="m.move_line_ids.filtered(lambda ml: ml.lot_id)"/>
+                                    <tr t-if="not linhas">
+                                        <td t-esc="m.product_id.display_name"/><td>-</td><td>-</td>
+                                        <td class="text-end"><t t-esc="m.product_uom_qty"/> <t t-esc="m.product_uom.name"/></td>
+                                    </tr>
+                                    <tr t-foreach="linhas" t-as="ml">
+                                        <td t-esc="m.product_id.display_name"/>
+                                        <td t-esc="ml.lot_id.name"/>
+                                        <td><span t-if="ml.lot_id.expiration_date" t-esc="ml.lot_id.expiration_date.strftime('%d/%m/%Y')"/></td>
+                                        <td class="text-end"><t t-esc="ml.quantity"/> <t t-esc="ml.product_uom_id.name"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <p>Mercadoria congelada: conferir a temperatura no recebimento (máx. -12 °C).</p>
+                        <div style="margin-top:60px;display:flex;justify-content:space-between">
+                            <div style="border-top:1px solid #000;width:45%;text-align:center">Entregue por</div>
+                            <div style="border-top:1px solid #000;width:45%;text-align:center">Recebido por (nome, assinatura, data e hora)</div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

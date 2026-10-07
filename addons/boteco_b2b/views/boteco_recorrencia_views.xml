@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_recorrencia_view_list" model="ir.ui.view">
+        <field name="name">boteco.b2b.recorrencia.list</field>
+        <field name="model">boteco.b2b.recorrencia</field>
+        <field name="arch" type="xml">
+            <list string="Pedidos recorrentes">
+                <field name="partner_id"/>
+                <field name="dia_entrega"/>
+                <field name="proxima_entrega"/>
+                <field name="ultimo_pedido_id"/>
+                <button name="action_gerar_pedido" type="object" string="Gerar pedido agora" icon="fa-bolt" class="btn-primary"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_recorrencia_view_form" model="ir.ui.view">
+        <field name="name">boteco.b2b.recorrencia.form</field>
+        <field name="model">boteco.b2b.recorrencia</field>
+        <field name="arch" type="xml">
+            <form string="Pedido recorrente">
+                <header>
+                    <button name="action_gerar_pedido" type="object" string="Gerar pedido agora" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="dia_entrega"/>
+                            <field name="antecedencia_dias"/>
+                        </group>
+                        <group>
+                            <field name="proxima_entrega"/>
+                            <field name="ultimo_pedido_id"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <field name="linha_ids">
+                        <list editable="bottom">
+                            <field name="product_id"/>
+                            <field name="quantidade"/>
+                            <field name="unidade"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_recorrencia" model="ir.actions.act_window">
+        <field name="name">Pedidos recorrentes</field>
+        <field name="res_model">boteco.b2b.recorrencia</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html"><p>Ex.: toda quinta, 20 kg de bolinho para o Bar do Zé. O pedido é criado sozinho na véspera.</p></field>
+    </record>
+</odoo>
