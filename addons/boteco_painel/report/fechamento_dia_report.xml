@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="report_fechamento_dia" model="ir.actions.report">
+        <field name="name">Fechamento do dia</field>
+        <field name="model">boteco.fechamento.dia</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">boteco_painel.fechamento_dia_documento</field>
+        <field name="report_file">boteco_painel.fechamento_dia_documento</field>
+    </record>
+
+    <template id="fechamento_dia_documento">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="f">
+                <t t-set="d" t-value="f.calcular(f.dia, f.company_id)"/>
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <h2>Fechamento do dia <t t-esc="f.dia.strftime('%d/%m/%Y')"/> – <t t-esc="d['empresa']"/></h2>
+                        <table class="table table-sm">
+                            <tr><td>Contas fechadas</td><td class="text-end" t-esc="d['contas']"/></tr>
+                            <tr><td>Clientes</td><td class="text-end" t-esc="d['clientes']"/></tr>
+                            <tr class="fw-bold"><td>Vendas</td><td class="text-end" t-esc="'R$ %.2f' % d['vendas']"/></tr>
+                            <tr><td>Ticket médio</td><td class="text-end" t-esc="'R$ %.2f' % d['ticket_medio']"/></tr>
+                            <tr><td>Taxa de serviço</td><td class="text-end" t-esc="'R$ %.2f' % d['taxa_servico']"/></tr>
+                            <tr><td>Couvert</td><td class="text-end" t-esc="'R$ %.2f' % d['couvert']"/></tr>
+                            <tr><td>Descontos</td><td class="text-end" t-esc="'R$ %.2f' % d['descontos']"/></tr>
+                            <tr><td>Cortesias</td><td class="text-end" t-esc="'R$ %.2f' % d['cortesias']"/></tr>
+                            <tr><td>Consumo de funcionários</td><td class="text-end"><t t-esc="d['consumo_funcionarios']['contas']"/> conta(s) – R$ <t t-esc="'%.2f' % d['consumo_funcionarios']['valor']"/></td></tr>
+                            <tr><td>Sangrias / reforços</td><td class="text-end">R$ <t t-esc="'%.2f' % d['sangrias']"/> / R$ <t t-esc="'%.2f' % d['reforcos']"/></td></tr>
+                        </table>
+                        <h4>Formas de pagamento</h4>
+                        <table class="table table-sm">
+                            <thead><tr><th>Forma</th><th class="text-end">Pagamentos</th><th class="text-end">Valor</th></tr></thead>
+                            <tr t-foreach="d['formas_pagamento']" t-as="p">
+                                <td t-esc="p['forma']"/><td class="text-end" t-esc="p['quantidade']"/><td class="text-end" t-esc="'R$ %.2f' % p['valor']"/>
+                            </tr>
+                            <tr class="fw-bold"><td>Total</td><td/><td class="text-end" t-esc="'R$ %.2f' % d['total_pagamentos']"/></tr>
+                        </table>
+                        <h4>Caixa (contagem cega)</h4>
+                        <table class="table table-sm">
+                            <thead><tr><th>Forma</th><th class="text-end">Esperado</th><th class="text-end">Contado</th><th class="text-end">Diferença</th></tr></thead>
+                            <tr t-foreach="d['caixa']['linhas']" t-as="l">
+                                <td t-esc="l['forma']"/><td class="text-end" t-esc="'R$ %.2f' % l['esperado']"/>
+                                <td class="text-end" t-esc="'R$ %.2f' % l['contado']"/>
+                                <td class="text-end" t-att-style="'color:#b91c1c;font-weight:bold' if l['diferenca'] else ''" t-esc="'R$ %.2f' % l['diferenca']"/>
+                            </tr>
+                            <tr class="fw-bold"><td>Total</td><td class="text-end" t-esc="'R$ %.2f' % d['caixa']['esperado']"/>
+                                <td class="text-end" t-esc="'R$ %.2f' % d['caixa']['contado']"/><td class="text-end" t-esc="'R$ %.2f' % d['caixa']['diferenca']"/></tr>
+                        </table>
+                        <h4>Cancelamentos (<t t-esc="d['cancelamentos']['quantidade']"/>)</h4>
+                        <table class="table table-sm" t-if="d['cancelamentos']['itens']">
+                            <tr t-foreach="d['cancelamentos']['itens']" t-as="c">
+                                <td t-esc="c['descricao']"/><td t-esc="c['motivo']"/><td t-esc="c['autorizado_por']"/>
+                                <td class="text-end" t-esc="'R$ %.2f' % c['valor']"/>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

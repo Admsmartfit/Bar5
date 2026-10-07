@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_painel.PainelDono">
+        <div class="o_boteco_painel">
+            <header class="pn__topo">
+                <h1>Noite de <t t-esc="state.d?.dia or '...'"/></h1>
+                <span class="pn__atualizado">Atualiza sozinho a cada 30 s</span>
+            </header>
+            <div t-if="state.erro" class="alert alert-warning" t-esc="state.erro"/>
+            <t t-if="state.d">
+                <t t-set="d" t-value="state.d"/>
+                <section class="pn__cartoes">
+                    <div class="pn__cartao pn__cartao--destaque">
+                        <div class="pn__rotulo">Faturamento da noite</div>
+                        <div class="pn__valor" t-esc="reais(d.noite.faturamento)"/>
+                        <div class="pn__sub" t-esc="variacao(d.variacao_faturamento)"/>
+                        <div class="pn__sub">Pago: <t t-esc="reais(d.noite.faturamento_pago)"/> · <t t-esc="d.noite.contas_abertas"/> conta(s) aberta(s)</div>
+                    </div>
+                    <div class="pn__cartao">
+                        <div class="pn__rotulo">Clientes</div>
+                        <div class="pn__valor" t-esc="d.noite.clientes"/>
+                        <div class="pn__sub" t-esc="variacao(d.variacao_clientes)"/>
+                    </div>
+                    <div class="pn__cartao">
+                        <div class="pn__rotulo">Ticket médio</div>
+                        <div class="pn__valor" t-esc="reais(d.noite.ticket_medio)"/>
+                    </div>
+                    <div class="pn__cartao" t-att-data-alerta="d.cmv_pct &gt; 35 ? '1' : '0'">
+                        <div class="pn__rotulo">CMV da noite</div>
+                        <div class="pn__valor"><t t-esc="d.cmv_pct"/>%</div>
+                    </div>
+                    <div class="pn__cartao" t-att-data-alerta="d.tempo_medio_entrega &gt; 30 ? '1' : '0'">
+                        <div class="pn__rotulo">Tempo médio de preparo</div>
+                        <div class="pn__valor"><t t-esc="d.tempo_medio_entrega"/> min</div>
+                        <div class="pn__sub"><t t-esc="d.pedidos_atrasados"/> pedido(s) acima de 30 min agora</div>
+                    </div>
+                    <div class="pn__cartao" t-att-data-alerta="d.cancelamentos.quantidade &gt; 5 ? '1' : '0'">
+                        <div class="pn__rotulo">Cancelamentos</div>
+                        <div class="pn__valor" t-esc="d.cancelamentos.quantidade"/>
+                        <div class="pn__sub"><t t-esc="reais(d.cancelamentos.valor)"/> · descontos e cortesias <t t-esc="reais(d.descontos_cortesias)"/></div>
+                    </div>
+                </section>
+
+                <section class="pn__bloco">
+                    <h2>Metas do plano</h2>
+                    <div t-foreach="d.metas" t-as="m" t-key="m.nome" class="pn__meta">
+                        <div class="pn__meta-topo"><span t-esc="m.nome"/><b><t t-esc="m.valor"/> / <t t-esc="m.meta"/> <t t-esc="m.unidade"/></b></div>
+                        <div class="pn__barra"><div t-att-style="'width:' + pctMeta(m) + '%'" t-att-data-ok="pctMeta(m) &gt;= 100 ? '1' : '0'"/></div>
+                    </div>
+                </section>
+
+                <section class="pn__bloco">
+                    <h2>Mais vendidos hoje</h2>
+                    <div t-if="!d.mais_vendidos.length" class="text-muted">Nenhuma venda ainda.</div>
+                    <ol class="pn__ranking">
+                        <li t-foreach="d.mais_vendidos" t-as="i" t-key="i_index">
+                            <span t-esc="i.nome"/><span><b t-esc="i.quantidade"/> · <t t-esc="reais(i.valor)"/></span>
+                        </li>
+                    </ol>
+                </section>
+
+                <section class="pn__bloco">
+                    <h2>Contas</h2>
+                    <div class="pn__contas">
+                        <button class="btn btn-light btn-lg" t-on-click="() => this.abrir('account.action_move_out_invoice_type')">
+                            A receber vencido: <b t-esc="reais(d.receber_vencido.valor)"/> (<t t-esc="d.receber_vencido.quantidade"/>)
+                        </button>
+                        <button class="btn btn-light btn-lg" t-on-click="() => this.abrir('account.action_move_in_invoice_type')">
+                            A pagar vencido: <b t-esc="reais(d.pagar_vencido.valor)"/> (<t t-esc="d.pagar_vencido.quantidade"/>)
+                        </button>
+                        <button class="btn btn-primary btn-lg" t-on-click="() => this.abrir('boteco_painel.action_fechamento_dia')">Fechamento do dia</button>
+                        <button class="btn btn-primary btn-lg" t-on-click="() => this.abrir('boteco_painel.action_dre')">DRE do mês</button>
+                    </div>
+                    <div t-foreach="d.alertas" t-as="a" t-key="a_index" class="alert alert-warning mt-2" t-esc="a"/>
+                </section>
+            </t>
+        </div>
+    </t>
+</templates>

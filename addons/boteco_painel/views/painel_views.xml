@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_painel_dono" model="ir.actions.client">
+        <field name="name">Painel do dono</field>
+        <field name="tag">boteco_painel.painel</field>
+    </record>
+
+    <record id="boteco_fechamento_dia_view_form" model="ir.ui.view">
+        <field name="name">boteco.fechamento.dia.form</field>
+        <field name="model">boteco.fechamento.dia</field>
+        <field name="arch" type="xml">
+            <form string="Fechamento do dia">
+                <group>
+                    <field name="dia"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </group>
+                <footer>
+                    <button name="action_imprimir" type="object" string="PDF" class="btn-primary"/>
+                    <button name="action_excel" type="object" string="Excel" class="btn-secondary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_fechamento_dia" model="ir.actions.act_window">
+        <field name="name">Fechamento do dia (redução Z)</field>
+        <field name="res_model">boteco.fechamento.dia</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="boteco_dre_view_form" model="ir.ui.view">
+        <field name="name">boteco.dre.form</field>
+        <field name="model">boteco.dre</field>
+        <field name="arch" type="xml">
+            <form string="DRE por frente">
+                <group>
+                    <field name="data_inicio"/>
+                    <field name="data_fim"/>
+                </group>
+                <footer>
+                    <button name="action_imprimir" type="object" string="Gerar DRE" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_dre" model="ir.actions.act_window">
+        <field name="name">DRE por frente</field>
+        <field name="res_model">boteco.dre</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Contas a pagar com a frente do negócio (para a DRE) -->
+    <record id="account_move_form_frente" model="ir.ui.view">
+        <field name="name">account.move.form.boteco.frente</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="boteco_frente" invisible="move_type not in ('in_invoice', 'in_refund', 'out_invoice', 'out_refund')"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="report_dre" model="ir.actions.report">
+        <field name="name">DRE por frente</field>
+        <field name="model">boteco.dre</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">boteco_painel.dre_documento</field>
+        <field name="report_file">boteco_painel.dre_documento</field>
+    </record>
+
+    <template id="dre_documento">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="r">
+                <t t-set="d" t-value="r.calcular(r.data_inicio, r.data_fim, r.company_id)"/>
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <h2>DRE por frente – <t t-esc="r.data_inicio.strftime('%d/%m/%Y')"/> a <t t-esc="r.data_fim.strftime('%d/%m/%Y')"/></h2>
+                        <table class="table table-sm table-bordered">
+                            <thead><tr><th/><th t-foreach="d['frentes']" t-as="fr" class="text-end" t-esc="fr['nome']"/></tr></thead>
+                            <tbody>
+                                <t t-foreach="[('receita', 'Receita'), ('custo', '(-) Custo (CMV)'), ('margem', '= Margem bruta'),
+                                               ('taxas_cartao', '(-) Taxas de cartão'), ('despesas', '(-) Despesas da frente'),
+                                               ('resultado', '= Resultado da frente')]" t-as="linha">
+                                    <tr t-att-class="'fw-bold' if linha[0] in ('margem', 'resultado') else ''">
+                                        <td t-esc="linha[1]"/>
+                                        <td t-foreach="d['frentes']" t-as="fr" class="text-end" t-esc="'R$ %.2f' % fr[linha[0]]"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <p>(-) Despesas gerais (não atribuídas a uma frente): <b t-esc="'R$ %.2f' % d['despesas_gerais']"/></p>
+                        <h3>Resultado do período: <t t-esc="'R$ %.2f' % d['resultado_total']"/></h3>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

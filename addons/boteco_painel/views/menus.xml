@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_boteco_painel" name="Painel do dono" parent="boteco_base.menu_boteco_root" sequence="5"
+              action="action_painel_dono" groups="boteco_base.group_dono"/>
+    <menuitem id="menu_boteco_relatorios" name="Relatórios" parent="boteco_base.menu_boteco_root" sequence="60"
+              groups="boteco_base.group_gerente"/>
+    <menuitem id="menu_fechamento_dia" name="Fechamento do dia (redução Z)" parent="menu_boteco_relatorios" sequence="10"
+              action="action_fechamento_dia"/>
+    <menuitem id="menu_dre" name="DRE por frente" parent="menu_boteco_relatorios" sequence="20"
+              action="action_dre" groups="boteco_base.group_dono"/>
+    <menuitem id="menu_pagar" name="Contas a pagar" parent="menu_boteco_relatorios" sequence="30"
+              action="account.action_move_in_invoice_type" groups="boteco_base.group_dono"/>
+</odoo>
