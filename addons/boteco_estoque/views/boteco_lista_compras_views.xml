@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_lista_compras_view_form" model="ir.ui.view">
+        <field name="name">boteco.lista.compras.form</field>
+        <field name="model">boteco.lista.compras</field>
+        <field name="arch" type="xml">
+            <form string="Lista de compras">
+                <p>Tudo o que está abaixo do estoque mínimo, separado por fornecedor. Toque em WhatsApp para mandar o pedido pronto.</p>
+                <field name="linha_ids">
+                    <list create="false">
+                        <field name="partner_id"/>
+                        <field name="quantidade_itens"/>
+                        <field name="itens"/>
+                        <button name="action_abrir_whatsapp" type="object" string="WhatsApp" icon="fa-whatsapp" class="btn-success"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_gerar" type="object" string="Atualizar lista" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_lista_compras" model="ir.actions.server">
+        <field name="name">Lista de compras</field>
+        <field name="model_id" ref="model_boteco_lista_compras"/>
+        <field name="state">code</field>
+        <field name="code">action = env["boteco.lista.compras"].create({}).action_gerar()</field>
+    </record>
+</odoo>

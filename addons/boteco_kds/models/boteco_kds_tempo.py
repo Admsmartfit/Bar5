@@ -1,4 +1,4 @@
-from odoo import fields, models, tools
+from odoo import api, fields, models, tools
 
 
 class BotecoKdsTempo(models.Model):
@@ -19,6 +19,11 @@ class BotecoKdsTempo(models.Model):
     minutos_entrega = fields.Float("Minutos até entregue", readonly=True, aggregator="avg")
     atrasado = fields.Boolean("Passou de 30 min", readonly=True)
     company_id = fields.Many2one("res.company", readonly=True)
+
+    @api.model
+    def _search(self, domain, offset=0, limit=None, order=None, **kwargs):
+        self.env.flush_all()  # view SQL: grava o que o ORM tem pendente antes de ler
+        return super()._search(domain, offset=offset, limit=limit, order=order, **kwargs)
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)

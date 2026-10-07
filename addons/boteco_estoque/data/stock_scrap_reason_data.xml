@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="motivo_perda_quebra" model="stock.scrap.reason.tag">
+        <field name="name">Quebra</field>
+        <field name="sequence">1</field>
+        <field name="color">#dc2626</field>
+    </record>
+    <record id="motivo_perda_vencido" model="stock.scrap.reason.tag">
+        <field name="name">Vencido</field>
+        <field name="sequence">2</field>
+        <field name="color">#ea580c</field>
+    </record>
+    <record id="motivo_perda_erro_preparo" model="stock.scrap.reason.tag">
+        <field name="name">Erro de preparo</field>
+        <field name="sequence">3</field>
+        <field name="color">#ca8a04</field>
+    </record>
+</odoo>

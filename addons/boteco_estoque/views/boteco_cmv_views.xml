@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_cmv_view_pivot" model="ir.ui.view">
+        <field name="name">boteco.cmv.pivot</field>
+        <field name="model">boteco.cmv</field>
+        <field name="arch" type="xml">
+            <pivot string="CMV" sample="1">
+                <field name="dia" interval="day" type="row"/>
+                <field name="tipo" type="col"/>
+                <field name="receita" type="measure"/>
+                <field name="custo" type="measure"/>
+                <field name="margem" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="boteco_cmv_view_list" model="ir.ui.view">
+        <field name="name">boteco.cmv.list</field>
+        <field name="model">boteco.cmv</field>
+        <field name="arch" type="xml">
+            <list string="CMV" create="false">
+                <field name="dia"/>
+                <field name="tipo"/>
+                <field name="product_id"/>
+                <field name="categ_id"/>
+                <field name="quantidade" sum="Total"/>
+                <field name="receita" sum="Total"/>
+                <field name="custo" sum="Total"/>
+                <field name="margem" sum="Total"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_cmv_view_graph" model="ir.ui.view">
+        <field name="name">boteco.cmv.graph</field>
+        <field name="model">boteco.cmv</field>
+        <field name="arch" type="xml">
+            <graph string="CMV por dia" type="bar" stacked="1" sample="1">
+                <field name="dia" interval="day"/>
+                <field name="tipo"/>
+                <field name="custo" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="boteco_cmv_view_search" model="ir.ui.view">
+        <field name="name">boteco.cmv.search</field>
+        <field name="model">boteco.cmv</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <field name="categ_id"/>
+                <filter name="ultimos_30" string="Últimos 30 dias" domain="[('dia', '&gt;=', (context_today() - relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="vendas" string="Vendas" domain="[('tipo', '=', 'venda')]"/>
+                <filter name="sem_venda" string="Saídas sem venda" domain="[('tipo', '!=', 'venda')]"/>
+                <group>
+                    <filter name="por_dia" string="Dia" context="{'group_by': 'dia:day'}"/>
+                    <filter name="por_produto" string="Produto" context="{'group_by': 'product_id'}"/>
+                    <filter name="por_categoria" string="Categoria" context="{'group_by': 'categ_id'}"/>
+                    <filter name="por_tipo" string="Tipo" context="{'group_by': 'tipo'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_boteco_cmv" model="ir.actions.act_window">
+        <field name="name">CMV</field>
+        <field name="res_model">boteco.cmv</field>
+        <field name="view_mode">pivot,list,graph</field>
+        <field name="context">{'search_default_ultimos_30': 1}</field>
+        <field name="help" type="html">
+            <p>Custo de cada venda (com os insumos das fichas técnicas), cortesias, consumo de funcionário e perdas, por noite.</p>
+        </field>
+    </record>
+</odoo>

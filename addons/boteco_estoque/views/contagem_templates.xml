@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="tela_contagem" name="Boteco: contagem de estoque no celular">
+        &lt;!DOCTYPE html&gt;
+        <html lang="pt-BR" data-tema="claro">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title>Contagem – Boteco</title>
+                <t t-call-assets="boteco_estoque.assets_contagem" t-js="false"/>
+            </head>
+            <body>
+                <header class="bt-topo">
+                    <div class="bt-topo__marca" t-esc="contagem.name"/>
+                    <a class="bt-botao bt-botao--secundario" href="/odoo/action-boteco_estoque.action_boteco_contagem"
+                       style="line-height:48px;text-decoration:none">Sair</a>
+                </header>
+                <main id="bt-contagem" t-att-data-id="contagem.id">
+                    <p class="bt-dica">Conte e digite a quantidade de cada item. O sistema não mostra o que "deveria" ter: conte de verdade.</p>
+                    <input id="bt-busca" class="bt-busca" type="search" placeholder="Buscar produto ou ler código de barras"/>
+                    <ul id="bt-itens" class="bt-itens"/>
+                    <div class="bt-rodape">
+                        <span id="bt-progresso"/>
+                        <span id="bt-salvo" class="bt-salvo"/>
+                        <button id="bt-terminar" class="bt-botao" type="button">Terminei a contagem</button>
+                    </div>
+                </main>
+                <t t-call-assets="boteco_estoque.assets_contagem" t-css="false"/>
+            </body>
+        </html>
+    </template>
+</odoo>

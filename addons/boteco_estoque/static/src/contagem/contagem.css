@@ -1,0 +1,17 @@
+#bt-contagem { padding: 12px; max-width: 760px; margin: 0 auto; padding-bottom: 96px; }
+.bt-dica { color: var(--bt-texto-suave); font-size: 16px; }
+.bt-busca { width: 100%; min-height: 56px; font-size: 18px; padding: 0 14px; border-radius: 12px; border: 2px solid var(--bt-borda); margin-bottom: 10px; }
+.bt-itens { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.bt-item { background: var(--bt-superficie); border: 2px solid var(--bt-borda); border-radius: 12px; padding: 10px; }
+.bt-item.contado { border-color: var(--bt-pronto); }
+.bt-item__nome { font-weight: 700; font-size: 18px; }
+.bt-item__cat { color: var(--bt-texto-suave); font-size: 14px; }
+.bt-item__controles { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+.bt-item__controles button { width: 56px; height: 56px; font-size: 28px; border-radius: 12px; border: 0; background: var(--bt-superficie-2); }
+.bt-item__controles input { flex: 1; min-height: 56px; font-size: 22px; text-align: center; border-radius: 12px; border: 2px solid var(--bt-borda); }
+.bt-item__un { min-width: 40px; color: var(--bt-texto-suave); }
+.bt-rodape {
+    position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 12px; align-items: center; justify-content: space-between;
+    padding: 10px 16px; background: var(--bt-superficie); border-top: 1px solid var(--bt-borda);
+}
+.bt-salvo { color: var(--bt-texto-suave); font-size: 14px; }

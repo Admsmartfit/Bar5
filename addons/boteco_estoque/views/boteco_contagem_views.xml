@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_contagem_view_list" model="ir.ui.view">
+        <field name="name">boteco.contagem.list</field>
+        <field name="model">boteco.contagem</field>
+        <field name="arch" type="xml">
+            <list string="Contagens" decoration-warning="estado == 'contado'">
+                <field name="create_date" string="Criada em"/>
+                <field name="name"/>
+                <field name="location_id"/>
+                <field name="responsavel_id"/>
+                <field name="itens_contados"/>
+                <field name="valor_diferenca"/>
+                <field name="estado" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_contagem_view_form" model="ir.ui.view">
+        <field name="name">boteco.contagem.form</field>
+        <field name="model">boteco.contagem</field>
+        <field name="arch" type="xml">
+            <form string="Contagem de estoque">
+                <header>
+                    <button name="action_abrir_celular" type="object" string="Contar no celular" class="btn-primary"
+                            invisible="estado != 'contando'"/>
+                    <button name="action_carregar_produtos" type="object" string="Carregar produtos" invisible="estado != 'contando'"/>
+                    <button name="action_aprovar" type="object" string="Aprovar ajuste" class="btn-warning"
+                            invisible="estado not in ('contando', 'contado')" groups="boteco_base.group_gerente"
+                            confirm="O estoque vai passar a ser o que foi contado. Continuar?"/>
+                    <field name="estado" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <h1><field name="name"/></h1>
+                    <group>
+                        <group>
+                            <field name="location_id"/>
+                            <field name="categ_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="responsavel_id"/>
+                            <field name="aprovado_por_id"/>
+                            <field name="valor_diferenca"/>
+                        </group>
+                    </group>
+                    <field name="linha_ids">
+                        <list editable="bottom" decoration-danger="diferenca &lt; 0" decoration-info="diferenca &gt; 0">
+                            <field name="product_id"/>
+                            <field name="quantidade_sistema" groups="boteco_base.group_gerente"/>
+                            <field name="quantidade_contada"/>
+                            <field name="contado"/>
+                            <field name="diferenca" groups="boteco_base.group_gerente"/>
+                            <field name="diferenca_valor" groups="boteco_base.group_gerente" sum="Total"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_contagem" model="ir.actions.act_window">
+        <field name="name">Contagem de estoque</field>
+        <field name="res_model">boteco.contagem</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
