@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-    <record id="pos_categoria_servicos" model="pos.category">
-        <field name="name">Serviços</field>
-        <field name="sequence">999</field>
-    </record>
-
     <!-- Produtos técnicos: não vão para produção nem aparecem no tablet -->
     <record id="produto_taxa_servico" model="product.product">
         <field name="name">Taxa de serviço</field>
@@ -15,7 +10,6 @@
         <field name="sale_ok" eval="True"/>
         <field name="purchase_ok" eval="False"/>
         <field name="taxes_id" eval="[Command.clear()]"/>
-        <field name="pos_categ_ids" eval="[Command.set([ref('pos_categoria_servicos')])]"/>
         <field name="default_code">TAXA-SERVICO</field>
     </record>
 
@@ -28,7 +22,6 @@
         <field name="sale_ok" eval="True"/>
         <field name="purchase_ok" eval="False"/>
         <field name="taxes_id" eval="[Command.clear()]"/>
-        <field name="pos_categ_ids" eval="[Command.set([ref('pos_categoria_servicos')])]"/>
         <field name="default_code">COUVERT</field>
     </record>
 </odoo>

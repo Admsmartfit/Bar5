@@ -1,3 +1,4 @@
+# pyright: reportUndefinedVariable=false
 # Fase 2 da instalação (odoo shell): antes de instalar a contabilidade, a empresa precisa
 # ser brasileira em reais. Assim o Odoo carrega o plano de contas do Brasil (l10n_br)
 # em vez do genérico.

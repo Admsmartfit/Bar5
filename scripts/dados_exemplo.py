@@ -1,3 +1,4 @@
+# pyright: reportUndefinedVariable=false
 # Dados de exemplo do Boteco (odoo shell). Para testes, treinamento e demonstração.
 #
 #   docker compose run --rm -T odoo odoo shell -c /etc/odoo/odoo.conf -d boteco --no-http < scripts/dados_exemplo.py

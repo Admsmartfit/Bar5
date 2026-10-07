@@ -146,3 +146,17 @@ class TestSalao(BotecoPosCase):
             "7314", "pode_cancelar_item", motivo="Desistência do cliente", referencia=pedido.uuid)
         self.env["pos.order"].with_user(self.garcom).remove_from_ui([pedido.id])
         self.assertEqual(self.env["boteco.auditoria"].search_count([("acao", "=", "cancelar_item"), ("res_id", "=", pedido.id)]), 2)
+
+    def test_tela_nao_sobrescreve_campos_do_servidor(self):
+        """O PDV devolve tudo o que carregou (com valores vazios/antigos): o servidor ignora."""
+        linha = self._linha(self.chope, 2, boteco_qtd_enviada=0, boteco_preco_origem=False)
+        dados = self._pedido([linha], mesa=self.mesa1, boteco_tipo_conta=False, boteco_origem=False,
+                             boteco_snapshot_envio=False, boteco_primeiro_envio=False)
+        pedido = self._sincronizar(dados, self.garcom)
+        self.assertEqual(pedido.boteco_tipo_conta, "normal")
+        self.assertEqual(pedido.lines.boteco_qtd_enviada, 2)
+        # Reenvio com snapshot antigo vindo da tela não gera novo envio nem zera a quantidade enviada
+        reenvio = dict(dados, lines=[[1, pedido.lines.id, {"boteco_qtd_enviada": 0, "qty": 2}]],
+                       boteco_snapshot_envio="{}")
+        self._sincronizar(reenvio, self.garcom)
+        self.assertEqual(pedido.lines.boteco_qtd_enviada, 2)

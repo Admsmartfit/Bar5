@@ -8,6 +8,17 @@ from .utils import documento_valido, ler_snapshot, so_digitos
 
 _logger = logging.getLogger(__name__)
 
+# Campos que só o servidor controla: o que vier da tela é descartado (a tela devolve tudo o que
+# carregou, inclusive valores antigos; aceitar isso deixaria a tela burlar o controle).
+CAMPOS_SERVIDOR_PEDIDO = {
+    "boteco_snapshot_envio", "boteco_primeiro_envio", "boteco_ultimo_envio", "boteco_autorizado_por_id",
+    "boteco_taxa_servico", "boteco_couvert", "boteco_total_cortesia", "boteco_total_desconto",
+    "boteco_dia_operacao", "boteco_funcionario_id", "boteco_cpf_valido",
+}
+CAMPOS_SERVIDOR_LINHA = {
+    "boteco_qtd_enviada", "boteco_autorizado_por_id", "boteco_oferta_id", "boteco_preco_origem", "boteco_preco_fixado",
+}
+
 ORIGENS = [("garcom", "Garçom"), ("caixa", "Caixa"), ("tablet", "Tablet da mesa"), ("qr", "QR Code")]
 
 
@@ -90,6 +101,10 @@ class PosOrder(models.Model):
     # ------------------------------------------------------------------
     @api.model
     def _boteco_normalizar(self, vals):
+        if "boteco_tipo_conta" in vals and not vals["boteco_tipo_conta"]:
+            vals["boteco_tipo_conta"] = "normal"
+        if "boteco_origem" in vals and not vals["boteco_origem"]:
+            vals["boteco_origem"] = "garcom"
         if vals.get("boteco_cpf_nota"):
             vals["boteco_cpf_nota"] = so_digitos(vals["boteco_cpf_nota"])
         return vals
@@ -133,7 +148,19 @@ class PosOrder(models.Model):
     # Envio para produção: o servidor processa o que mudou desde o último envio
     # ------------------------------------------------------------------
     @api.model
+    def _boteco_limpar_dados_da_tela(self, pedido):
+        for campo in CAMPOS_SERVIDOR_PEDIDO:
+            pedido.pop(campo, None)
+        for comando in pedido.get("lines") or []:
+            if isinstance(comando, (list, tuple)) and len(comando) >= 3 and isinstance(comando[2], dict):
+                for campo in CAMPOS_SERVIDOR_LINHA:
+                    comando[2].pop(campo, None)
+        return pedido
+
+    @api.model
     def sync_from_ui(self, orders):
+        for pedido in orders:
+            self._boteco_limpar_dados_da_tela(pedido)
         resultado = super().sync_from_ui(orders)
         ids = [o["id"] for o in resultado.get("pos.order", [])]
         self.browse(ids)._boteco_processar_envio()

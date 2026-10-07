@@ -1,3 +1,4 @@
+# pyright: reportUndefinedVariable=false
 # Configuração inicial do Boteco. Roda dentro do "odoo shell" (variável `env` disponível):
 #
 #   docker compose run --rm -T odoo odoo shell -c /etc/odoo/odoo.conf -d boteco < scripts/configurar_empresa.py
@@ -140,7 +141,9 @@ cfg_vals = {
     "picking_type_id": arm_bar.pos_type_id.id if arm_bar and arm_bar.pos_type_id else False,
 }
 cfg_vals = {k: v for k, v in cfg_vals.items() if k in env["pos.config"]._fields and v is not False}
-if config:
+if config and config.current_session_id:
+    log("PDV com caixa aberto: configuração do PDV mantida (feche o caixa para reaplicar)")
+elif config:
     config.write(cfg_vals)
 else:
     config = env["pos.config"].create(cfg_vals)
@@ -162,6 +165,16 @@ for nome_planta, numeros, inicio_x in (("Salão", range(1, 15), 40), ("Área abe
                 "position_h": inicio_x + (i % 5) * 140, "position_v": 40 + (i // 5) * 140,
                 "width": 110, "height": 110,
             })
+# A planta padrão criada pelo Odoo (nome da empresa, 1 mesa) atrapalha: remove se não tiver pedidos
+for planta in Planta.search([("name", "not in", ["Salão", "Área aberta"]), ("pos_config_ids", "in", config.ids)]):
+    if not env["pos.order"].search_count([("table_id", "in", planta.table_ids.ids)]):
+        try:
+            with env.cr.savepoint():
+                planta.table_ids.write({"active": False})
+                planta.active = False
+            log("Planta padrão arquivada: %s" % planta.name)
+        except Exception as erro:  # noqa: BLE001 — com caixa aberto o Odoo pode recusar
+            log("Planta padrão mantida (%s)" % erro)
 log("Mesas criadas/conferidas")
 
 # ---------------------------------------------------------------- dono, URL e idioma
