@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_fiscal_layout_view_form" model="ir.ui.view">
+        <field name="name">boteco.fiscal.layout.form</field>
+        <field name="model">boteco.fiscal.layout</field>
+        <field name="arch" type="xml">
+            <form string="Layout de exportação">
+                <sheet>
+                    <h1><field name="name"/></h1>
+                    <group>
+                        <field name="separador"/>
+                        <field name="decimal_virgula"/>
+                    </group>
+                    <p class="text-muted">Arraste para mudar a ordem; mude o nome para casar com o sistema emissor.</p>
+                    <field name="coluna_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="campo"/>
+                            <field name="titulo"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_fiscal_layout" model="ir.actions.act_window">
+        <field name="name">Layouts de exportação</field>
+        <field name="res_model">boteco.fiscal.layout</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

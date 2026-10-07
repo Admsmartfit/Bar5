@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_fiscal_registro_view_list" model="ir.ui.view">
+        <field name="name">boteco.fiscal.registro.list</field>
+        <field name="model">boteco.fiscal.registro</field>
+        <field name="arch" type="xml">
+            <list string="Fiscal" create="false" decoration-warning="estado == 'pendente'"
+                  decoration-success="estado == 'emitido'" decoration-muted="estado == 'nao_emitir'">
+                <header>
+                    <button name="action_nao_emitir" type="object" string="Não emitir"/>
+                    <button name="action_voltar_pendente" type="object" string="Voltar para pendente"/>
+                </header>
+                <field name="data_venda"/>
+                <field name="dia" optional="hide"/>
+                <field name="tipo"/>
+                <field name="referencia"/>
+                <field name="cliente_documento" optional="show"/>
+                <field name="valor_total" sum="Total"/>
+                <field name="estado" widget="badge" decoration-warning="estado == 'pendente'" decoration-info="estado == 'exportado'"
+                       decoration-success="estado == 'emitido'"/>
+                <field name="motivo_nao_emitir" optional="show"/>
+                <field name="numero_nota" optional="show"/>
+                <field name="chave_nota" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+                <button name="action_abrir_origem" type="object" icon="fa-external-link" title="Abrir a venda"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_fiscal_registro_view_search" model="ir.ui.view">
+        <field name="name">boteco.fiscal.registro.search</field>
+        <field name="model">boteco.fiscal.registro</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="referencia"/>
+                <field name="cliente_documento"/>
+                <field name="chave_nota"/>
+                <filter name="pendentes" string="Pendentes" domain="[('estado', '=', 'pendente')]"/>
+                <filter name="exportados" string="Exportados (esperando retorno)" domain="[('estado', '=', 'exportado')]"/>
+                <filter name="emitidos" string="Emitidos" domain="[('estado', '=', 'emitido')]"/>
+                <filter name="nao_emitir" string="Não emitir" domain="[('estado', '=', 'nao_emitir')]"/>
+                <separator/>
+                <filter name="nfce" string="NFC-e" domain="[('tipo', '=', 'nfce')]"/>
+                <filter name="nfe" string="NF-e" domain="[('tipo', '=', 'nfe')]"/>
+                <separator/>
+                <filter name="periodo" string="Data" date="dia"/>
+                <group>
+                    <filter name="por_dia" string="Dia" context="{'group_by': 'dia:day'}"/>
+                    <filter name="por_estado" string="Situação" context="{'group_by': 'estado'}"/>
+                    <filter name="por_tipo" string="Tipo" context="{'group_by': 'tipo'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="boteco_fiscal_registro_view_pivot" model="ir.ui.view">
+        <field name="name">boteco.fiscal.registro.pivot</field>
+        <field name="model">boteco.fiscal.registro</field>
+        <field name="arch" type="xml">
+            <pivot string="Pendentes por dia">
+                <field name="dia" interval="day" type="row"/>
+                <field name="estado" type="col"/>
+                <field name="valor_total" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_fiscal" model="ir.actions.act_window">
+        <field name="name">Fiscal</field>
+        <field name="res_model">boteco.fiscal.registro</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="context">{'search_default_pendentes': 1}</field>
+        <field name="help" type="html">
+            <p>Cada conta paga e cada entrega a bares gera um registro aqui. Exporte, emita no sistema emissor e importe o retorno.</p>
+        </field>
+    </record>
+
+    <record id="boteco_fiscal_lote_view_list" model="ir.ui.view">
+        <field name="name">boteco.fiscal.lote.list</field>
+        <field name="model">boteco.fiscal.lote</field>
+        <field name="arch" type="xml">
+            <list string="Lotes exportados" create="false">
+                <field name="name"/>
+                <field name="data"/>
+                <field name="usuario_id"/>
+                <field name="periodo_inicio"/>
+                <field name="periodo_fim"/>
+                <field name="formato"/>
+                <field name="reexportacao"/>
+                <field name="quantidade"/>
+                <field name="valor_total" sum="Total"/>
+                <button name="action_baixar" type="object" string="Baixar" icon="fa-download"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_fiscal_lotes" model="ir.actions.act_window">
+        <field name="name">Lotes exportados</field>
+        <field name="res_model">boteco.fiscal.lote</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

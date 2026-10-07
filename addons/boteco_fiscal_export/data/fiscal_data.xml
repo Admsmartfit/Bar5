@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="sequencia_lote_fiscal" model="ir.sequence">
+        <field name="name">Lote de exportação fiscal</field>
+        <field name="code">boteco.fiscal.lote</field>
+        <field name="prefix">FIS/%(year)s/</field>
+        <field name="padding">4</field>
+    </record>
+
+    <record id="layout_padrao" model="boteco.fiscal.layout">
+        <field name="name">Padrão (todas as colunas)</field>
+        <field name="separador">;</field>
+        <field name="decimal_virgula" eval="True"/>
+        <field name="coluna_ids" eval="[
+            Command.create({'sequence': 1, 'campo': 'registro_id'}),
+            Command.create({'sequence': 2, 'campo': 'tipo'}),
+            Command.create({'sequence': 3, 'campo': 'referencia'}),
+            Command.create({'sequence': 4, 'campo': 'data_hora'}),
+            Command.create({'sequence': 5, 'campo': 'emitente_cnpj'}),
+            Command.create({'sequence': 6, 'campo': 'emitente_razao'}),
+            Command.create({'sequence': 7, 'campo': 'emitente_ie'}),
+            Command.create({'sequence': 8, 'campo': 'cliente_documento'}),
+            Command.create({'sequence': 9, 'campo': 'cliente_nome'}),
+            Command.create({'sequence': 10, 'campo': 'item_codigo'}),
+            Command.create({'sequence': 11, 'campo': 'item_descricao'}),
+            Command.create({'sequence': 12, 'campo': 'item_ncm'}),
+            Command.create({'sequence': 13, 'campo': 'item_cest'}),
+            Command.create({'sequence': 14, 'campo': 'item_cfop'}),
+            Command.create({'sequence': 15, 'campo': 'item_cst_csosn'}),
+            Command.create({'sequence': 16, 'campo': 'item_origem'}),
+            Command.create({'sequence': 17, 'campo': 'item_unidade'}),
+            Command.create({'sequence': 18, 'campo': 'item_quantidade'}),
+            Command.create({'sequence': 19, 'campo': 'item_valor_unitario'}),
+            Command.create({'sequence': 20, 'campo': 'item_desconto'}),
+            Command.create({'sequence': 21, 'campo': 'item_valor_total'}),
+            Command.create({'sequence': 22, 'campo': 'taxa_servico'}),
+            Command.create({'sequence': 23, 'campo': 'pagamentos'}),
+            Command.create({'sequence': 24, 'campo': 'troco'}),
+            Command.create({'sequence': 25, 'campo': 'valor_total'}),
+        ]"/>
+    </record>
+</odoo>

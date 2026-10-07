@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_fiscal_exportacao_view_form" model="ir.ui.view">
+        <field name="name">boteco.fiscal.exportacao.form</field>
+        <field name="model">boteco.fiscal.exportacao</field>
+        <field name="arch" type="xml">
+            <form string="Exportar para emissão">
+                <div class="alert alert-danger" invisible="not pendencias">
+                    <b>Exportação bloqueada:</b> corrija os dados fiscais destes produtos (Boteco › Cardápio › Produtos sem dados fiscais).
+                    <field name="pendencias" nolabel="1"/>
+                </div>
+                <group>
+                    <group>
+                        <field name="data_inicio"/>
+                        <field name="data_fim"/>
+                        <field name="tipo"/>
+                    </group>
+                    <group>
+                        <field name="formato"/>
+                        <field name="layout_id" invisible="formato == 'json'"/>
+                        <field name="reexportar"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_exportar" type="object" string="Exportar" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_fiscal_exportar" model="ir.actions.act_window">
+        <field name="name">Exportar para emissão</field>
+        <field name="res_model">boteco.fiscal.exportacao</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

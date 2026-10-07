@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_fiscal_retorno_view_form" model="ir.ui.view">
+        <field name="name">boteco.fiscal.retorno.form</field>
+        <field name="model">boteco.fiscal.retorno</field>
+        <field name="arch" type="xml">
+            <form string="Importar notas emitidas">
+                <p>Planilha (CSV ou Excel) com as colunas <b>referencia</b> (ou <b>registro_id</b>), <b>numero</b> e <b>chave</b>.</p>
+                <group>
+                    <field name="arquivo" filename="nome_arquivo"/>
+                    <field name="nome_arquivo" invisible="1"/>
+                </group>
+                <group invisible="not resultado"><field name="resultado" nolabel="1" colspan="2"/></group>
+                <footer>
+                    <button name="action_importar" type="object" string="Importar" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_fiscal_retorno" model="ir.actions.act_window">
+        <field name="name">Importar retorno (notas emitidas)</field>
+        <field name="res_model">boteco.fiscal.retorno</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
