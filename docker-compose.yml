@@ -1,0 +1,122 @@
+# Sistema Boteco Raiz — Odoo Community 18 + PostgreSQL 16
+#
+# Uso normal: ./instalar.sh  (gera .env, config/odoo.conf, certificado e sobe tudo)
+# Comandos úteis:
+#   docker compose ps                      -> situação dos serviços
+#   docker compose logs -f odoo            -> log do Odoo
+#   ./scripts/atualizar.sh                 -> atualiza módulos com backup e volta automática
+#
+# Nunca coloque senha aqui: tudo vem do arquivo .env (que não vai para o Git).
+
+name: boteco
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "30"
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: America/Sao_Paulo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-odoo} -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    # Ajustes para mini PC de 16 GB (Odoo divide a máquina com o banco)
+    command:
+      - postgres
+      - -c
+      - shared_buffers=1GB
+      - -c
+      - effective_cache_size=4GB
+      - -c
+      - work_mem=16MB
+      - -c
+      - maintenance_work_mem=256MB
+      - -c
+      - max_connections=200
+      - -c
+      - timezone=America/Sao_Paulo
+    logging: *logging
+
+  odoo:
+    image: odoo:18
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: db
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: America/Sao_Paulo
+      BOTECO_BACKUP_DIR: /backups
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./config/odoo.conf:/etc/odoo/odoo.conf:ro
+      - ./addons:/mnt/extra-addons:ro
+      - ./oca:/mnt/oca-addons:ro
+      - ${BACKUP_DIR:-./backups}:/backups:ro
+      - odoo-logs:/var/log/odoo
+    # Porta exposta só na máquina; o acesso da rede passa pelo nginx (HTTPS)
+    ports:
+      - "127.0.0.1:8069:8069"
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request;urllib.request.urlopen('http://localhost:8069/web/health',timeout=5)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    logging: *logging
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - odoo
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/boteco.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./config/certs:/etc/nginx/certs:ro
+    logging: *logging
+
+  # Backup local a cada hora (banco + arquivos), retenção configurável.
+  # O envio diário para a nuvem roda no host (scripts/backup-nuvem.sh), pois precisa do rclone.
+  backup:
+    image: postgres:16
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-odoo}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      BOTECO_DB: ${BOTECO_DB:-boteco}
+      BACKUP_RETENCAO_DIAS: ${BACKUP_RETENCAO_DIAS:-30}
+      BACKUP_INTERVALO_MIN: ${BACKUP_INTERVALO_MIN:-60}
+      TZ: America/Sao_Paulo
+    volumes:
+      - ${BACKUP_DIR:-./backups}:/backups
+      - odoo-data:/var/lib/odoo:ro
+      - ./scripts/backup-loop.sh:/usr/local/bin/backup-loop.sh:ro
+    entrypoint: ["/bin/bash", "/usr/local/bin/backup-loop.sh"]
+    logging: *logging
+
+volumes:
+  pgdata:
+  odoo-data:
+  odoo-logs:

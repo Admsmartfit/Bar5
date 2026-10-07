@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="pagina_saude" name="Boteco: saúde do sistema">
+        <t t-call="boteco_base.layout_boteco">
+            <t t-set="titulo">Saúde do sistema – Boteco</t>
+            <t t-set="head"><meta http-equiv="refresh" content="60"/></t>
+            <header class="bt-topo">
+                <div class="bt-topo__marca">Saúde do sistema</div>
+                <a class="bt-botao bt-botao--secundario" href="/boteco/inicio" style="line-height:48px;text-decoration:none">Voltar</a>
+            </header>
+            <main style="max-width:900px;margin:0 auto;padding:16px">
+                <div t-attf-class="bt-saude-geral bt-saude-geral--#{dados['geral']}">
+                    <t t-if="dados['geral'] == 'ok'">Tudo funcionando</t>
+                    <t t-elif="dados['geral'] == 'alerta'">Funcionando, com avisos</t>
+                    <t t-else="">Atenção: tem coisa parada</t>
+                </div>
+                <ul class="bt-saude-lista">
+                    <li t-foreach="dados['itens']" t-as="item" t-attf-class="bt-saude-item bt-saude-item--#{item['estado']}">
+                        <span class="bt-saude-item__marca" aria-hidden="true">
+                            <t t-if="item['estado'] == 'ok'">✔</t>
+                            <t t-elif="item['estado'] == 'alerta'">!</t>
+                            <t t-else="">✖</t>
+                        </span>
+                        <div>
+                            <div class="bt-saude-item__nome" t-esc="item['nome']"/>
+                            <div class="bt-saude-item__detalhe" t-esc="item['detalhe']"/>
+                        </div>
+                    </li>
+                </ul>
+                <p style="color:var(--bt-texto-suave);font-size:15px">Atualiza sozinha a cada minuto. Última verificação (UTC): <t t-esc="dados['verificado_em']"/></p>
+                <p><a class="bt-botao" href="/odoo/action-boteco_base.action_boteco_impressora" style="display:inline-block;line-height:48px;text-decoration:none">Impressoras e "Imprimir teste"</a></p>
+            </main>
+            <style>
+                .bt-saude-geral { padding: 20px; border-radius: 14px; font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 16px; }
+                .bt-saude-geral--ok { background: var(--bt-pronto); color: #fff; }
+                .bt-saude-geral--alerta { background: var(--bt-preparando); color: #111; }
+                .bt-saude-geral--erro { background: var(--bt-atrasado); color: #fff; }
+                .bt-saude-lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+                .bt-saude-item { display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: 14px; background: var(--bt-superficie); border-left: 8px solid var(--bt-aguardando); }
+                .bt-saude-item--ok { border-left-color: var(--bt-pronto); }
+                .bt-saude-item--alerta { border-left-color: var(--bt-preparando); }
+                .bt-saude-item--erro { border-left-color: var(--bt-atrasado); }
+                .bt-saude-item__marca { font-size: 24px; width: 32px; text-align: center; font-weight: 800; }
+                .bt-saude-item__nome { font-weight: 700; }
+                .bt-saude-item__detalhe { color: var(--bt-texto-suave); font-size: 16px; }
+            </style>
+        </t>
+    </template>
+</odoo>

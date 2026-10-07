@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Guia de uma página por perfil: tour de 3 passos + "como faço" (seção 4, item 10; etapa 10) -->
+    <template id="pagina_ajuda" name="Boteco: ajuda por perfil">
+        <t t-call="boteco_base.layout_boteco">
+            <t t-set="titulo">Ajuda – Boteco</t>
+            <t t-set="tema">claro</t>
+            <header class="bt-topo">
+                <div class="bt-topo__marca">Ajuda: <t t-esc="nome_perfil"/></div>
+                <div>
+                    <button class="bt-botao bt-botao--secundario" onclick="window.print()">Imprimir</button>
+                    <a class="bt-botao" href="/boteco/inicio" style="display:inline-block;line-height:48px;text-decoration:none">Voltar ao trabalho</a>
+                </div>
+            </header>
+            <main class="bt-ajuda">
+                <nav class="bt-ajuda__perfis">
+                    <a t-foreach="perfis" t-as="p" t-attf-href="/boteco/ajuda/#{p[0]}"
+                       t-attf-class="#{'ativo' if p[0] == perfil else ''}" t-esc="p[1]"/>
+                </nav>
+
+                <t t-if="perfil == 'garcom'">
+                    <ol class="bt-passos">
+                        <li><b>Toque na mesa</b> no mapa. Mesa livre: diga quantas pessoas.</li>
+                        <li><b>Toque nos itens</b> (use as categorias ou a busca). Adicionais aparecem sozinhos.</li>
+                        <li><b>Toque em "Pedido"</b> para mandar pra cozinha e pro bar. Pronto!</li>
+                    </ol>
+                    <h2>Como faço…</h2>
+                    <dl>
+                        <dt>Celular do cliente pediu para entrar na mesa</dt><dd>Aparece um aviso no topo. Confira se a pessoa está mesmo na mesa e toque em "Liberar".</dd>
+                        <dt>Item ficou pronto</dt><dd>O celular apita e o item aparece em "Prontos para entregar". Depois de entregar, toque em "Entregue".</dd>
+                        <dt>Cancelar um item que já foi pra cozinha</dt><dd>Só com o PIN do gerente e o motivo. Antes de mandar, pode apagar à vontade.</dd>
+                        <dt>Transferir item ou juntar mesas</dt><dd>Na conta, toque em "Transferir" e escolha a mesa de destino.</dd>
+                        <dt>Primeira bebida alcoólica da mesa</dt><dd>Confira a idade e confirme no aviso "+18".</dd>
+                    </dl>
+                </t>
+                <t t-elif="perfil == 'caixa'">
+                    <ol class="bt-passos">
+                        <li><b>Abra o caixa</b> no começo da noite digitando o dinheiro do troco.</li>
+                        <li><b>Feche a conta</b>: toque na mesa, em "Pagamento", escolha as formas (PIX, cartão, dinheiro) e confirme.</li>
+                        <li><b>No fim da noite</b>, conte o dinheiro e digite o que contou. O sistema mostra a diferença depois.</li>
+                    </ol>
+                    <h2>Como faço…</h2>
+                    <dl>
+                        <dt>Dividir a conta</dt><dd>"Dividir": por pessoa (partes iguais), por item ou por valor.</dd>
+                        <dt>Tirar a taxa de serviço</dt><dd>Toque em "10%" na conta. Fica registrado quem tirou.</dd>
+                        <dt>Sangria ou reforço</dt><dd>Menu ☰ › "Entrada e saída de dinheiro", com o motivo.</dd>
+                        <dt>CPF na nota</dt><dd>Na tela de pagamento, toque em "CPF na nota" e digite. A nota é emitida depois.</dd>
+                    </dl>
+                </t>
+                <t t-elif="perfil == 'chapeiro'">
+                    <ol class="bt-passos">
+                        <li><b>Pedido novo apita</b> e aparece no fim da fila, em cinza.</li>
+                        <li><b>Toque no cartão</b> quando começar: fica amarelo ("preparando").</li>
+                        <li><b>Toque de novo</b> quando estiver pronto: fica verde e o garçom é avisado.</li>
+                    </ol>
+                    <dl>
+                        <dt>Cartão vermelho</dt><dd>Passou de 20 minutos. Acima de 30, o gerente recebe alerta.</dd>
+                        <dt>Reimprimir ticket</dt><dd>Segure o dedo no cartão e toque em "Reimprimir".</dd>
+                    </dl>
+                </t>
+                <t t-elif="perfil == 'gerente'">
+                    <ol class="bt-passos">
+                        <li><b>Abra o caixa</b> e confira as impressoras na página de saúde.</li>
+                        <li><b>Acompanhe o painel do turno</b>: mesas, atrasos, cancelamentos.</li>
+                        <li><b>Autorize</b> cancelamentos, descontos e cortesias digitando seu PIN na tela de quem pediu.</li>
+                    </ol>
+                    <dl>
+                        <dt>Fechar o dia</dt><dd>Todas as mesas fechadas → fechar caixa (contagem cega) → imprimir resumo.</dd>
+                        <dt>Pessoa bloqueada no PIN</dt><dd>Boteco › Pessoas › abrir a pessoa › "Desbloquear PIN".</dd>
+                        <dt>Algo parou</dt><dd>Abra /boteco/saude: mostra banco, impressoras, disco e backup.</dd>
+                    </dl>
+                </t>
+                <t t-elif="perfil == 'cozinheiro'">
+                    <ol class="bt-passos">
+                        <li><b>Toque na produção do dia</b> e em "Iniciar".</li>
+                        <li><b>Pese</b> e digite o peso real.</li>
+                        <li><b>Toque em "Finalizar"</b>: a etiqueta sai sozinha. Cole no saco a vácuo.</li>
+                    </ol>
+                    <dl>
+                        <dt>Temperatura dos freezers</dt><dd>Toda manhã: "Temperaturas" › toque no equipamento › digite.</dd>
+                        <dt>Perda</dt><dd>"Registrar perda", escolha o motivo e a quantidade.</dd>
+                    </dl>
+                </t>
+                <t t-elif="perfil == 'comercial'">
+                    <ol class="bt-passos">
+                        <li><b>Escolha o bar cliente</b> (ou cadastre com CNPJ).</li>
+                        <li><b>"Repetir último pedido"</b> ou lance os kg de cada produto.</li>
+                        <li><b>Separe lendo o QR das etiquetas</b> e imprima o romaneio para assinatura.</li>
+                    </ol>
+                </t>
+                <t t-else="">
+                    <ol class="bt-passos">
+                        <li><b>Painel do dono</b>: faturamento, CMV, clientes por noite e metas do plano.</li>
+                        <li><b>Boteco › Pessoas</b>: cadastre a equipe com perfil e PIN.</li>
+                        <li><b>Boteco › Permissões</b>: ligue e desligue o que cada perfil pode fazer.</li>
+                    </ol>
+                </t>
+            </main>
+            <style>
+                .bt-ajuda { max-width: 820px; margin: 0 auto; padding: 16px; line-height: 1.5; }
+                .bt-ajuda__perfis { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+                .bt-ajuda__perfis a { padding: 10px 14px; border-radius: 999px; background: var(--bt-superficie-2); color: var(--bt-texto); text-decoration: none; min-height: 48px; display: inline-flex; align-items: center; }
+                .bt-ajuda__perfis a.ativo { background: var(--bt-primaria); color: var(--bt-primaria-texto); font-weight: 700; }
+                .bt-passos { counter-reset: passo; list-style: none; padding: 0; display: grid; gap: 12px; }
+                .bt-passos li { counter-increment: passo; background: var(--bt-superficie); border-radius: 14px; padding: 16px 16px 16px 64px; position: relative; border: 1px solid var(--bt-borda); }
+                .bt-passos li::before { content: counter(passo); position: absolute; left: 16px; top: 12px; width: 36px; height: 36px; border-radius: 50%; background: var(--bt-primaria); color: var(--bt-primaria-texto); display: grid; place-items: center; font-weight: 800; }
+                dt { font-weight: 700; margin-top: 12px; }
+                dd { margin: 4px 0 0 0; color: var(--bt-texto-suave); }
+                @media print { .bt-topo, .bt-ajuda__perfis { display: none; } }
+            </style>
+        </t>
+    </template>
+</odoo>

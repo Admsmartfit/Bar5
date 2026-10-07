@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_company_view_form_boteco" model="ir.ui.view">
+        <field name="name">res.company.form.boteco</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Boteco" name="boteco">
+                    <group>
+                        <group string="Unidade">
+                            <field name="boteco_tipo_unidade"/>
+                            <field name="boteco_hora_virada" widget="float_time"/>
+                            <field name="boteco_registro_sanitario"/>
+                        </group>
+                        <group string="Redes">
+                            <field name="boteco_rede_sistema" placeholder="192.168.10.0/24"/>
+                            <field name="boteco_rede_clientes" placeholder="192.168.20.0/24"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_termo_view_list" model="ir.ui.view">
+        <field name="name">boteco.termo.list</field>
+        <field name="model">boteco.termo</field>
+        <field name="arch" type="xml">
+            <list string="Termos de boteco" editable="bottom">
+                <header>
+                    <button name="action_aplicar" type="object" string="Aplicar nos menus" class="btn-primary" display="always"/>
+                </header>
+                <field name="sequence" widget="handle"/>
+                <field name="xmlid"/>
+                <field name="nome_original"/>
+                <field name="nome_boteco"/>
+                <button name="action_restaurar" type="object" string="Voltar ao original" icon="fa-undo"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_boteco_termo" model="ir.actions.act_window">
+        <field name="name">Termos de boteco</field>
+        <field name="res_model">boteco.termo</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

@@ -1,0 +1,56 @@
+.bt-pin__corpo { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+.bt-grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+}
+
+.bt-pessoa {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    min-height: 150px; padding: 16px 8px;
+    background: var(--bt-superficie); border: 2px solid var(--bt-borda); border-radius: var(--bt-raio);
+}
+.bt-pessoa:active { transform: scale(0.97); }
+.bt-pessoa__avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--bt-primaria); color: var(--bt-primaria-texto);
+    font-size: 26px; font-weight: 800;
+}
+.bt-pessoa[data-perfil="chapeiro"] .bt-pessoa__avatar { background: #ea580c; color: #fff; }
+.bt-pessoa[data-perfil="gerente"] .bt-pessoa__avatar { background: #7c3aed; color: #fff; }
+.bt-pessoa[data-perfil="cozinheiro"] .bt-pessoa__avatar { background: #16a34a; color: #fff; }
+.bt-pessoa[data-perfil="comercial"] .bt-pessoa__avatar { background: #0891b2; color: #fff; }
+.bt-pessoa__nome { font-weight: 700; text-align: center; }
+.bt-pessoa__perfil { font-size: 15px; color: var(--bt-texto-suave); }
+
+.bt-pin__teclado { max-width: 380px; margin: 0 auto; text-align: center; }
+.bt-voltar {
+    min-height: var(--bt-alvo); background: none; border: 0; color: var(--bt-texto-suave); font-size: 18px;
+}
+
+.bt-pontos { display: flex; justify-content: center; gap: 14px; margin: 12px 0; }
+.bt-pontos span {
+    width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--bt-texto-suave);
+}
+.bt-pontos span.cheio { background: var(--bt-primaria); border-color: var(--bt-primaria); }
+.bt-pontos.tremer { animation: bt-tremer 0.35s; }
+@keyframes bt-tremer {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.bt-erro { min-height: 28px; color: #fca5a5; font-weight: 600; }
+
+.bt-numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.bt-tecla {
+    min-height: 80px; border-radius: var(--bt-raio);
+    background: var(--bt-superficie); border: 2px solid var(--bt-borda);
+    font-size: 32px; font-weight: 700;
+}
+.bt-tecla:active { background: var(--bt-superficie-2); }
+.bt-tecla--ok { background: var(--bt-pronto); border-color: var(--bt-pronto); font-size: 22px; color: #fff; }
+.bt-tecla--apagar { font-size: 26px; }
+.bt-tecla[disabled] { opacity: 0.5; }

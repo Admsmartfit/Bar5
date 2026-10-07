@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_auditoria_view_list" model="ir.ui.view">
+        <field name="name">boteco.auditoria.list</field>
+        <field name="model">boteco.auditoria</field>
+        <field name="arch" type="xml">
+            <list string="Auditoria" create="false" edit="false" delete="false"
+                  decoration-danger="acao in ('cancelar_item', 'autorizacao_negada')"
+                  decoration-warning="acao in ('desconto', 'cortesia', 'remover_taxa', 'sangria', 'ajuste_estoque', 'perda')">
+                <field name="data"/>
+                <field name="acao"/>
+                <field name="descricao"/>
+                <field name="usuario_id"/>
+                <field name="autorizado_por_id" optional="show"/>
+                <field name="valor_antigo" optional="show"/>
+                <field name="valor_novo" optional="show"/>
+                <field name="valor" sum="Total" optional="show"/>
+                <field name="motivo" optional="show"/>
+                <field name="referencia" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="boteco_auditoria_view_form" model="ir.ui.view">
+        <field name="name">boteco.auditoria.form</field>
+        <field name="model">boteco.auditoria</field>
+        <field name="arch" type="xml">
+            <form string="Registro de auditoria" create="false" edit="false" delete="false">
+                <header>
+                    <button name="action_abrir_registro" type="object" string="Abrir documento" invisible="not modelo"/>
+                </header>
+                <sheet>
+                    <h2><field name="descricao"/></h2>
+                    <group>
+                        <group>
+                            <field name="acao"/>
+                            <field name="data"/>
+                            <field name="usuario_id"/>
+                            <field name="autorizado_por_id"/>
+                            <field name="ip"/>
+                        </group>
+                        <group>
+                            <field name="valor_antigo"/>
+                            <field name="valor_novo"/>
+                            <field name="valor"/>
+                            <field name="referencia"/>
+                            <field name="modelo"/>
+                            <field name="res_id"/>
+                        </group>
+                    </group>
+                    <group string="Motivo"><field name="motivo" nolabel="1" colspan="2"/></group>
+                    <group string="Detalhes" groups="base.group_no_one"><field name="detalhe" nolabel="1" colspan="2"/></group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="boteco_auditoria_view_search" model="ir.ui.view">
+        <field name="name">boteco.auditoria.search</field>
+        <field name="model">boteco.auditoria</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="descricao"/>
+                <field name="usuario_id"/>
+                <field name="autorizado_por_id"/>
+                <field name="referencia"/>
+                <field name="motivo"/>
+                <filter name="hoje" string="Hoje" domain="[('data', '&gt;=', (context_today() - relativedelta(days=1)).strftime('%Y-%m-%d 09:00:00'))]"/>
+                <filter name="semana" string="Últimos 7 dias" domain="[('data', '&gt;=', (context_today() - relativedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="cancelamentos" string="Cancelamentos" domain="[('acao', '=', 'cancelar_item')]"/>
+                <filter name="descontos" string="Descontos e cortesias" domain="[('acao', 'in', ('desconto', 'cortesia', 'consumo_funcionario'))]"/>
+                <filter name="caixa" string="Caixa" domain="[('acao', 'in', ('sangria', 'reforco', 'abrir_caixa', 'fechar_caixa'))]"/>
+                <filter name="estoque" string="Estoque" domain="[('acao', 'in', ('ajuste_estoque', 'perda'))]"/>
+                <filter name="precos" string="Preços" domain="[('acao', '=', 'alteracao_preco')]"/>
+                <filter name="negadas" string="PIN recusado" domain="[('acao', '=', 'autorizacao_negada')]"/>
+                <group>
+                    <filter name="por_acao" string="Ação" context="{'group_by': 'acao'}"/>
+                    <filter name="por_usuario" string="Quem fez" context="{'group_by': 'usuario_id'}"/>
+                    <filter name="por_dia" string="Dia" context="{'group_by': 'data:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="boteco_auditoria_view_pivot" model="ir.ui.view">
+        <field name="name">boteco.auditoria.pivot</field>
+        <field name="model">boteco.auditoria</field>
+        <field name="arch" type="xml">
+            <pivot string="Auditoria">
+                <field name="usuario_id" type="row"/>
+                <field name="acao" type="col"/>
+                <field name="valor" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_boteco_auditoria" model="ir.actions.act_window">
+        <field name="name">Auditoria</field>
+        <field name="res_model">boteco.auditoria</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="context">{'search_default_semana': 1}</field>
+        <field name="help" type="html">
+            <p>Tudo o que é sensível fica aqui: cancelamentos, descontos, cortesias, sangrias, ajustes de estoque e preços. Nada pode ser apagado.</p>
+        </field>
+    </record>
+</odoo>

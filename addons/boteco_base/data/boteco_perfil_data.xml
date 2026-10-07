@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu raiz do boteco: precisa existir antes dos perfis que o referenciam -->
+    <menuitem id="menu_boteco_root" name="Boteco" sequence="1"
+              web_icon="boteco_base,static/description/icon.png"/>
+
+    <!-- noupdate: o dono ajusta as permissões e a atualização do módulo não desfaz -->
+    <data noupdate="1">
+        <record id="perfil_garcom" model="boteco.perfil">
+            <field name="name">Garçom</field>
+            <field name="codigo">garcom</field>
+            <field name="sequence">10</field>
+            <field name="group_id" ref="group_garcom"/>
+            <field name="descricao">Abre mesa, lança e entrega itens, transfere item, aprova pedido de QR.</field>
+            <field name="menu_ids" eval="[Command.set([ref('point_of_sale.menu_point_root')])]"/>
+            <field name="pode_aprovar_qr" eval="True"/>
+        </record>
+
+        <record id="perfil_caixa" model="boteco.perfil">
+            <field name="name">Barman / caixa</field>
+            <field name="codigo">caixa</field>
+            <field name="sequence">20</field>
+            <field name="group_id" ref="group_caixa"/>
+            <field name="descricao">Tudo do garçom, receber pagamento, sangria e reforço.</field>
+            <field name="menu_ids" eval="[Command.set([ref('point_of_sale.menu_point_root')])]"/>
+            <field name="pode_aprovar_qr" eval="True"/>
+            <field name="pode_receber_pagamento" eval="True"/>
+            <field name="pode_sangria_reforco" eval="True"/>
+        </record>
+
+        <record id="perfil_chapeiro" model="boteco.perfil">
+            <field name="name">Chapeiro</field>
+            <field name="codigo">chapeiro</field>
+            <field name="sequence">30</field>
+            <field name="group_id" ref="group_chapeiro"/>
+            <field name="descricao">Marca "preparando" e "pronto" na fila da chapa.</field>
+            <field name="menu_ids" eval="[Command.set([ref('menu_boteco_root')])]"/>
+        </record>
+
+        <record id="perfil_gerente" model="boteco.perfil">
+            <field name="name">Gerente</field>
+            <field name="codigo">gerente</field>
+            <field name="sequence">40</field>
+            <field name="group_id" ref="group_gerente"/>
+            <field name="descricao">Cancela com motivo, dá desconto e cortesia, abre e fecha caixa, ajusta estoque.</field>
+            <field name="menu_ids" eval="[Command.set([
+                ref('point_of_sale.menu_point_root'),
+                ref('stock.menu_stock_root'),
+                ref('purchase.menu_purchase_root'),
+                ref('menu_boteco_root'),
+            ])]"/>
+            <field name="pode_cancelar_item" eval="True"/>
+            <field name="pode_dar_desconto" eval="True"/>
+            <field name="pode_dar_cortesia" eval="True"/>
+            <field name="pode_consumo_funcionario" eval="True"/>
+            <field name="pode_remover_taxa" eval="True"/>
+            <field name="pode_sangria_reforco" eval="True"/>
+            <field name="pode_abrir_fechar_caixa" eval="True"/>
+            <field name="pode_receber_pagamento" eval="True"/>
+            <field name="pode_aprovar_qr" eval="True"/>
+            <field name="pode_ajustar_estoque" eval="True"/>
+            <field name="pode_sair_quiosque" eval="True"/>
+        </record>
+
+        <record id="perfil_cozinheiro" model="boteco.perfil">
+            <field name="name">Cozinheiro</field>
+            <field name="codigo">cozinheiro</field>
+            <field name="sequence">50</field>
+            <field name="group_id" ref="group_cozinheiro"/>
+            <field name="descricao">Produz lote, imprime etiqueta, registra perda e temperatura.</field>
+            <field name="menu_ids" eval="[Command.set([ref('mrp.menu_mrp_root'), ref('menu_boteco_root')])]"/>
+            <field name="pode_ajustar_estoque" eval="True"/>
+        </record>
+
+        <record id="perfil_comercial" model="boteco.perfil">
+            <field name="name">Comercial B2B</field>
+            <field name="codigo">comercial</field>
+            <field name="sequence">60</field>
+            <field name="group_id" ref="group_comercial"/>
+            <field name="descricao">Cadastra cliente B2B, lança pedido, marca entrega.</field>
+            <field name="menu_ids" eval="[Command.set([ref('sale.sale_menu_root'), ref('menu_boteco_root')])]"/>
+        </record>
+
+        <record id="perfil_dono" model="boteco.perfil">
+            <field name="name">Dono / administrador</field>
+            <field name="codigo">dono</field>
+            <field name="sequence">70</field>
+            <field name="group_id" ref="group_dono"/>
+            <field name="descricao">Tudo, inclusive pessoas, preços, fiscal e configurações. Entra com senha.</field>
+            <field name="permite_login_pin" eval="False"/>
+            <field name="pode_cancelar_item" eval="True"/>
+            <field name="pode_dar_desconto" eval="True"/>
+            <field name="pode_dar_cortesia" eval="True"/>
+            <field name="pode_consumo_funcionario" eval="True"/>
+            <field name="pode_remover_taxa" eval="True"/>
+            <field name="pode_sangria_reforco" eval="True"/>
+            <field name="pode_abrir_fechar_caixa" eval="True"/>
+            <field name="pode_receber_pagamento" eval="True"/>
+            <field name="pode_aprovar_qr" eval="True"/>
+            <field name="pode_ajustar_estoque" eval="True"/>
+            <field name="pode_alterar_preco" eval="True"/>
+            <field name="pode_ver_financeiro" eval="True"/>
+            <field name="pode_sair_quiosque" eval="True"/>
+        </record>
+    </data>
+</odoo>

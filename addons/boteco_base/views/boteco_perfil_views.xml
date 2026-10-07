@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tela simples de liga/desliga: uma linha por perfil, uma chave por permissão -->
+    <record id="boteco_perfil_view_list" model="ir.ui.view">
+        <field name="name">boteco.perfil.list</field>
+        <field name="model">boteco.perfil</field>
+        <field name="arch" type="xml">
+            <list string="Permissões por perfil" editable="bottom" create="false" delete="false" class="o_boteco_permissoes">
+                <field name="sequence" widget="handle"/>
+                <field name="name" readonly="1"/>
+                <field name="usuarios_count" string="Pessoas"/>
+                <field name="permite_login_pin" widget="boolean_toggle"/>
+                <field name="pode_cancelar_item" widget="boolean_toggle" string="Cancelar"/>
+                <field name="pode_dar_desconto" widget="boolean_toggle" string="Desconto"/>
+                <field name="pode_dar_cortesia" widget="boolean_toggle" string="Cortesia"/>
+                <field name="pode_consumo_funcionario" widget="boolean_toggle" string="Consumo func."/>
+                <field name="pode_remover_taxa" widget="boolean_toggle" string="Tirar taxa"/>
+                <field name="pode_receber_pagamento" widget="boolean_toggle" string="Receber"/>
+                <field name="pode_sangria_reforco" widget="boolean_toggle" string="Sangria"/>
+                <field name="pode_abrir_fechar_caixa" widget="boolean_toggle" string="Abrir/fechar caixa"/>
+                <field name="pode_aprovar_qr" widget="boolean_toggle" string="Aprovar QR"/>
+                <field name="pode_ajustar_estoque" widget="boolean_toggle" string="Estoque"/>
+                <field name="pode_alterar_preco" widget="boolean_toggle" string="Preço"/>
+                <field name="pode_ver_financeiro" widget="boolean_toggle" string="Financeiro"/>
+                <field name="pode_sair_quiosque" widget="boolean_toggle" string="Sair quiosque"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="boteco_perfil_view_form" model="ir.ui.view">
+        <field name="name">boteco.perfil.form</field>
+        <field name="model">boteco.perfil</field>
+        <field name="arch" type="xml">
+            <form string="Perfil">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_ver_pessoas" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="usuarios_count" widget="statinfo" string="Pessoas"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="codigo" readonly="1"/>
+                            <field name="group_id" groups="base.group_no_one"/>
+                            <field name="permite_login_pin" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="descricao"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Permissões" name="permissoes">
+                            <group>
+                                <group string="Salão e caixa">
+                                    <field name="pode_cancelar_item" widget="boolean_toggle"/>
+                                    <field name="pode_dar_desconto" widget="boolean_toggle"/>
+                                    <field name="pode_dar_cortesia" widget="boolean_toggle"/>
+                                    <field name="pode_consumo_funcionario" widget="boolean_toggle"/>
+                                    <field name="pode_remover_taxa" widget="boolean_toggle"/>
+                                    <field name="pode_receber_pagamento" widget="boolean_toggle"/>
+                                    <field name="pode_aprovar_qr" widget="boolean_toggle"/>
+                                    <field name="pode_sair_quiosque" widget="boolean_toggle"/>
+                                </group>
+                                <group string="Caixa, estoque e gestão">
+                                    <field name="pode_sangria_reforco" widget="boolean_toggle"/>
+                                    <field name="pode_abrir_fechar_caixa" widget="boolean_toggle"/>
+                                    <field name="pode_ajustar_estoque" widget="boolean_toggle"/>
+                                    <field name="pode_alterar_preco" widget="boolean_toggle"/>
+                                    <field name="pode_ver_financeiro" widget="boolean_toggle"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Menus visíveis" name="menus">
+                            <p class="text-muted">Menus principais que este perfil enxerga. Deixe vazio para mostrar tudo o que o grupo permite.</p>
+                            <field name="menu_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="Pessoas" name="pessoas">
+                            <field name="user_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="login"/>
+                                    <field name="boteco_tem_pin"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boteco_perfil" model="ir.actions.act_window">
+        <field name="name">Permissões por perfil</field>
+        <field name="res_model">boteco.perfil</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p>Ligue e desligue o que cada perfil pode fazer. Ações sem permissão pedem o PIN do gerente na hora.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boteco_perfil_user,boteco.perfil usuario,model_boteco_perfil,base.group_user,1,0,0,0
+access_boteco_perfil_dono,boteco.perfil dono,model_boteco_perfil,group_dono,1,1,1,0
+access_boteco_auditoria_gerente,boteco.auditoria gerente,model_boteco_auditoria,group_gerente,1,0,0,0
+access_boteco_autorizacao_user,boteco.autorizacao usuario,model_boteco_autorizacao,base.group_user,1,0,0,0
+access_boteco_pin_tentativa_dono,boteco.pin.tentativa dono,model_boteco_pin_tentativa,group_dono,1,0,0,0
+access_boteco_impressora_user,boteco.impressora usuario,model_boteco_impressora,base.group_user,1,0,0,0
+access_boteco_impressora_gerente,boteco.impressora gerente,model_boteco_impressora,group_gerente,1,1,1,0
+access_boteco_impressora_dono,boteco.impressora dono,model_boteco_impressora,group_dono,1,1,1,1
+access_boteco_setor_user,boteco.setor usuario,model_boteco_setor,base.group_user,1,0,0,0
+access_boteco_setor_dono,boteco.setor dono,model_boteco_setor,group_dono,1,1,1,1
+access_boteco_setor_public,boteco.setor publico,model_boteco_setor,base.group_public,1,0,0,0
+access_boteco_termo_dono,boteco.termo dono,model_boteco_termo,group_dono,1,1,1,1

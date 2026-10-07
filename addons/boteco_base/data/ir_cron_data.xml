@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="cron_verificar_impressoras" model="ir.cron">
+        <field name="name">Boteco: verificar impressoras</field>
+        <field name="model_id" ref="model_boteco_impressora"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_verificar()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+    <record id="cron_limpar_tentativas" model="ir.cron">
+        <field name="name">Boteco: limpar tentativas de PIN antigas</field>
+        <field name="model_id" ref="model_boteco_pin_tentativa"/>
+        <field name="state">code</field>
+        <field name="code">model._limpar_antigas()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+    <record id="cron_limpar_autorizacoes" model="ir.cron">
+        <field name="name">Boteco: limpar autorizações vencidas</field>
+        <field name="model_id" ref="model_boteco_autorizacao"/>
+        <field name="state">code</field>
+        <field name="code">model._limpar_vencidas()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+</odoo>

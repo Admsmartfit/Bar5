@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="setor_bar" model="boteco.setor">
+        <field name="name">Bar</field>
+        <field name="codigo">bar</field>
+        <field name="sequence">10</field>
+        <field name="cor">#2563eb</field>
+    </record>
+    <record id="setor_chapa" model="boteco.setor">
+        <field name="name">Chapa</field>
+        <field name="codigo">chapa</field>
+        <field name="sequence">20</field>
+        <field name="cor">#ea580c</field>
+    </record>
+</odoo>

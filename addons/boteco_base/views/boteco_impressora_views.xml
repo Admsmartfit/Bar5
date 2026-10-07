@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_impressora_view_list" model="ir.ui.view">
+        <field name="name">boteco.impressora.list</field>
+        <field name="model">boteco.impressora</field>
+        <field name="arch" type="xml">
+            <list string="Impressoras" decoration-danger="estado == 'erro'" decoration-success="estado == 'ok'">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="ip"/>
+                <field name="porta"/>
+                <field name="linguagem"/>
+                <field name="estado" widget="badge" decoration-success="estado == 'ok'" decoration-danger="estado == 'erro'"/>
+                <field name="ultima_verificacao"/>
+                <button name="action_imprimir_teste" type="object" string="Imprimir teste" icon="fa-print" class="btn-primary"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="boteco_impressora_view_form" model="ir.ui.view">
+        <field name="name">boteco.impressora.form</field>
+        <field name="model">boteco.impressora</field>
+        <field name="arch" type="xml">
+            <form string="Impressora">
+                <header>
+                    <button name="action_imprimir_teste" type="object" string="Imprimir teste" class="btn-primary btn-lg"/>
+                    <button name="action_verificar" type="object" string="Verificar conexão"/>
+                    <field name="estado" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" placeholder="Ex.: Impressora da chapa"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="ip" placeholder="192.168.10.50"/>
+                            <field name="porta"/>
+                            <field name="linguagem"/>
+                        </group>
+                        <group>
+                            <field name="colunas" invisible="linguagem != 'escpos'"/>
+                            <field name="codepage" invisible="linguagem != 'escpos'"/>
+                            <field name="bip" invisible="linguagem != 'escpos'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Situação">
+                        <field name="ultima_verificacao"/>
+                        <field name="ultimo_erro" invisible="not ultimo_erro"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boteco_impressora" model="ir.actions.act_window">
+        <field name="name">Impressoras</field>
+        <field name="res_model">boteco.impressora</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p>Cadastre as impressoras de rede (pedidos 80 mm e etiquetas). Use "Imprimir teste" antes de abrir o bar.</p>
+        </field>
+    </record>
+</odoo>

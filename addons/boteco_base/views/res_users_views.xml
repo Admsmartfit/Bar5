@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cadastro simplificado de pessoas: nome, perfil, PIN. Sem a tela gigante de grupos do Odoo. -->
+    <record id="res_users_view_list_boteco" model="ir.ui.view">
+        <field name="name">res.users.list.boteco</field>
+        <field name="model">res.users</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <list string="Pessoas">
+                <field name="name"/>
+                <field name="login" string="Usuário"/>
+                <field name="boteco_perfil_id"/>
+                <field name="boteco_tem_pin" string="PIN"/>
+                <field name="boteco_bloqueado" string="Bloqueado" decoration-danger="boteco_bloqueado"/>
+                <field name="login_date" string="Último acesso"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="res_users_view_form_boteco" model="ir.ui.view">
+        <field name="name">res.users.form.boteco</field>
+        <field name="model">res.users</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <form string="Pessoa">
+                <header>
+                    <button name="action_boteco_desbloquear_pin" type="object" string="Desbloquear PIN"
+                            invisible="not boteco_bloqueado" class="btn-warning"/>
+                </header>
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'avatar_128'}"/>
+                    <div class="oe_title">
+                        <label for="name" string="Nome"/>
+                        <h1><field name="name" required="1" placeholder="Nome da pessoa"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="login" string="Usuário" help="Nome curto, sem espaço. Ex.: joao"/>
+                            <field name="boteco_perfil_id" required="1" options="{'no_create': True}"/>
+                            <field name="boteco_pin" password="True" placeholder="4 a 6 números"
+                                   invisible="boteco_perfil_codigo == 'dono'"/>
+                            <field name="boteco_tem_pin" readonly="1"/>
+                            <field name="boteco_bloqueado" invisible="not boteco_bloqueado"/>
+                            <field name="boteco_perfil_codigo" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="boteco_pdv_config_id" invisible="boteco_perfil_codigo not in ('garcom', 'caixa', 'gerente')"/>
+                            <field name="company_ids" widget="many2many_tags" groups="base.group_multi_company" string="Empresas"/>
+                            <field name="company_id" groups="base.group_multi_company" string="Empresa principal"/>
+                            <field name="tz" string="Fuso"/>
+                            <field name="lang" string="Idioma"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boteco_pessoas" model="ir.actions.act_window">
+        <field name="name">Pessoas</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('share', '=', False)]</field>
+        <field name="context">{'default_tz': 'America/Sao_Paulo', 'default_lang': 'pt_BR'}</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'list', 'view_id': ref('res_users_view_list_boteco')}),
+            Command.create({'view_mode': 'form', 'view_id': ref('res_users_view_form_boteco')})]"/>
+        <field name="help" type="html">
+            <p>Cadastre cada pessoa da equipe com um perfil e um PIN de 4 a 6 números.</p>
+        </field>
+    </record>
+
+    <!-- Mostra o perfil do boteco também na ficha técnica de usuário do Odoo -->
+    <record id="res_users_view_form_inherit_boteco" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.boteco</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="before">
+                <group string="Boteco" name="boteco">
+                    <group>
+                        <field name="boteco_perfil_id"/>
+                        <field name="boteco_pin" password="True"/>
+                    </group>
+                    <group>
+                        <field name="boteco_tem_pin" readonly="1"/>
+                        <field name="boteco_pdv_config_id"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tela inicial de cada perfil: /boteco/inicio decide o destino -->
+    <record id="action_boteco_inicio" model="ir.actions.act_url">
+        <field name="name">Minha tela</field>
+        <field name="url">/boteco/inicio</field>
+        <field name="target">self</field>
+    </record>
+</odoo>

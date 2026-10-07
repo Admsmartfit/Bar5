@@ -1,0 +1,30 @@
+; Gerado pelo ./instalar.sh a partir de config/odoo.conf.template.
+; Não edite config/odoo.conf direto: edite o template e rode ./instalar.sh de novo.
+[options]
+addons_path = /mnt/extra-addons,/mnt/oca-addons,/usr/lib/python3/dist-packages/odoo/addons
+data_dir = /var/lib/odoo
+admin_passwd = ${ODOO_ADMIN_PASSWD}
+db_host = db
+db_port = 5432
+db_user = ${POSTGRES_USER}
+db_password = ${POSTGRES_PASSWORD}
+db_name = ${BOTECO_DB}
+dbfilter = ^${BOTECO_DB}$
+list_db = False
+proxy_mode = True
+without_demo = all
+
+; Multiprocesso: HTTP em 8069, tempo real (websocket) em 8072
+workers = ${ODOO_WORKERS}
+max_cron_threads = ${ODOO_MAX_CRON_THREADS}
+gevent_port = 8072
+limit_memory_soft = 1610612736
+limit_memory_hard = 2147483648
+limit_time_cpu = 120
+limit_time_real = 300
+limit_request = 8192
+
+; Log em arquivo com rotação diária e 30 dias guardados
+logfile = /var/log/odoo/odoo.log
+logrotate = True
+log_level = info

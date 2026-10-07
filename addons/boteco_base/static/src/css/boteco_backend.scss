@@ -1,0 +1,18 @@
+// Ajustes de usabilidade no backend do Odoo (botões grandes, chaves de permissão legíveis)
+
+.o_boteco_systray__btn {
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 1.2rem;
+    color: inherit;
+}
+
+.o_boteco_permissoes {
+    .o_boolean_toggle {
+        transform: scale(1.15);
+    }
+    th {
+        white-space: normal !important;
+        text-align: center;
+    }
+}

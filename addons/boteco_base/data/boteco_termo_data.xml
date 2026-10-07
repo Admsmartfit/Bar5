@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Linguagem de boteco nos menus de operação (seção 4, item 5 do PRD). Editável em Boteco > Termos. -->
+    <record id="termo_pdv" model="boteco.termo">
+        <field name="sequence">10</field>
+        <field name="xmlid">point_of_sale.menu_point_root</field>
+        <field name="nome_boteco">Salão e Caixa</field>
+    </record>
+    <record id="termo_vendas" model="boteco.termo">
+        <field name="sequence">20</field>
+        <field name="xmlid">sale.sale_menu_root</field>
+        <field name="nome_boteco">Venda a Bares</field>
+    </record>
+    <record id="termo_pedidos" model="boteco.termo">
+        <field name="sequence">21</field>
+        <field name="xmlid">sale.menu_sale_order</field>
+        <field name="nome_boteco">Pedidos</field>
+    </record>
+    <record id="termo_orcamentos" model="boteco.termo">
+        <field name="sequence">22</field>
+        <field name="xmlid">sale.menu_sale_quotations</field>
+        <field name="nome_boteco">Pedidos em aberto</field>
+    </record>
+    <record id="termo_fabricacao" model="boteco.termo">
+        <field name="sequence">30</field>
+        <field name="xmlid">mrp.menu_mrp_root</field>
+        <field name="nome_boteco">Cozinha Central</field>
+    </record>
+    <record id="termo_ordens_producao" model="boteco.termo">
+        <field name="sequence">31</field>
+        <field name="xmlid">mrp.menu_mrp_production_action</field>
+        <field name="nome_boteco">Produções</field>
+    </record>
+    <record id="termo_bom" model="boteco.termo">
+        <field name="sequence">32</field>
+        <field name="xmlid">mrp.menu_mrp_bom_form_action</field>
+        <field name="nome_boteco">Receitas e fichas técnicas</field>
+    </record>
+    <record id="termo_estoque" model="boteco.termo">
+        <field name="sequence">40</field>
+        <field name="xmlid">stock.menu_stock_root</field>
+        <field name="nome_boteco">Estoque</field>
+    </record>
+    <record id="termo_compras" model="boteco.termo">
+        <field name="sequence">50</field>
+        <field name="xmlid">purchase.menu_purchase_root</field>
+        <field name="nome_boteco">Compras</field>
+    </record>
+    <record id="termo_financeiro" model="boteco.termo">
+        <field name="sequence">60</field>
+        <field name="xmlid">account.menu_finance</field>
+        <field name="nome_boteco">Financeiro</field>
+    </record>
+</odoo>

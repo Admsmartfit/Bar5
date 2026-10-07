@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_boteco_saude_url" model="ir.actions.act_url">
+        <field name="name">Saúde do sistema</field>
+        <field name="url">/boteco/saude</field>
+        <field name="target">self</field>
+    </record>
+    <record id="action_boteco_ajuda_url" model="ir.actions.act_url">
+        <field name="name">Ajuda</field>
+        <field name="url">/boteco/ajuda</field>
+        <field name="target">new</field>
+    </record>
+    <record id="action_boteco_trocar_pessoa" model="ir.actions.act_url">
+        <field name="name">Trocar de pessoa (PIN)</field>
+        <field name="url">/boteco/sair</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- Boteco (raiz criada em data/boteco_perfil_data.xml) -->
+    <menuitem id="menu_boteco_operacao" name="Operação" parent="menu_boteco_root" sequence="10"/>
+    <menuitem id="menu_boteco_inicio" name="Minha tela" parent="menu_boteco_operacao" sequence="1"
+              action="action_boteco_inicio"/>
+    <menuitem id="menu_boteco_trocar_pessoa" name="Trocar de pessoa (PIN)" parent="menu_boteco_operacao" sequence="2"
+              action="action_boteco_trocar_pessoa"/>
+    <menuitem id="menu_boteco_ajuda" name="Ajuda" parent="menu_boteco_operacao" sequence="99"
+              action="action_boteco_ajuda_url"/>
+
+    <menuitem id="menu_boteco_gestao" name="Gestão" parent="menu_boteco_root" sequence="50"
+              groups="group_gerente"/>
+    <menuitem id="menu_boteco_auditoria" name="Auditoria" parent="menu_boteco_gestao" sequence="10"
+              action="action_boteco_auditoria"/>
+    <menuitem id="menu_boteco_saude" name="Saúde do sistema" parent="menu_boteco_gestao" sequence="20"
+              action="action_boteco_saude_url"/>
+    <menuitem id="menu_boteco_impressoras" name="Impressoras" parent="menu_boteco_gestao" sequence="30"
+              action="action_boteco_impressora"/>
+
+    <menuitem id="menu_boteco_config" name="Configuração" parent="menu_boteco_root" sequence="90"
+              groups="group_dono"/>
+    <menuitem id="menu_boteco_pessoas" name="Pessoas" parent="menu_boteco_config" sequence="10"
+              action="action_boteco_pessoas"/>
+    <menuitem id="menu_boteco_perfis" name="Permissões por perfil" parent="menu_boteco_config" sequence="20"
+              action="action_boteco_perfil"/>
+    <menuitem id="menu_boteco_setores" name="Setores de produção" parent="menu_boteco_config" sequence="30"
+              action="action_boteco_setor"/>
+    <menuitem id="menu_boteco_termos" name="Termos de boteco" parent="menu_boteco_config" sequence="90"
+              action="action_boteco_termo"/>
+</odoo>

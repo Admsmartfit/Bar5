@@ -1,0 +1,10 @@
+.env
+config/odoo.conf
+config/certs/
+backups/
+*.pyc
+__pycache__/
+.vscode/
+*.log
+oca/*
+!oca/README.md

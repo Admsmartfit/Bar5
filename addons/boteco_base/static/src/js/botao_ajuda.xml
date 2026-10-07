@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_base.BotoesSystray">
+        <div class="o_boteco_systray d-flex align-items-center">
+            <button type="button" class="btn btn-link o_boteco_systray__btn" title="Trocar de pessoa (PIN)" t-on-click="trocarPessoa">
+                <i class="fa fa-exchange"/>
+            </button>
+            <button type="button" class="btn btn-link o_boteco_systray__btn" title="Ajuda" t-on-click="abrirAjuda">
+                <i class="fa fa-question-circle"/>
+            </button>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_setor_view_list" model="ir.ui.view">
+        <field name="name">boteco.setor.list</field>
+        <field name="model">boteco.setor</field>
+        <field name="arch" type="xml">
+            <list string="Setores de produção" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="codigo"/>
+                <field name="cor" widget="color"/>
+                <field name="impressora_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_boteco_setor" model="ir.actions.act_window">
+        <field name="name">Setores de produção</field>
+        <field name="res_model">boteco.setor</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p>Para onde vai cada item pedido: bar, chapa... Cada setor tem sua impressora e sua tela.</p>
+        </field>
+    </record>
+</odoo>

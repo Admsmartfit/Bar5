@@ -1,0 +1,69 @@
+/*
+ * Tokens visuais do Boteco (seção 4 do PRD):
+ *  - status por cor fixa: cinza aguardando, amarelo preparando, verde pronto, vermelho atrasado
+ *  - roxo = pediu a conta
+ *  - modo escuro nas telas de produção, contraste AA, alvos de toque >= 48 px (64 px na produção)
+ */
+:root {
+    --bt-fundo: #0f172a;
+    --bt-superficie: #1e293b;
+    --bt-superficie-2: #334155;
+    --bt-borda: #475569;
+    --bt-texto: #f8fafc;
+    --bt-texto-suave: #cbd5e1;
+    --bt-primaria: #f59e0b;
+    --bt-primaria-texto: #111827;
+
+    --bt-aguardando: #64748b;
+    --bt-preparando: #eab308;
+    --bt-pronto: #16a34a;
+    --bt-atrasado: #dc2626;
+    --bt-conta: #7c3aed;
+    --bt-livre: #0f766e;
+
+    --bt-alvo: 48px;
+    --bt-alvo-producao: 64px;
+    --bt-raio: 14px;
+    --bt-fonte: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+[data-tema="claro"] {
+    --bt-fundo: #f8fafc;
+    --bt-superficie: #ffffff;
+    --bt-superficie-2: #e2e8f0;
+    --bt-borda: #cbd5e1;
+    --bt-texto: #0f172a;
+    --bt-texto-suave: #475569;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bt-fundo);
+    color: var(--bt-texto);
+    font-family: var(--bt-fonte);
+    font-size: 18px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--bt-primaria); outline-offset: 2px; }
+
+.bt-topo {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px; background: var(--bt-superficie); border-bottom: 1px solid var(--bt-borda);
+}
+.bt-topo__marca { font-weight: 700; font-size: 20px; }
+.bt-topo__relogio { font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 600; }
+
+.bt-titulo { font-size: 28px; margin: 8px 0 16px; text-align: center; }
+.bt-vazio { text-align: center; color: var(--bt-texto-suave); }
+.bt-link { display: block; text-align: center; margin: 24px auto; color: var(--bt-texto-suave); min-height: var(--bt-alvo); line-height: var(--bt-alvo); }
+
+.bt-botao {
+    min-height: var(--bt-alvo); padding: 0 20px; border-radius: var(--bt-raio);
+    border: 0; background: var(--bt-primaria); color: var(--bt-primaria-texto); font-weight: 700;
+}
+.bt-botao--secundario { background: var(--bt-superficie-2); color: var(--bt-texto); }
