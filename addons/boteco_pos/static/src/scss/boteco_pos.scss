@@ -1,0 +1,52 @@
+// Cores fixas de situação (PRD seção 4): cinza aguardando, amarelo preparando, verde pronto,
+// vermelho atrasado, roxo pediu a conta.
+$boteco-livre: #e5e7eb;
+$boteco-ocupada: #16a34a;
+$boteco-chamou: #eab308;
+$boteco-conta: #7c3aed;
+$boteco-pagamento: #2563eb;
+$boteco-atrasada: #dc2626;
+
+.floor-map .table, .table[data-boteco-status] {
+    &[data-boteco-status="ocupada"] { background: $boteco-ocupada !important; color: #fff !important; }
+    &[data-boteco-status="chamou"] { background: $boteco-chamou !important; color: #111 !important; animation: boteco-pulsar 1.2s infinite; }
+    &[data-boteco-status="conta"] { background: $boteco-conta !important; color: #fff !important; animation: boteco-pulsar 1.6s infinite; }
+    &[data-boteco-status="pagamento"] { background: $boteco-pagamento !important; color: #fff !important; }
+    &[data-boteco-status="atrasada"] { background: $boteco-atrasada !important; color: #fff !important; }
+}
+
+@keyframes boteco-pulsar {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.35); }
+    50% { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
+}
+
+.o_boteco_mesa_rodape {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.1;
+    padding-bottom: 2px;
+    .o_boteco_mesa_status { display: block; }
+}
+
+.o_boteco_atender { min-height: 32px; font-weight: 700; }
+
+// Popup de autorização: botões grandes (alvo >= 48 px)
+.o_boteco_autorizacao {
+    .o_boteco_motivos {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 8px;
+        .btn { min-height: 56px; white-space: normal; }
+    }
+    .o_boteco_pin__pontos {
+        display: flex; gap: 12px; justify-content: center; margin: 8px 0 12px;
+        span { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #6b7280; }
+        span.cheio { background: #111827; border-color: #111827; }
+    }
+    .o_boteco_pin__teclado {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+        .btn { min-height: 64px; font-size: 1.5rem; font-weight: 700; }
+    }
+}
+
+.o_boteco_contagem_cega { font-size: 1rem; }

@@ -38,7 +38,7 @@ E_LINUX=0; [[ "$(uname -s)" == "Linux" ]] && E_LINUX=1
 
 # Módulos nativos (seção 5 do PRD) + módulos próprios
 MODULOS_NATIVOS="point_of_sale,pos_restaurant,pos_self_order,stock,purchase,mrp,pos_mrp,sale_management,account,l10n_br"
-MODULOS_BOTECO="boteco_base,boteco_cardapio,boteco_pos,boteco_kds,boteco_autoatendimento,boteco_estoque,boteco_cozinha_central,boteco_b2b,boteco_painel,boteco_fiscal_export,boteco_treinamento"
+MODULOS_BOTECO="${MODULOS_BOTECO:-boteco_base,boteco_cardapio,boteco_pos,boteco_kds,boteco_autoatendimento,boteco_estoque,boteco_cozinha_central,boteco_b2b,boteco_painel,boteco_fiscal_export}"
 MODULOS="${MODULOS:-$MODULOS_NATIVOS,$MODULOS_BOTECO}"
 
 # -----------------------------------------------------------------------------
@@ -122,23 +122,40 @@ for i in $(seq 1 60); do
   sleep 2
 done
 
+# Instala (-i) ou atualiza (-u) módulos; em caso de erro mostra o trecho do log e para.
+instalar_modulos() {
+  local log; log="$(mktemp)"
+  if ! docker compose run --rm -T odoo odoo -c /etc/odoo/odoo.conf -d "$BOTECO_DB" --workers=0 \
+      --without-demo=all "$1" "$2" --stop-after-init --logfile= > "$log" 2>&1; then
+    grep -E " (ERROR|CRITICAL) " -A25 "$log" | tail -60
+    falha "a instalação dos módulos falhou (log completo: $log)"
+  fi
+  if grep -qE " (ERROR|CRITICAL) " "$log"; then
+    aviso "a instalação registrou erros; confira $log"
+  fi
+}
+
 BANCO_EXISTE="$(docker compose exec -T db psql -U "$POSTGRES_USER" -d postgres -tAc \
   "SELECT 1 FROM pg_database WHERE datname='${BOTECO_DB}'" | tr -d '[:space:]')"
 
 if [[ "$BANCO_EXISTE" != "1" ]]; then
-  echo "Criando o banco '${BOTECO_DB}' (pt_BR) e instalando módulos. Isso leva alguns minutos..."
-  docker compose run --rm -T odoo odoo -c /etc/odoo/odoo.conf -d "$BOTECO_DB" \
-    --load-language=pt_BR --without-demo=all -i "$MODULOS" --stop-after-init --logfile=
+  echo "Criando o banco '${BOTECO_DB}' em português do Brasil..."
+  docker compose run --rm -T odoo odoo -c /etc/odoo/odoo.conf -d "$BOTECO_DB" --workers=0 \
+    --load-language=pt_BR --without-demo=all -i base --stop-after-init --logfile= >/dev/null
+  # Empresa brasileira ANTES da contabilidade: o Odoo carrega o plano de contas do Brasil
+  docker compose run --rm -T odoo odoo shell -c /etc/odoo/odoo.conf -d "$BOTECO_DB" --no-http \
+    --workers=0 --logfile= < scripts/pre_configurar.py
+  echo "Instalando módulos (leva alguns minutos)..."
+  instalar_modulos -i "$MODULOS"
   echo "Configurando empresa, armazéns, PDV e usuário dono..."
   docker compose run --rm -T \
     -e EMPRESA_NOME -e EMPRESA_CNPJ -e EMPRESA_CIDADE -e EMPRESA_MODO -e COZINHA_NOME -e COZINHA_CNPJ \
     -e ODOO_ADMIN_USER_PASSWORD -e BOTECO_HOSTNAME -e REDE_CLIENTES -e REDE_SISTEMA \
-    odoo odoo shell -c /etc/odoo/odoo.conf -d "$BOTECO_DB" --no-http --logfile= \
+    odoo odoo shell -c /etc/odoo/odoo.conf -d "$BOTECO_DB" --no-http --workers=0 --logfile= \
     < scripts/configurar_empresa.py
 else
   echo "Banco '${BOTECO_DB}' já existe. Atualizando módulos boteco_*..."
-  docker compose run --rm -T odoo odoo -c /etc/odoo/odoo.conf -d "$BOTECO_DB" \
-    -u "$MODULOS_BOTECO" --stop-after-init --logfile=
+  instalar_modulos -u "$MODULOS_BOTECO"
 fi
 
 # -----------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+/** @odoo-module ignore **/
 /* Tela de entrada por PIN. JavaScript puro (sem framework) para abrir rápido em tablet velho. */
 (function () {
     "use strict";

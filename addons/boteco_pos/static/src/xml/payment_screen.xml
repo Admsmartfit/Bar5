@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_pos.PaymentScreenButtons" t-inherit="point_of_sale.PaymentScreenButtons" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('payment-buttons')]" position="inside">
+            <div class="d-flex flex-column flex-sm-row gap-2 w-100 o_boteco_pagamento">
+                <button class="button btn btn-light btn-lg w-100 lh-lg" t-att-class="{'highlight active text-action': botecoPartes}"
+                        t-on-click="() => this.botecoDividirIgual()">
+                    <i class="fa fa-users me-2"/>
+                    <t t-if="botecoPartes">
+                        <t t-esc="botecoPartes"/> partes de <t t-esc="env.utils.formatCurrency(botecoValoresPartes[0])"/>
+                    </t>
+                    <t t-else="">Dividir igual</t>
+                </button>
+                <button class="button btn btn-light btn-lg w-100 lh-lg text-truncate"
+                        t-att-class="{'highlight active text-action': currentOrder.boteco_cpf_nota}"
+                        t-on-click="() => this.botecoCpfNaNota()">
+                    <i class="fa fa-id-card-o me-2"/>
+                    <t t-if="currentOrder.boteco_cpf_nota">CPF/CNPJ: <t t-esc="currentOrder.boteco_cpf_nota"/></t>
+                    <t t-else="">CPF na nota</t>
+                </button>
+            </div>
+        </xpath>
+    </t>
+</templates>

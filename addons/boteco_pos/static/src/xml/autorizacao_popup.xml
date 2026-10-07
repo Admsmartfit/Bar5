@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_pos.AutorizacaoPopup">
+        <Dialog title="props.titulo" size="'md'" contentClass="'o_boteco_autorizacao'">
+            <p t-if="props.subtitulo" class="text-muted mb-2" t-esc="props.subtitulo"/>
+
+            <div t-if="precisaMotivo" class="mb-3">
+                <div class="fw-bold mb-2">Motivo</div>
+                <div class="o_boteco_motivos">
+                    <t t-foreach="props.motivos" t-as="motivo" t-key="motivo.id">
+                        <button type="button" class="btn btn-lg"
+                                t-att-class="state.motivo?.id === motivo.id ? 'btn-primary' : 'btn-outline-secondary'"
+                                t-on-click="() => this.escolherMotivo(motivo)" t-esc="motivo.nome"/>
+                    </t>
+                </div>
+                <input t-if="state.motivo?.pede_detalhe" type="text" class="form-control form-control-lg mt-2"
+                       placeholder="Explique em poucas palavras" t-model="state.detalhe"/>
+            </div>
+
+            <div t-if="props.precisaPin" class="o_boteco_pin">
+                <div class="fw-bold mb-1">PIN do gerente</div>
+                <div class="o_boteco_pin__pontos">
+                    <t t-foreach="pontos" t-as="ponto" t-key="ponto_index">
+                        <span t-att-class="{'cheio': ponto}"/>
+                    </t>
+                </div>
+                <div class="o_boteco_pin__teclado">
+                    <t t-foreach="teclas" t-as="t" t-key="t">
+                        <button type="button" class="btn btn-lg"
+                                t-att-class="t === 'ok' ? 'btn-success' : 'btn-light border'"
+                                t-on-click="() => this.tecla(t)">
+                            <t t-if="t === 'apagar'">⌫</t>
+                            <t t-elif="t === 'ok'">OK</t>
+                            <t t-else="" t-esc="t"/>
+                        </button>
+                    </t>
+                </div>
+            </div>
+            <div t-else="" class="alert alert-info">Você tem permissão para isso. Fica registrado no seu nome.</div>
+
+            <div t-if="state.erro" class="alert alert-danger mt-2 mb-0" role="alert" t-esc="state.erro"/>
+
+            <t t-set-slot="footer">
+                <button class="btn btn-primary btn-lg" t-att-disabled="!podeConfirmar or state.enviando" t-on-click="confirmar">
+                    Confirmar
+                </button>
+                <button class="btn btn-secondary btn-lg" t-on-click="props.close">Voltar</button>
+            </t>
+        </Dialog>
+    </t>
+</templates>

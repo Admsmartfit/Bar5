@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boteco_motivo_user,boteco.motivo usuario,model_boteco_motivo,base.group_user,1,0,0,0
+access_boteco_motivo_dono,boteco.motivo dono,model_boteco_motivo,boteco_base.group_dono,1,1,1,1
+access_boteco_agenda_user,boteco.agenda.musica usuario,model_boteco_agenda_musica,base.group_user,1,0,0,0
+access_boteco_agenda_gerente,boteco.agenda.musica gerente,model_boteco_agenda_musica,boteco_base.group_gerente,1,1,1,1
+access_boteco_fechamento_gerente,boteco.fechamento.caixa gerente,model_boteco_fechamento_caixa,boteco_base.group_gerente,1,0,0,0
+access_boteco_fechamento_caixa,boteco.fechamento.caixa caixa,model_boteco_fechamento_caixa,boteco_base.group_caixa,1,0,0,0
+access_boteco_fechamento_linha_gerente,boteco.fechamento.caixa.linha gerente,model_boteco_fechamento_caixa_linha,boteco_base.group_gerente,1,0,0,0
+access_boteco_fechamento_linha_caixa,boteco.fechamento.caixa.linha caixa,model_boteco_fechamento_caixa_linha,boteco_base.group_caixa,1,0,0,0

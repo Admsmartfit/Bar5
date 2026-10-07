@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="regra_agenda_empresa" model="ir.rule">
+        <field name="name">Agenda de música: empresas permitidas</field>
+        <field name="model_id" ref="model_boteco_agenda_musica"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="regra_fechamento_empresa" model="ir.rule">
+        <field name="name">Fechamento de caixa: empresas permitidas</field>
+        <field name="model_id" ref="model_boteco_fechamento_caixa"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

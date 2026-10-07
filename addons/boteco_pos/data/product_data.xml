@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="pos_categoria_servicos" model="pos.category">
+        <field name="name">Serviços</field>
+        <field name="sequence">999</field>
+    </record>
+
+    <!-- Produtos técnicos: não vão para produção nem aparecem no tablet -->
+    <record id="produto_taxa_servico" model="product.product">
+        <field name="name">Taxa de serviço</field>
+        <field name="type">service</field>
+        <field name="list_price">0.0</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="self_order_available" eval="False"/>
+        <field name="sale_ok" eval="True"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="taxes_id" eval="[Command.clear()]"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_categoria_servicos')])]"/>
+        <field name="default_code">TAXA-SERVICO</field>
+    </record>
+
+    <record id="produto_couvert" model="product.product">
+        <field name="name">Couvert artístico</field>
+        <field name="type">service</field>
+        <field name="list_price">10.0</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="self_order_available" eval="False"/>
+        <field name="sale_ok" eval="True"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="taxes_id" eval="[Command.clear()]"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_categoria_servicos')])]"/>
+        <field name="default_code">COUVERT</field>
+    </record>
+</odoo>

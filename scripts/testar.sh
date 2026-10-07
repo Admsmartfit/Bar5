@@ -31,7 +31,7 @@ set +e
 docker compose run --rm -T odoo odoo -c /etc/odoo/odoo.conf -d "$BANCO" --db-filter=".*"   --workers=0 --max-cron-threads=0 --http-port=8079 --logfile=   --load-language=pt_BR --without-demo=all -i "$MODULOS"   --test-enable --test-tags="$TAGS" --stop-after-init > "$LOG" 2>&1
 STATUS=$?
 set -e
-grep -E " (ERROR|CRITICAL) |FAIL:|Traceback|odoo.tests.stats|odoo.tests.result" "$LOG" | head -80 || true
+grep -E " (ERROR|CRITICAL) |FAIL:|ParseError|Error:|odoo.tests.stats|odoo.tests.result" "$LOG" | head -80 || true
 
 if [[ -z "${MANTER:-}" ]]; then
   docker compose exec -T db dropdb -U "$POSTGRES_USER" --if-exists "$BANCO" || true

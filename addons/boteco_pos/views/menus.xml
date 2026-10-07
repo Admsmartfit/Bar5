@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_boteco_salao" name="Salão e caixa" parent="boteco_base.menu_boteco_root" sequence="30"
+              groups="boteco_base.group_gerente"/>
+    <menuitem id="menu_boteco_agenda" name="Música e couvert" parent="menu_boteco_salao" sequence="10"
+              action="action_boteco_agenda_musica"/>
+    <menuitem id="menu_boteco_fechamentos" name="Fechamentos de caixa" parent="menu_boteco_salao" sequence="20"
+              action="action_boteco_fechamento_caixa"/>
+    <menuitem id="menu_boteco_contas" name="Contas (pedidos)" parent="menu_boteco_salao" sequence="30"
+              action="point_of_sale.action_pos_pos_form"/>
+    <menuitem id="menu_boteco_motivos" name="Motivos" parent="boteco_base.menu_boteco_config" sequence="40"
+              action="action_boteco_motivo"/>
+</odoo>

@@ -6,6 +6,7 @@ e produtos de bar e de chapa. ``_sincronizar`` envia pedidos como o PDV real faz
 (``pos.order.sync_from_ui``), incluindo o "mandar pra cozinha" (last_order_preparation_change).
 """
 
+import copy
 import json
 import uuid as uuid_lib
 
@@ -119,6 +120,7 @@ class BotecoPosCase(BotecoCase):
         total = sum(l["price_subtotal_incl"] for l in linhas)
         dados = {
             "uuid": uuid or self._uuid(),
+            "access_token": self._uuid(),
             "name": "Pedido %s" % (uuid or self._uuid())[:8],
             "session_id": sessao.id,
             "pricelist_id": self.config.pricelist_id.id,
@@ -146,6 +148,8 @@ class BotecoPosCase(BotecoCase):
             dados["state"] = "paid"
         return dados
 
-    def _sincronizar(self, dados):
-        resultado = self.env["pos.order"].sync_from_ui([dados])
+    def _sincronizar(self, dados, user=None):
+        """Envia como o PDV faz. Copia o dicionário: o sync_from_ui altera o que recebe."""
+        Pedido = self.env["pos.order"].with_user(user) if user else self.env["pos.order"]
+        resultado = Pedido.sync_from_ui([copy.deepcopy(dados)])
         return self.env["pos.order"].browse(resultado["pos.order"][0]["id"])

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_agenda_musica_view_list" model="ir.ui.view">
+        <field name="name">boteco.agenda.musica.list</field>
+        <field name="model">boteco.agenda.musica</field>
+        <field name="arch" type="xml">
+            <list string="Agenda de música" editable="top">
+                <field name="data"/>
+                <field name="artista"/>
+                <field name="valor_couvert"/>
+                <field name="observacao"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_agenda_musica_view_calendar" model="ir.ui.view">
+        <field name="name">boteco.agenda.musica.calendar</field>
+        <field name="model">boteco.agenda.musica</field>
+        <field name="arch" type="xml">
+            <calendar string="Agenda de música" date_start="data" mode="month" quick_create="1">
+                <field name="artista"/>
+                <field name="valor_couvert"/>
+            </calendar>
+        </field>
+    </record>
+    <record id="action_boteco_agenda_musica" model="ir.actions.act_window">
+        <field name="name">Música e couvert</field>
+        <field name="res_model">boteco.agenda.musica</field>
+        <field name="view_mode">calendar,list</field>
+        <field name="help" type="html">
+            <p>Marque os dias de música ao vivo. Nesses dias o couvert entra na conta por pessoa, sozinho.</p>
+        </field>
+    </record>
+</odoo>

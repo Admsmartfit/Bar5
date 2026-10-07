@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_motivo_view_list" model="ir.ui.view">
+        <field name="name">boteco.motivo.list</field>
+        <field name="model">boteco.motivo</field>
+        <field name="arch" type="xml">
+            <list string="Motivos" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="tipo"/>
+                <field name="name"/>
+                <field name="pede_detalhe" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_motivo_view_search" model="ir.ui.view">
+        <field name="name">boteco.motivo.search</field>
+        <field name="model">boteco.motivo</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <group>
+                    <filter name="por_tipo" string="Tipo" context="{'group_by': 'tipo'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_boteco_motivo" model="ir.actions.act_window">
+        <field name="name">Motivos</field>
+        <field name="res_model">boteco.motivo</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_por_tipo': 1}</field>
+    </record>
+</odoo>

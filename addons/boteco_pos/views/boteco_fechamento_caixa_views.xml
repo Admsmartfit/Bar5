@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_fechamento_caixa_view_list" model="ir.ui.view">
+        <field name="name">boteco.fechamento.caixa.list</field>
+        <field name="model">boteco.fechamento.caixa</field>
+        <field name="arch" type="xml">
+            <list string="Fechamentos de caixa" create="false" decoration-danger="diferenca &lt; 0" decoration-warning="diferenca &gt; 0">
+                <field name="data"/>
+                <field name="dia_operacao"/>
+                <field name="session_id"/>
+                <field name="operador_id"/>
+                <field name="autorizado_por_id"/>
+                <field name="total_esperado" sum="Total"/>
+                <field name="total_contado" sum="Total"/>
+                <field name="diferenca" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_fechamento_caixa_view_form" model="ir.ui.view">
+        <field name="name">boteco.fechamento.caixa.form</field>
+        <field name="model">boteco.fechamento.caixa</field>
+        <field name="arch" type="xml">
+            <form string="Fechamento de caixa" create="false" edit="false">
+                <header>
+                    <button name="action_imprimir" type="object" string="Imprimir resumo" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <h1><field name="name"/></h1>
+                    <group>
+                        <group>
+                            <field name="session_id"/>
+                            <field name="dia_operacao"/>
+                            <field name="data"/>
+                        </group>
+                        <group>
+                            <field name="operador_id"/>
+                            <field name="autorizado_por_id"/>
+                            <field name="diferenca"/>
+                        </group>
+                    </group>
+                    <field name="linha_ids">
+                        <list decoration-danger="diferenca &lt; 0" decoration-warning="diferenca &gt; 0">
+                            <field name="nome"/>
+                            <field name="quantidade"/>
+                            <field name="esperado" sum="Total"/>
+                            <field name="contado" sum="Total"/>
+                            <field name="diferenca" sum="Total"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                    <field name="observacao" placeholder="Observação"/>
+                    <field name="currency_id" invisible="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_fechamento_caixa" model="ir.actions.act_window">
+        <field name="name">Fechamentos de caixa</field>
+        <field name="res_model">boteco.fechamento.caixa</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

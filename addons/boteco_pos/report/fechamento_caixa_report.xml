@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="report_fechamento_caixa" model="ir.actions.report">
+        <field name="name">Resumo do fechamento de caixa</field>
+        <field name="model">boteco.fechamento.caixa</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">boteco_pos.fechamento_caixa_documento</field>
+        <field name="report_file">boteco_pos.fechamento_caixa_documento</field>
+        <field name="print_report_name">'Fechamento - %s' % (object.session_id.name)</field>
+        <field name="binding_model_id" ref="model_boteco_fechamento_caixa"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="fechamento_caixa_documento">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="f">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <h2>Fechamento de caixa – <t t-esc="f.session_id.name"/></h2>
+                        <p>
+                            Dia de operação: <b t-field="f.dia_operacao"/> ·
+                            Contado por: <b t-esc="f.operador_id.name"/> ·
+                            Autorizado por: <b t-esc="f.autorizado_por_id.name"/> ·
+                            Em: <span t-field="f.data"/>
+                        </p>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr><th>Forma de pagamento</th><th class="text-end">Qtd.</th><th class="text-end">Esperado</th><th class="text-end">Contado</th><th class="text-end">Diferença</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="f.linha_ids" t-as="l">
+                                    <td t-esc="l.nome"/>
+                                    <td class="text-end" t-esc="l.quantidade"/>
+                                    <td class="text-end"><span t-field="l.esperado"/></td>
+                                    <td class="text-end"><span t-field="l.contado"/></td>
+                                    <td class="text-end" t-att-style="'color:#b91c1c;font-weight:bold' if l.diferenca else ''"><span t-field="l.diferenca"/></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-bold">
+                                    <td>Total</td><td/>
+                                    <td class="text-end"><span t-field="f.total_esperado"/></td>
+                                    <td class="text-end"><span t-field="f.total_contado"/></td>
+                                    <td class="text-end"><span t-field="f.diferenca"/></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <p t-if="f.observacao"><b>Observação:</b> <t t-esc="f.observacao"/></p>
+                        <div style="margin-top:60px;display:flex;justify-content:space-around">
+                            <div style="border-top:1px solid #000;width:40%;text-align:center">Operador</div>
+                            <div style="border-top:1px solid #000;width:40%;text-align:center">Gerente</div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

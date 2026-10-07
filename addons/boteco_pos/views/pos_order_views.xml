@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pos_order_view_form_boteco" model="ir.ui.view">
+        <field name="name">pos.order.form.boteco</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Boteco" name="boteco">
+                    <group>
+                        <group string="Conta">
+                            <field name="boteco_origem"/>
+                            <field name="boteco_tipo_conta"/>
+                            <field name="boteco_funcionario_id" invisible="boteco_tipo_conta != 'funcionario'"/>
+                            <field name="boteco_funcionario_modo" invisible="boteco_tipo_conta != 'funcionario'"/>
+                            <field name="boteco_autorizado_por_id"/>
+                            <field name="boteco_cpf_nota"/>
+                            <field name="boteco_cpf_valido" invisible="not boteco_cpf_nota"/>
+                        </group>
+                        <group string="Valores">
+                            <field name="boteco_taxa_servico"/>
+                            <field name="boteco_taxa_removida"/>
+                            <field name="boteco_couvert"/>
+                            <field name="boteco_total_desconto"/>
+                            <field name="boteco_total_cortesia"/>
+                            <field name="boteco_primeiro_envio"/>
+                            <field name="boteco_ultimo_envio"/>
+                            <field name="boteco_dia_operacao"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="pos_order_view_search_boteco" model="ir.ui.view">
+        <field name="name">pos.order.search.boteco</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[1]" position="before">
+                <filter name="boteco_funcionario" string="Consumo de funcionário" domain="[('boteco_tipo_conta', '=', 'funcionario')]"/>
+                <filter name="boteco_com_cortesia" string="Com cortesia" domain="[('boteco_total_cortesia', '>', 0)]"/>
+                <filter name="boteco_sem_taxa" string="Taxa retirada" domain="[('boteco_taxa_removida', '=', True)]"/>
+                <separator/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

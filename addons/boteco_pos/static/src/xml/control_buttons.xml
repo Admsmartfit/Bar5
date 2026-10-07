@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_pos.ControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <xpath expr="//t[@t-if='props.showRemainingButtons']/div" position="inside">
+            <button class="btn btn-secondary btn-lg py-5 o_boteco_btn_cortesia" t-on-click="() => this.clickBotecoCortesia()">
+                <i class="fa fa-gift me-1"/> Cortesia
+            </button>
+            <button t-if="botecoTemTaxa" class="btn btn-secondary btn-lg py-5 o_boteco_btn_taxa" t-on-click="() => this.clickBotecoTaxa()">
+                <i class="fa fa-percent me-1"/>
+                <t t-if="currentOrder?.boteco_taxa_removida">Devolver a taxa de serviço</t>
+                <t t-else="">Tirar taxa (<t t-esc="env.utils.formatCurrency(botecoTaxaValor)"/>)</t>
+            </button>
+            <button t-if="botecoTemCouvert" class="btn btn-secondary btn-lg py-5 o_boteco_btn_couvert" t-on-click="() => this.clickBotecoCouvert()">
+                <i class="fa fa-music me-1"/>
+                <t t-if="currentOrder?.boteco_couvert_removido">Devolver o couvert</t>
+                <t t-else="">Tirar couvert</t>
+            </button>
+            <button class="btn btn-secondary btn-lg py-5 o_boteco_btn_funcionario" t-on-click="() => this.clickBotecoFuncionario()">
+                <i class="fa fa-id-badge me-1"/> Consumo de funcionário
+            </button>
+        </xpath>
+    </t>
+</templates>

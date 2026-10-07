@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_pos.FloorScreen" t-inherit="pos_restaurant.FloorScreen" t-inherit-mode="extension">
+        <xpath expr="//t[@t-as='table']/div" position="attributes">
+            <attribute name="t-att-data-boteco-status">botecoStatusMesa(table)</attribute>
+        </xpath>
+        <xpath expr="//t[@t-as='table']/div/div[hasclass('info')]" position="inside">
+            <div class="o_boteco_mesa_rodape position-absolute bottom-0 start-0 w-100 text-center">
+                <span t-if="botecoStatusMesa(table) !== 'livre' and botecoStatusMesa(table) !== 'ocupada'"
+                      class="o_boteco_mesa_status" t-esc="botecoRotuloStatus(table)"/>
+                <span t-if="botecoTempoMesa(table)" class="o_boteco_mesa_tempo" t-esc="botecoTempoMesa(table)"/>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-as='table']/div/div[hasclass('info')]" position="after">
+            <button t-if="table.boteco_chamou_garcom" type="button"
+                    class="btn btn-sm btn-light o_boteco_atender position-absolute top-0 start-0 m-1 z-3"
+                    t-on-click="(ev) => this.botecoAtender(table, ev)">Atendido</button>
+        </xpath>
+    </t>
+</templates>

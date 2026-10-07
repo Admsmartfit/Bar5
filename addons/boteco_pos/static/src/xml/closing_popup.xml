@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_pos.ClosePosPopup" t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension">
+        <!-- Esperado e diferença só aparecem depois da contagem -->
+        <xpath expr="//div[hasclass('payment-methods-overview')]" position="attributes">
+            <attribute name="t-if">!botecoCego or state.botecoConferido</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('payment-methods-overview')]" position="before">
+            <div t-if="botecoCego and !state.botecoConferido" class="alert alert-info o_boteco_contagem_cega">
+                <b>Contagem cega:</b> conte o dinheiro e confira os comprovantes de cartão e PIX.
+                Digite o que contou em cada forma e toque em <b>Conferir</b>. O valor esperado aparece depois.
+            </div>
+            <div t-if="state.botecoResultado" class="o_boteco_resultado_contagem mb-3">
+                <table class="table table-sm mb-1">
+                    <thead><tr><th>Forma</th><th class="text-end">Esperado</th><th class="text-end">Contado</th><th class="text-end">Diferença</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="state.botecoResultado.linhas" t-as="l" t-key="l_index">
+                            <td t-esc="l.nome"/>
+                            <td class="text-end" t-esc="env.utils.formatCurrency(l.esperado)"/>
+                            <td class="text-end" t-esc="env.utils.formatCurrency(l.contado)"/>
+                            <td class="text-end fw-bold" t-att-class="{'text-danger': l.diferenca &lt; 0, 'text-warning': l.diferenca &gt; 0}"
+                                t-esc="env.utils.formatCurrency(l.diferenca)"/>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </xpath>
+        <!-- O botão "copiar o esperado" entregaria o valor: some na contagem cega -->
+        <xpath expr="//button[hasclass('fa-clone')]" position="attributes">
+            <attribute name="t-if">!botecoCego</attribute>
+        </xpath>
+        <!-- Todas as formas são contadas (não só as que tiveram venda) -->
+        <xpath expr="//div[hasclass('payment-methods-overview')]/following-sibling::div[@t-foreach='props.non_cash_payment_methods']/t[@t-set='_showDiff']" position="attributes">
+            <attribute name="t-value">pm.type === 'bank' and (pm.number !== 0 or botecoCego)</attribute>
+        </xpath>
+        <xpath expr="//button[hasclass('highlight')]" position="before">
+            <button t-if="botecoCego and !state.botecoConferido" class="button btn btn-warning btn-lg o_boteco_conferir"
+                    t-on-click="() => this.botecoConferir()">Conferir contagem</button>
+        </xpath>
+    </t>
+</templates>

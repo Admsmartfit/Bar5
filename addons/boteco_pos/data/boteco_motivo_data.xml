@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Cancelamento (PRD: erro do garçom, desistência, problema no produto) -->
+    <record id="motivo_cancel_erro_garcom" model="boteco.motivo">
+        <field name="name">Erro do garçom</field><field name="tipo">cancelamento</field><field name="sequence">1</field>
+    </record>
+    <record id="motivo_cancel_desistencia" model="boteco.motivo">
+        <field name="name">Desistência do cliente</field><field name="tipo">cancelamento</field><field name="sequence">2</field>
+    </record>
+    <record id="motivo_cancel_problema" model="boteco.motivo">
+        <field name="name">Problema no produto</field><field name="tipo">cancelamento</field><field name="sequence">3</field>
+        <field name="pede_detalhe" eval="True"/>
+    </record>
+    <record id="motivo_cancel_demora" model="boteco.motivo">
+        <field name="name">Demorou demais</field><field name="tipo">cancelamento</field><field name="sequence">4</field>
+    </record>
+
+    <!-- Desconto -->
+    <record id="motivo_desc_cliente_fiel" model="boteco.motivo">
+        <field name="name">Cliente da casa</field><field name="tipo">desconto</field><field name="sequence">1</field>
+    </record>
+    <record id="motivo_desc_reclamacao" model="boteco.motivo">
+        <field name="name">Reclamação / demora</field><field name="tipo">desconto</field><field name="sequence">2</field>
+    </record>
+    <record id="motivo_desc_parceria" model="boteco.motivo">
+        <field name="name">Parceria / evento</field><field name="tipo">desconto</field><field name="sequence">3</field>
+        <field name="pede_detalhe" eval="True"/>
+    </record>
+
+    <!-- Cortesia -->
+    <record id="motivo_cort_aniversario" model="boteco.motivo">
+        <field name="name">Aniversariante</field><field name="tipo">cortesia</field><field name="sequence">1</field>
+    </record>
+    <record id="motivo_cort_reclamacao" model="boteco.motivo">
+        <field name="name">Compensar reclamação</field><field name="tipo">cortesia</field><field name="sequence">2</field>
+    </record>
+    <record id="motivo_cort_degustacao" model="boteco.motivo">
+        <field name="name">Degustação / divulgação</field><field name="tipo">cortesia</field><field name="sequence">3</field>
+    </record>
+    <record id="motivo_cort_artista" model="boteco.motivo">
+        <field name="name">Artista / banda</field><field name="tipo">cortesia</field><field name="sequence">4</field>
+    </record>
+
+    <!-- Perda -->
+    <record id="motivo_perda_quebra" model="boteco.motivo">
+        <field name="name">Quebra</field><field name="tipo">perda</field><field name="sequence">1</field>
+    </record>
+    <record id="motivo_perda_vencido" model="boteco.motivo">
+        <field name="name">Vencido</field><field name="tipo">perda</field><field name="sequence">2</field>
+    </record>
+    <record id="motivo_perda_preparo" model="boteco.motivo">
+        <field name="name">Erro de preparo</field><field name="tipo">perda</field><field name="sequence">3</field>
+    </record>
+
+    <!-- Caixa -->
+    <record id="motivo_sangria_cofre" model="boteco.motivo">
+        <field name="name">Recolhimento ao cofre</field><field name="tipo">sangria</field><field name="sequence">1</field>
+    </record>
+    <record id="motivo_sangria_fornecedor" model="boteco.motivo">
+        <field name="name">Pagamento a fornecedor</field><field name="tipo">sangria</field><field name="sequence">2</field>
+        <field name="pede_detalhe" eval="True"/>
+    </record>
+    <record id="motivo_sangria_vale" model="boteco.motivo">
+        <field name="name">Vale de funcionário</field><field name="tipo">sangria</field><field name="sequence">3</field>
+        <field name="pede_detalhe" eval="True"/>
+    </record>
+    <record id="motivo_reforco_troco" model="boteco.motivo">
+        <field name="name">Reforço de troco</field><field name="tipo">reforco</field><field name="sequence">1</field>
+    </record>
+
+    <!-- Taxa / couvert -->
+    <record id="motivo_taxa_cliente_recusou" model="boteco.motivo">
+        <field name="name">Cliente não quis pagar</field><field name="tipo">taxa</field><field name="sequence">1</field>
+    </record>
+    <record id="motivo_taxa_atendimento" model="boteco.motivo">
+        <field name="name">Problema no atendimento</field><field name="tipo">taxa</field><field name="sequence">2</field>
+    </record>
+    <record id="motivo_taxa_nao_viu_show" model="boteco.motivo">
+        <field name="name">Chegou depois do show</field><field name="tipo">taxa</field><field name="sequence">3</field>
+    </record>
+</odoo>
