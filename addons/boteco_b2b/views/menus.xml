@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_boteco_b2b" name="Venda a bares e assessoria" parent="boteco_base.menu_boteco_root" sequence="47"
+    <!-- Vendas > Venda a bares (B2B) -->
+    <menuitem id="menu_boteco_b2b" name="Venda a bares (B2B)" parent="boteco_base.menu_boteco_top_vendas" sequence="30"
               groups="boteco_base.group_comercial"/>
-    <menuitem id="menu_pedidos_b2b" name="Pedidos" parent="menu_boteco_b2b" sequence="10" action="action_pedidos_b2b"/>
-    <menuitem id="menu_bares_clientes" name="Bares clientes" parent="menu_boteco_b2b" sequence="20" action="action_bares_clientes"/>
-    <menuitem id="menu_recorrentes" name="Pedidos recorrentes" parent="menu_boteco_b2b" sequence="30" action="action_boteco_recorrencia"/>
+    <menuitem id="menu_pedidos_b2b" name="Pedidos dos bares" parent="menu_boteco_b2b" sequence="10" action="action_pedidos_b2b"/>
+    <menuitem id="menu_recorrentes" name="Pedidos recorrentes" parent="menu_boteco_b2b" sequence="20" action="action_boteco_recorrencia"/>
+    <menuitem id="menu_bares_clientes" name="Bares clientes" parent="menu_boteco_b2b" sequence="30" action="action_bares_clientes"/>
     <menuitem id="menu_contratos" name="Contratos de assessoria" parent="menu_boteco_b2b" sequence="40" action="action_boteco_contrato"
               groups="boteco_base.group_dono"/>
-    <menuitem id="menu_receber" name="Contas a receber" parent="menu_boteco_b2b" sequence="50"
+
+    <!-- Finanças > Contas -->
+    <menuitem id="menu_receber" name="Contas a receber" parent="boteco_base.menu_boteco_sec_contas" sequence="20"
               action="account.action_move_out_invoice_type" groups="boteco_base.group_dono"/>
 </odoo>

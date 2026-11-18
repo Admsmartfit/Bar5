@@ -73,7 +73,7 @@
         <field name="model">res.company</field>
         <field name="priority">99</field>
         <field name="arch" type="xml">
-            <form string="Central de Recursos" create="0" delete="0">
+            <form string="Central de Recursos" create="0" delete="0" class="o_bt_central">
                 <sheet>
                     <div class="oe_title">
                         <h1>Central de Recursos</h1>
@@ -85,50 +85,206 @@
                     </p>
                     <notebook>
                         <page string="Pedidos e salão" name="g1">
-                            <group>
-                                <field name="boteco_flag_ocupacao_padrao_mesa" widget="boolean_toggle"/>
-                                <field name="boteco_flag_salao_juncao_mesas" widget="boolean_toggle"/>
-                                <field name="boteco_flag_tablet_neutro_anti_burst" widget="boolean_toggle"/>
-                                <field name="boteco_flag_tablet_chamada_qualificada" widget="boolean_toggle"/>
-                                <field name="boteco_flag_quarentena_pedidos_anomalos" widget="boolean_toggle"/>
-                                <field name="boteco_flag_validacao_zscore_ticket" widget="boolean_toggle"/>
-                            </group>
+                            <div class="o_bt_recursos">
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_ocupacao_padrao_mesa" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_ocupacao_padrao_mesa" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Ao abrir a mesa, o número de pessoas já vem com os lugares cadastrados. O garçom só confirma ou ajusta.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_salao_juncao_mesas" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_salao_juncao_mesas" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Mesas juntadas somam as pessoas, para grupo grande pedir sem ser barrado à toa.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_tablet_neutro_anti_burst" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_tablet_neutro_anti_burst" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">O cliente não muda o número de pessoas no tablet; toques repetidos no + e envio duplo são ignorados.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_tablet_chamada_qualificada" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_tablet_chamada_qualificada" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">No tablet, o cliente diz o que precisa (copos/gelo, guardanapos, conta no cartão ou Pix).</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_quarentena_pedidos_anomalos" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_quarentena_pedidos_anomalos" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Pedido do tablet fora do normal para a mesa (ex.: 10 pratos para 2 pessoas) espera o garçom confirmar antes de ir para a cozinha.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_validacao_zscore_ticket" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_validacao_zscore_ticket" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Segura também envios com valor muito acima do que as mesas costumam gastar (precisa de 20 contas de histórico).</div>
+                                    </div>
+                                </div>
+                            </div>
                         </page>
                         <page string="Utensílios na impressão" name="g2">
-                            <group>
-                                <field name="boteco_flag_insumo_copos_primeira_cerveja" widget="boolean_toggle"/>
-                                <field name="boteco_flag_correlacao_vinho_agua" widget="boolean_toggle"/>
-                                <field name="boteco_flag_insumo_pratos_compartilhados" widget="boolean_toggle"/>
-                                <field name="boteco_flag_hold_fire_sobremesa_2_tempo" widget="boolean_toggle"/>
-                            </group>
+                            <div class="o_bt_recursos">
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_insumo_copos_primeira_cerveja" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_insumo_copos_primeira_cerveja" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Na 1ª cerveja da mesa o ticket do bar manda levar os copos; se chegar mais gente, só os que faltam.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_correlacao_vinho_agua" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_correlacao_vinho_agua" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Vinho imprime taças, saca-rolhas e balde; se a mesa não tem água, o garçom é avisado para oferecer.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_insumo_pratos_compartilhados" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_insumo_pratos_compartilhados" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Porções e tábuas imprimem pratos e talheres para a mesa; lanches imprimem cesta de guardanapos.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_hold_fire_sobremesa_2_tempo" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_hold_fire_sobremesa_2_tempo" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Sobremesa pedida junto com o prato só começa quando o prato principal fica pronto.</div>
+                                    </div>
+                                </div>
+                            </div>
                         </page>
                         <page string="Cozinha central e B2B" name="g3">
-                            <group>
-                                <field name="boteco_flag_capacidade_finita_congelados" widget="boolean_toggle"/>
-                                <field name="boteco_flag_controle_volume_freezer" widget="boolean_toggle"/>
-                                <field name="boteco_flag_reserva_estoque_bar_b2b" widget="boolean_toggle"/>
-                                <field name="boteco_flag_explosao_insumos_fator_coccao" widget="boolean_toggle"/>
-                            </group>
+                            <div class="o_bt_recursos">
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_capacidade_finita_congelados" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_capacidade_finita_congelados" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">O plano de produção não sugere mais do que a cozinha consegue fazer no dia.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_controle_volume_freezer" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_controle_volume_freezer" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">O plano de produção não sugere mais do que cabe nos freezers e na câmara fria.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_reserva_estoque_bar_b2b" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_reserva_estoque_bar_b2b" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Venda para outros bares não pode usar a reserva mínima que o salão precisa.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_explosao_insumos_fator_coccao" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_explosao_insumos_fator_coccao" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">A receita considera perda na limpeza e no fogo, e o plano avisa a matéria-prima que falta.</div>
+                                    </div>
+                                </div>
+                            </div>
                         </page>
                         <page string="Compras inteligentes" name="g4">
-                            <group>
-                                <field name="boteco_flag_leitor_orcamento_pdf_imagem" widget="boolean_toggle"/>
-                                <field name="boteco_flag_monitor_instagram_fornecedores" widget="boolean_toggle"/>
-                                <field name="boteco_flag_radar_precos_oportunidade" widget="boolean_toggle"/>
-                            </group>
+                            <div class="o_bt_recursos">
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_leitor_orcamento_pdf_imagem" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_leitor_orcamento_pdf_imagem" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Lê orçamento de fornecedor em PDF, foto ou texto colado do WhatsApp e guarda os preços.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_monitor_instagram_fornecedores" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_monitor_instagram_fornecedores" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Lê as ofertas postadas no Instagram dos fornecedores às 8h e às 14h.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_radar_precos_oportunidade" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_radar_precos_oportunidade" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Avisa quando um insumo está 10% ou mais abaixo da média e quanto isso economiza nas receitas.</div>
+                                    </div>
+                                </div>
+                            </div>
                         </page>
                         <page string="Opcionais" name="g5">
-                            <group>
-                                <field name="boteco_flag_pdv_atalhos_f1_f12" widget="boolean_toggle"/>
-                                <field name="boteco_flag_pdv_fichas_avulsas" widget="boolean_toggle"/>
-                                <field name="boteco_flag_pdv_balanca_ean13" widget="boolean_toggle"/>
-                                <field name="boteco_flag_portaria_validador_saida" widget="boolean_toggle"/>
-                                <field name="boteco_flag_garcom_tags_rapidas" widget="boolean_toggle"/>
-                                <field name="boteco_flag_kds_totalizador_pacing" widget="boolean_toggle"/>
-                                <field name="boteco_flag_crm_whatsapp_ia" widget="boolean_toggle"/>
-                            <field name="boteco_flag_delivery_roteirizacao_motoboy" widget="boolean_toggle"/>
-                                <field name="boteco_flag_financeiro_pix_rateio" widget="boolean_toggle"/>
-                            </group>
+                            <div class="o_bt_recursos">
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_portaria_validador_saida" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_portaria_validador_saida" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Tela da portaria: bipa a comanda na saída e mostra VERDE (paga) ou VERMELHO (pendente).</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_garcom_tags_rapidas" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_garcom_tags_rapidas" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Observações de 1 toque no PDV ([Sem cebola], [Ao ponto]...) e cobrança direto na maquininha.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_kds_totalizador_pacing" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_kds_totalizador_pacing" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Na tela da cozinha: soma dos itens iguais, pratos da mesma mesa saindo juntos e teclado numérico.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_delivery_roteirizacao_motoboy" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_delivery_roteirizacao_motoboy" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Taxa de entrega por bairro, controle das entregas e acerto dos motoboys.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_crm_whatsapp_ia" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_crm_whatsapp_ia" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Lista de clientes que sumiram e aniversariantes, com mensagem pronta para o WhatsApp.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_financeiro_pix_rateio" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_financeiro_pix_rateio" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Divide a taxa de serviço entre garçons, cozinha/bar e casa.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_pdv_atalhos_f1_f12" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_pdv_atalhos_f1_f12" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Atalhos de teclado no caixa (ainda não implementado: Etapa 19).</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_pdv_fichas_avulsas" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_pdv_fichas_avulsas" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Fichas avulsas com código de barras (ainda não implementado: Etapa 19).</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_pdv_balanca_ean13" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_pdv_balanca_ean13" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Etiqueta de balança e meio a meio (ainda não implementado: Etapa 19).</div>
+                                    </div>
+                                </div>
+                            </div>
                         </page>
                     </notebook>
                 </sheet>

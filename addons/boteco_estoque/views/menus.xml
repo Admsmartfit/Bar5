@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_boteco_estoque" name="Estoque e compras" parent="boteco_base.menu_boteco_root" sequence="40"
+    <!-- Compras e estoque > Comprar -->
+    <menuitem id="menu_boteco_lista_compras" name="Lista de compras (WhatsApp)" parent="boteco_base.menu_boteco_sec_comprar"
+              sequence="10" action="action_boteco_lista_compras"/>
+    <menuitem id="menu_boteco_importar_orcamento" name="Ler orçamento (PDF / foto)" parent="boteco_base.menu_boteco_sec_comprar"
+              sequence="20" action="action_boteco_importar_orcamento"/>
+    <menuitem id="menu_boteco_radar_precos" name="Radar de preços" parent="boteco_base.menu_boteco_sec_comprar"
+              sequence="30" action="action_boteco_historico_preco"/>
+    <menuitem id="menu_boteco_nfe" name="Dar entrada na nota (XML)" parent="boteco_base.menu_boteco_sec_comprar"
+              sequence="40" action="action_boteco_nfe_importacao"/>
+    <menuitem id="menu_boteco_nfe_produtos" name="De-para de fornecedores" parent="boteco_base.menu_boteco_sec_comprar"
+              sequence="90" action="action_boteco_nfe_produto"/>
+
+    <!-- Compras e estoque > Estoque -->
+    <menuitem id="menu_boteco_estoque" name="Estoque" parent="boteco_base.menu_boteco_top_compras" sequence="20"
               groups="boteco_base.group_gerente"/>
-    <menuitem id="menu_boteco_nfe" name="Entrada por XML da nota" parent="menu_boteco_estoque" sequence="10"
-              action="action_boteco_nfe_importacao"/>
-    <menuitem id="menu_boteco_lista_compras" name="Lista de compras (WhatsApp)" parent="menu_boteco_estoque" sequence="20"
-              action="action_boteco_lista_compras"/>
-    <menuitem id="menu_boteco_importar_orcamento" name="Ler orçamento (PDF / foto)" parent="menu_boteco_estoque" sequence="22"
-              action="action_boteco_importar_orcamento"/>
-    <menuitem id="menu_boteco_radar_precos" name="Radar de preços" parent="menu_boteco_estoque" sequence="24"
-              action="action_boteco_historico_preco"/>
-    <menuitem id="menu_boteco_contagem" name="Contagem de estoque" parent="menu_boteco_estoque" sequence="30"
+    <menuitem id="menu_boteco_contagem" name="Contagem de estoque" parent="menu_boteco_estoque" sequence="10"
               action="action_boteco_contagem"/>
-    <menuitem id="menu_boteco_perdas" name="Perdas" parent="menu_boteco_estoque" sequence="40"
+    <menuitem id="menu_boteco_perdas" name="Perdas e quebras" parent="menu_boteco_estoque" sequence="20"
               action="stock.action_stock_scrap"/>
-    <menuitem id="menu_boteco_fichas" name="Fichas técnicas" parent="menu_boteco_estoque" sequence="50"
-              action="mrp.mrp_bom_form_action"/>
-    <menuitem id="menu_boteco_minimos" name="Estoque mínimo" parent="menu_boteco_estoque" sequence="60"
+    <menuitem id="menu_boteco_minimos" name="Estoque mínimo" parent="menu_boteco_estoque" sequence="30"
               action="stock.action_orderpoint"/>
-    <menuitem id="menu_boteco_cmv" name="CMV" parent="menu_boteco_estoque" sequence="70"
+    <menuitem id="menu_boteco_fichas" name="Fichas técnicas" parent="menu_boteco_estoque" sequence="40"
+              action="mrp.mrp_bom_form_action"/>
+    <menuitem id="menu_boteco_cmv" name="CMV (custo das vendas)" parent="menu_boteco_estoque" sequence="50"
               action="action_boteco_cmv"/>
-    <menuitem id="menu_boteco_nfe_produtos" name="De-para de fornecedores" parent="menu_boteco_estoque" sequence="90"
-              action="action_boteco_nfe_produto"/>
 </odoo>

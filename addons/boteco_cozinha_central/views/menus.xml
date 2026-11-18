@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_boteco_cozinha" name="Cozinha central" parent="boteco_base.menu_boteco_root" sequence="45"
+    <!-- Produção > Cozinha central -->
+    <menuitem id="menu_boteco_cozinha" name="Cozinha central" parent="boteco_base.menu_boteco_top_producao" sequence="20"
               groups="boteco_base.group_cozinheiro,boteco_base.group_gerente"/>
     <menuitem id="menu_tela_producao" name="Produção do dia" parent="menu_boteco_cozinha" sequence="10"
               action="action_tela_producao"/>

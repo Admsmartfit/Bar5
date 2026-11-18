@@ -16,36 +16,66 @@
         <field name="target">self</field>
     </record>
 
-    <!-- Boteco (raiz criada em data/boteco_perfil_data.xml) -->
-    <menuitem id="menu_boteco_operacao" name="Operação" parent="menu_boteco_root" sequence="10"/>
-    <menuitem id="menu_boteco_inicio" name="Minha tela" parent="menu_boteco_operacao" sequence="1"
+    <!--
+    Estrutura do menu "Boteco" (todos os módulos penduram seus itens aqui):
+
+      Início | Vendas | Cardápio | Produção | Compras e estoque | Finanças | Configuração
+
+    * Organizado pelo trabalho do dia (o que a pessoa vai fazer), não pelo nome técnico do módulo.
+    * No máximo 2 níveis: o menu do topo abre uma lista com títulos de seção.
+    * Rotina primeiro; cadastros e ajustes do sistema ficam todos em "Configuração".
+    * Cada perfil só vê o que usa (grupos nos menus + "menus visíveis" do perfil).
+    -->
+    <menuitem id="menu_boteco_operacao" name="Início" parent="menu_boteco_root" sequence="1"/>
+    <menuitem id="menu_boteco_inicio" name="Minha tela" parent="menu_boteco_operacao" sequence="10"
               action="action_boteco_inicio"/>
-    <menuitem id="menu_boteco_trocar_pessoa" name="Trocar de pessoa (PIN)" parent="menu_boteco_operacao" sequence="2"
+    <menuitem id="menu_boteco_trocar_pessoa" name="Trocar de pessoa (PIN)" parent="menu_boteco_operacao" sequence="20"
               action="action_boteco_trocar_pessoa"/>
     <menuitem id="menu_boteco_ajuda" name="Ajuda" parent="menu_boteco_operacao" sequence="99"
               action="action_boteco_ajuda_url"/>
 
-    <menuitem id="menu_boteco_gestao" name="Gestão" parent="menu_boteco_root" sequence="50"
+    <menuitem id="menu_boteco_top_vendas" name="Vendas" parent="menu_boteco_root" sequence="20"/>
+    <menuitem id="menu_boteco_sec_delivery" name="Delivery e clientes" parent="menu_boteco_top_vendas" sequence="20"
               groups="group_gerente"/>
-    <menuitem id="menu_boteco_auditoria" name="Auditoria" parent="menu_boteco_gestao" sequence="10"
-              action="action_boteco_auditoria"/>
-    <menuitem id="menu_boteco_saude" name="Saúde do sistema" parent="menu_boteco_gestao" sequence="20"
-              action="action_boteco_saude_url"/>
-    <menuitem id="menu_boteco_impressoras" name="Impressoras" parent="menu_boteco_gestao" sequence="30"
+
+    <menuitem id="menu_boteco_top_producao" name="Produção" parent="menu_boteco_root" sequence="40"/>
+
+    <menuitem id="menu_boteco_top_compras" name="Compras e estoque" parent="menu_boteco_root" sequence="50"
+              groups="group_gerente"/>
+    <menuitem id="menu_boteco_sec_comprar" name="Comprar" parent="menu_boteco_top_compras" sequence="10"/>
+
+    <menuitem id="menu_boteco_top_financas" name="Finanças" parent="menu_boteco_root" sequence="60"
+              groups="group_gerente"/>
+    <menuitem id="menu_boteco_sec_contas" name="Contas" parent="menu_boteco_top_financas" sequence="20"
+              groups="group_dono"/>
+
+    <!-- Configuração: gerente vê o operacional (impressoras, mesas...); o dono vê também sistema e equipe -->
+    <menuitem id="menu_boteco_config" name="Configuração" parent="menu_boteco_root" sequence="90"
+              groups="group_gerente"/>
+    <menuitem id="menu_boteco_sec_sistema" name="Sistema" parent="menu_boteco_config" sequence="10" groups="group_dono"/>
+    <menuitem id="menu_boteco_central_recursos" name="Liga / desliga recursos" parent="menu_boteco_sec_sistema"
+              sequence="10" action="action_boteco_central_recursos"/>
+    <menuitem id="menu_boteco_atualizacao" name="Atualizar sistema" parent="menu_boteco_sec_sistema"
+              sequence="20" action="action_boteco_atualizacao"/>
+    <menuitem id="menu_boteco_termos" name="Termos de boteco" parent="menu_boteco_sec_sistema" sequence="90"
+              action="action_boteco_termo"/>
+
+    <menuitem id="menu_boteco_sec_equipe" name="Equipe" parent="menu_boteco_config" sequence="20" groups="group_dono"/>
+    <menuitem id="menu_boteco_pessoas" name="Pessoas" parent="menu_boteco_sec_equipe" sequence="10"
+              action="action_boteco_pessoas"/>
+    <menuitem id="menu_boteco_perfis" name="Permissões por perfil" parent="menu_boteco_sec_equipe" sequence="20"
+              action="action_boteco_perfil"/>
+
+    <menuitem id="menu_boteco_sec_salao_config" name="Salão e produção" parent="menu_boteco_config" sequence="30"/>
+    <menuitem id="menu_boteco_setores" name="Setores de produção" parent="menu_boteco_sec_salao_config" sequence="20"
+              action="action_boteco_setor" groups="group_dono"/>
+    <menuitem id="menu_boteco_impressoras" name="Impressoras" parent="menu_boteco_sec_salao_config" sequence="30"
               action="action_boteco_impressora"/>
 
-    <menuitem id="menu_boteco_config" name="Configuração" parent="menu_boteco_root" sequence="90"
-              groups="group_dono"/>
-    <menuitem id="menu_boteco_pessoas" name="Pessoas" parent="menu_boteco_config" sequence="10"
-              action="action_boteco_pessoas"/>
-    <menuitem id="menu_boteco_perfis" name="Permissões por perfil" parent="menu_boteco_config" sequence="20"
-              action="action_boteco_perfil"/>
-    <menuitem id="menu_boteco_setores" name="Setores de produção" parent="menu_boteco_config" sequence="30"
-              action="action_boteco_setor"/>
-    <menuitem id="menu_boteco_central_recursos" name="Habilitar / Desabilitar Recursos" parent="menu_boteco_config"
-              sequence="5" action="action_boteco_central_recursos"/>
-    <menuitem id="menu_boteco_atualizacao" name="Atualizar sistema" parent="menu_boteco_config"
-              sequence="95" action="action_boteco_atualizacao"/>
-    <menuitem id="menu_boteco_termos" name="Termos de boteco" parent="menu_boteco_config" sequence="90"
-              action="action_boteco_termo"/>
+    <!-- Antigo "Gestão": acompanhamento do sistema -->
+    <menuitem id="menu_boteco_gestao" name="Acompanhamento" parent="menu_boteco_config" sequence="40"/>
+    <menuitem id="menu_boteco_saude" name="Saúde do sistema" parent="menu_boteco_gestao" sequence="10"
+              action="action_boteco_saude_url"/>
+    <menuitem id="menu_boteco_auditoria" name="Auditoria (quem fez o quê)" parent="menu_boteco_gestao" sequence="20"
+              action="action_boteco_auditoria"/>
 </odoo>

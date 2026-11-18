@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_boteco_producao" name="Produção" parent="boteco_base.menu_boteco_root" sequence="15"
+    <!-- Produção > Bar e chapa (telas de produção / KDS) -->
+    <menuitem id="menu_boteco_producao" name="Bar e chapa" parent="boteco_base.menu_boteco_top_producao" sequence="10"
               groups="boteco_base.group_chapeiro,boteco_base.group_garcom"/>
     <menuitem id="menu_kds_chapa" name="Fila da chapa" parent="menu_boteco_producao" sequence="10"
               action="action_kds_chapa" groups="boteco_base.group_chapeiro"/>
     <menuitem id="menu_kds_bar" name="Fila do bar" parent="menu_boteco_producao" sequence="20"
               action="action_kds_bar" groups="boteco_base.group_chapeiro,boteco_base.group_caixa"/>
-    <menuitem id="menu_kds_todos" name="Todos os setores" parent="menu_boteco_producao" sequence="30"
+    <menuitem id="menu_kds_todos" name="Todos os setores (expedição)" parent="menu_boteco_producao" sequence="30"
               action="action_kds_todos" groups="boteco_base.group_gerente"/>
     <menuitem id="menu_kds_prontos" name="Prontos para entregar" parent="menu_boteco_producao" sequence="40"
               action="action_kds_prontos" groups="boteco_base.group_garcom"/>
-    <menuitem id="menu_kds_historico" name="Tickets de produção" parent="menu_boteco_producao" sequence="50"
+    <menuitem id="menu_kds_historico" name="Histórico de tickets" parent="menu_boteco_producao" sequence="50"
               action="action_boteco_kds_pedido" groups="boteco_base.group_gerente"/>
     <menuitem id="menu_kds_tempos" name="Tempos de produção" parent="menu_boteco_producao" sequence="60"
               action="action_boteco_kds_tempo" groups="boteco_base.group_gerente"/>
-    <menuitem id="menu_impressao_fila" name="Fila de impressão" parent="boteco_base.menu_boteco_gestao" sequence="35"
+    <menuitem id="menu_impressao_fila" name="Fila de impressão" parent="boteco_base.menu_boteco_sec_salao_config" sequence="35"
               action="action_boteco_impressao_job"/>
 </odoo>

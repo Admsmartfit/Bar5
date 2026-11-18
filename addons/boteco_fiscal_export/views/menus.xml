@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_boteco_fiscal" name="Fiscal" parent="boteco_base.menu_boteco_root" sequence="55"
+    <!-- Finanças > Fiscal -->
+    <menuitem id="menu_boteco_fiscal" name="Fiscal" parent="boteco_base.menu_boteco_top_financas" sequence="30"
               groups="boteco_base.group_dono"/>
     <menuitem id="menu_fiscal_registros" name="Vendas e notas" parent="menu_boteco_fiscal" sequence="10" action="action_fiscal"/>
     <menuitem id="menu_fiscal_exportar" name="Exportar para emissão" parent="menu_boteco_fiscal" sequence="20" action="action_fiscal_exportar"/>
     <menuitem id="menu_fiscal_retorno" name="Importar retorno" parent="menu_boteco_fiscal" sequence="30" action="action_fiscal_retorno"/>
     <menuitem id="menu_fiscal_lotes" name="Lotes exportados" parent="menu_boteco_fiscal" sequence="40" action="action_fiscal_lotes"/>
-    <menuitem id="menu_fiscal_layouts" name="Layouts" parent="menu_boteco_fiscal" sequence="50" action="action_fiscal_layout"/>
+    <menuitem id="menu_fiscal_layouts" name="Layouts do arquivo fiscal" parent="menu_boteco_fiscal" sequence="50" action="action_fiscal_layout"/>
 </odoo>

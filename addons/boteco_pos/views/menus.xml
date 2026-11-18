@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_boteco_salao" name="Salão e caixa" parent="boteco_base.menu_boteco_root" sequence="30"
+    <!-- Vendas > Salão e caixa -->
+    <menuitem id="menu_boteco_salao" name="Salão e caixa" parent="boteco_base.menu_boteco_top_vendas" sequence="10"
               groups="boteco_base.group_gerente"/>
-    <menuitem id="menu_boteco_agenda" name="Música e couvert" parent="menu_boteco_salao" sequence="10"
-              action="action_boteco_agenda_musica"/>
+    <menuitem id="menu_boteco_contas" name="Contas (pedidos)" parent="menu_boteco_salao" sequence="10"
+              action="point_of_sale.action_pos_pos_form"/>
     <menuitem id="menu_boteco_fechamentos" name="Fechamentos de caixa" parent="menu_boteco_salao" sequence="20"
               action="action_boteco_fechamento_caixa"/>
-    <menuitem id="menu_boteco_contas" name="Contas (pedidos)" parent="menu_boteco_salao" sequence="30"
-              action="point_of_sale.action_pos_pos_form"/>
-    <menuitem id="menu_boteco_entregas" name="Entregas (delivery)" parent="menu_boteco_salao" sequence="40"
+    <menuitem id="menu_boteco_agenda" name="Música e couvert" parent="menu_boteco_salao" sequence="30"
+              action="action_boteco_agenda_musica"/>
+
+    <!-- Vendas > Delivery e clientes -->
+    <menuitem id="menu_boteco_entregas" name="Entregas" parent="boteco_base.menu_boteco_sec_delivery" sequence="10"
               action="action_boteco_entregas"/>
-    <menuitem id="menu_boteco_acerto_motoboy" name="Acerto de motoboys" parent="menu_boteco_salao" sequence="45"
-              action="action_boteco_acerto_motoboy"/>
-    <menuitem id="menu_boteco_regua_crm" name="Clientes sumidos e aniversariantes" parent="menu_boteco_salao" sequence="50"
-              action="action_boteco_regua_crm"/>
-    <menuitem id="menu_boteco_motivos" name="Motivos" parent="boteco_base.menu_boteco_config" sequence="40"
-              action="action_boteco_motivo"/>
-    <menuitem id="menu_boteco_bairros" name="Bairros e taxas de entrega" parent="boteco_base.menu_boteco_config" sequence="45"
-              action="action_boteco_bairro"/>
-    <!-- Portaria: qualquer pessoa da equipe com login (a tela confere a Central de Recursos) -->
-    <menuitem id="menu_boteco_portaria" name="Portaria (validar saída)" parent="boteco_base.menu_boteco_operacao" sequence="20"
+    <menuitem id="menu_boteco_acerto_motoboy" name="Acerto de motoboys" parent="boteco_base.menu_boteco_sec_delivery"
+              sequence="20" action="action_boteco_acerto_motoboy"/>
+    <menuitem id="menu_boteco_regua_crm" name="Clientes sumidos e aniversariantes" parent="boteco_base.menu_boteco_sec_delivery"
+              sequence="30" action="action_boteco_regua_crm"/>
+
+    <!-- Início > Portaria: qualquer pessoa da equipe com login (a tela confere a Central de Recursos) -->
+    <menuitem id="menu_boteco_portaria" name="Portaria (validar saída)" parent="boteco_base.menu_boteco_operacao" sequence="30"
               action="action_boteco_portaria_url"/>
+
+    <!-- Configuração > Salão e produção -->
+    <menuitem id="menu_boteco_motivos" name="Motivos (desconto, cancelamento...)" parent="boteco_base.menu_boteco_sec_salao_config"
+              sequence="40" action="action_boteco_motivo" groups="boteco_base.group_dono"/>
+    <menuitem id="menu_boteco_bairros" name="Bairros e taxas de entrega" parent="boteco_base.menu_boteco_sec_salao_config"
+              sequence="50" action="action_boteco_bairro" groups="boteco_base.group_dono"/>
 </odoo>
