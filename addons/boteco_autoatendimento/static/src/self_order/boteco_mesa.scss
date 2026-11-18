@@ -54,6 +54,9 @@ body { padding-bottom: 84px; }
 .bt-totais { margin-top: 12px; div { display: flex; justify-content: space-between; padding: 4px 0; } }
 .bt-totais__total { font-weight: 900; font-size: 20px; border-top: 2px solid #111827; margin-top: 6px; padding-top: 8px !important; }
 .bt-denovo { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.bt-chamadas { display: grid; gap: 10px; }
+.bt-chamadas button { min-height: 64px; border: 0; border-radius: 12px; background: #fef3c7; font-size: 20px; font-weight: 700; text-align: left; padding: 0 16px; }
+.bt-serve { display: block; font-size: 14px; font-weight: 600; color: #92400e; margin-bottom: 4px; }
 .bt-denovo__item {
     display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; min-height: 140px;
     border: 2px solid #e5e7eb; border-radius: 14px; background: #fff; font-size: 16px;

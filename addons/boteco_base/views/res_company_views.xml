@@ -19,7 +19,127 @@
                         </group>
                     </group>
                 </page>
+                <page string="Central de Recursos (Liga/Desliga)" name="boteco_recursos" groups="boteco_base.group_dono">
+                    <p class="text-muted">
+                        Ligue ou desligue cada recurso do sistema a qualquer momento. Desligar um recurso
+                        volta o sistema ao comportamento padrão, sem perder dados.
+                    </p>
+                    <group>
+                        <group string="1. Pedidos e salão">
+                            <field name="boteco_flag_ocupacao_padrao_mesa" widget="boolean_toggle"/>
+                            <field name="boteco_flag_salao_juncao_mesas" widget="boolean_toggle"/>
+                            <field name="boteco_flag_tablet_neutro_anti_burst" widget="boolean_toggle"/>
+                            <field name="boteco_flag_tablet_chamada_qualificada" widget="boolean_toggle"/>
+                            <field name="boteco_flag_quarentena_pedidos_anomalos" widget="boolean_toggle"/>
+                            <field name="boteco_flag_validacao_zscore_ticket" widget="boolean_toggle"/>
+                        </group>
+                        <group string="2. Utensílios na impressão">
+                            <field name="boteco_flag_insumo_copos_primeira_cerveja" widget="boolean_toggle"/>
+                            <field name="boteco_flag_correlacao_vinho_agua" widget="boolean_toggle"/>
+                            <field name="boteco_flag_insumo_pratos_compartilhados" widget="boolean_toggle"/>
+                            <field name="boteco_flag_hold_fire_sobremesa_2_tempo" widget="boolean_toggle"/>
+                        </group>
+                        <group string="3. Cozinha central e B2B">
+                            <field name="boteco_flag_capacidade_finita_congelados" widget="boolean_toggle"/>
+                            <field name="boteco_flag_controle_volume_freezer" widget="boolean_toggle"/>
+                            <field name="boteco_flag_reserva_estoque_bar_b2b" widget="boolean_toggle"/>
+                            <field name="boteco_flag_explosao_insumos_fator_coccao" widget="boolean_toggle"/>
+                        </group>
+                        <group string="4. Inteligência de compras">
+                            <field name="boteco_flag_leitor_orcamento_pdf_imagem" widget="boolean_toggle"/>
+                            <field name="boteco_flag_monitor_instagram_fornecedores" widget="boolean_toggle"/>
+                            <field name="boteco_flag_radar_precos_oportunidade" widget="boolean_toggle"/>
+                        </group>
+                        <group string="5. Recursos opcionais">
+                            <field name="boteco_flag_pdv_atalhos_f1_f12" widget="boolean_toggle"/>
+                            <field name="boteco_flag_pdv_fichas_avulsas" widget="boolean_toggle"/>
+                            <field name="boteco_flag_pdv_balanca_ean13" widget="boolean_toggle"/>
+                            <field name="boteco_flag_portaria_validador_saida" widget="boolean_toggle"/>
+                            <field name="boteco_flag_garcom_tags_rapidas" widget="boolean_toggle"/>
+                            <field name="boteco_flag_kds_totalizador_pacing" widget="boolean_toggle"/>
+                            <field name="boteco_flag_crm_whatsapp_ia" widget="boolean_toggle"/>
+                            <field name="boteco_flag_delivery_roteirizacao_motoboy" widget="boolean_toggle"/>
+                            <field name="boteco_flag_financeiro_pix_rateio" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                </page>
             </xpath>
         </field>
+    </record>
+
+    <!-- Tela dedicada: só os interruptores, aberta pelo menu Configuração -->
+    <record id="res_company_view_form_central_recursos" model="ir.ui.view">
+        <field name="name">res.company.form.boteco.central.recursos</field>
+        <field name="model">res.company</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <form string="Central de Recursos" create="0" delete="0">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Central de Recursos</h1>
+                        <h4><field name="name" readonly="1"/></h4>
+                    </div>
+                    <p class="text-muted">
+                        Ligue ou desligue cada recurso a qualquer momento. Desligar volta ao comportamento
+                        padrão, sem perder dados. As mudanças valem na hora para novos pedidos.
+                    </p>
+                    <notebook>
+                        <page string="Pedidos e salão" name="g1">
+                            <group>
+                                <field name="boteco_flag_ocupacao_padrao_mesa" widget="boolean_toggle"/>
+                                <field name="boteco_flag_salao_juncao_mesas" widget="boolean_toggle"/>
+                                <field name="boteco_flag_tablet_neutro_anti_burst" widget="boolean_toggle"/>
+                                <field name="boteco_flag_tablet_chamada_qualificada" widget="boolean_toggle"/>
+                                <field name="boteco_flag_quarentena_pedidos_anomalos" widget="boolean_toggle"/>
+                                <field name="boteco_flag_validacao_zscore_ticket" widget="boolean_toggle"/>
+                            </group>
+                        </page>
+                        <page string="Utensílios na impressão" name="g2">
+                            <group>
+                                <field name="boteco_flag_insumo_copos_primeira_cerveja" widget="boolean_toggle"/>
+                                <field name="boteco_flag_correlacao_vinho_agua" widget="boolean_toggle"/>
+                                <field name="boteco_flag_insumo_pratos_compartilhados" widget="boolean_toggle"/>
+                                <field name="boteco_flag_hold_fire_sobremesa_2_tempo" widget="boolean_toggle"/>
+                            </group>
+                        </page>
+                        <page string="Cozinha central e B2B" name="g3">
+                            <group>
+                                <field name="boteco_flag_capacidade_finita_congelados" widget="boolean_toggle"/>
+                                <field name="boteco_flag_controle_volume_freezer" widget="boolean_toggle"/>
+                                <field name="boteco_flag_reserva_estoque_bar_b2b" widget="boolean_toggle"/>
+                                <field name="boteco_flag_explosao_insumos_fator_coccao" widget="boolean_toggle"/>
+                            </group>
+                        </page>
+                        <page string="Compras inteligentes" name="g4">
+                            <group>
+                                <field name="boteco_flag_leitor_orcamento_pdf_imagem" widget="boolean_toggle"/>
+                                <field name="boteco_flag_monitor_instagram_fornecedores" widget="boolean_toggle"/>
+                                <field name="boteco_flag_radar_precos_oportunidade" widget="boolean_toggle"/>
+                            </group>
+                        </page>
+                        <page string="Opcionais" name="g5">
+                            <group>
+                                <field name="boteco_flag_pdv_atalhos_f1_f12" widget="boolean_toggle"/>
+                                <field name="boteco_flag_pdv_fichas_avulsas" widget="boolean_toggle"/>
+                                <field name="boteco_flag_pdv_balanca_ean13" widget="boolean_toggle"/>
+                                <field name="boteco_flag_portaria_validador_saida" widget="boolean_toggle"/>
+                                <field name="boteco_flag_garcom_tags_rapidas" widget="boolean_toggle"/>
+                                <field name="boteco_flag_kds_totalizador_pacing" widget="boolean_toggle"/>
+                                <field name="boteco_flag_crm_whatsapp_ia" widget="boolean_toggle"/>
+                            <field name="boteco_flag_delivery_roteirizacao_motoboy" widget="boolean_toggle"/>
+                                <field name="boteco_flag_financeiro_pix_rateio" widget="boolean_toggle"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boteco_central_recursos" model="ir.actions.server">
+        <field name="name">Central de Recursos (Liga/Desliga)</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_boteco_central_recursos()</field>
     </record>
 </odoo>

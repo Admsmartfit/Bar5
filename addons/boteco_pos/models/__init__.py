@@ -7,3 +7,8 @@ from . import pos_session
 from . import pos_order
 from . import pos_order_line
 from . import restaurant_table
+from . import res_company
+from . import pos_note
+from . import pos_payment_method
+from . import boteco_crm
+from . import boteco_delivery

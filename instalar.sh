@@ -87,6 +87,8 @@ source .env; set +a
 : "${BOTECO_DB:=boteco}" "${ODOO_WORKERS:=4}" "${ODOO_MAX_CRON_THREADS:=1}" "${BACKUP_DIR:=./backups}"
 export BOTECO_DB ODOO_WORKERS ODOO_MAX_CRON_THREADS
 mkdir -p "$BACKUP_DIR"
+# Pasta da tela "Atualizar sistema": o Odoo (usuário do contêiner) grava o pedido, o agente do servidor lê
+mkdir -p atualizacao && chmod 777 atualizacao
 
 # -----------------------------------------------------------------------------
 passo "3/6 Gerando config/odoo.conf e certificado HTTPS"
@@ -115,7 +117,8 @@ fi
 
 # -----------------------------------------------------------------------------
 passo "4/6 Banco de dados e módulos"
-docker compose pull -q
+docker compose pull -q --ignore-buildable
+docker compose build --pull -q odoo
 docker compose up -d db
 for i in $(seq 1 60); do
   docker compose exec -T db pg_isready -U "$POSTGRES_USER" >/dev/null 2>&1 && break
@@ -169,7 +172,7 @@ for i in $(seq 1 90); do
 done
 
 # -----------------------------------------------------------------------------
-passo "6/6 Agendamentos (backup na nuvem e reinício automático)"
+passo "6/6 Agendamentos (backup na nuvem, atualização pela tela e reinício automático)"
 if [[ $E_LINUX -eq 1 && $MODO_DEV -eq 0 ]]; then
   cat > /etc/systemd/system/boteco-backup-nuvem.service <<EOF
 [Unit]
@@ -178,7 +181,7 @@ After=docker.service
 [Service]
 Type=oneshot
 WorkingDirectory=${RAIZ}
-ExecStart=${RAIZ}/scripts/backup-nuvem.sh
+ExecStart=/bin/bash ${RAIZ}/scripts/backup-nuvem.sh
 EOF
   cat > /etc/systemd/system/boteco-backup-nuvem.timer <<EOF
 [Unit]
@@ -189,9 +192,51 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 EOF
+  # Atualização pela tela (Configuração > Atualizar sistema). Roda como root, igual a esta instalação
+  # (precisa ler o .env e usar o Docker). Atualizar à mão no servidor: sudo ./scripts/atualizar.sh --git
+  # Sem chmod nos scripts: o git veria a mudança de permissão como alteração local e travaria o "git pull"
+  cat > /etc/systemd/system/boteco-atualizacao.service <<EOF
+[Unit]
+Description=Boteco: atende o pedido da tela "Atualizar sistema"
+After=docker.service
+[Service]
+Type=oneshot
+WorkingDirectory=${RAIZ}
+ExecStart=/bin/bash ${RAIZ}/scripts/agente_atualizacao.sh processar
+TimeoutStartSec=3600
+EOF
+  cat > /etc/systemd/system/boteco-atualizacao.path <<EOF
+[Unit]
+Description=Boteco: vigia pedidos da tela "Atualizar sistema"
+[Path]
+PathExists=${RAIZ}/atualizacao/pedido.txt
+Unit=boteco-atualizacao.service
+[Install]
+WantedBy=multi-user.target
+EOF
+  cat > /etc/systemd/system/boteco-atualizacao-verificar.service <<EOF
+[Unit]
+Description=Boteco: procura atualizações no GitHub
+After=network-online.target
+[Service]
+Type=oneshot
+WorkingDirectory=${RAIZ}
+ExecStart=/bin/bash ${RAIZ}/scripts/agente_atualizacao.sh verificar
+EOF
+  cat > /etc/systemd/system/boteco-atualizacao-verificar.timer <<EOF
+[Unit]
+Description=Boteco: procura atualizações no GitHub a cada 3 horas
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=3h
+[Install]
+WantedBy=timers.target
+EOF
   systemctl daemon-reload
   systemctl enable --now boteco-backup-nuvem.timer >/dev/null
+  systemctl enable --now boteco-atualizacao.path boteco-atualizacao-verificar.timer >/dev/null
   echo "Backup na nuvem agendado para 07:30 (depois do fechamento)."
+  echo "Atualização pela tela ativada (o servidor procura novidades no GitHub a cada 3 horas)."
 else
   echo "Modo desenvolvimento: agendamento do host não instalado."
 fi

@@ -15,6 +15,8 @@ class BotecoListaCompras(models.TransientModel):
     def action_gerar(self):
         self.ensure_one()
         regras = self.env["stock.warehouse.orderpoint"].search([("company_id", "=", self.env.company.id)])
+        radar = self.env.company.boteco_recurso_ativo("radar_precos_oportunidade")
+        Historico = self.env["boteco.historico.preco"]
         por_fornecedor = {}
         for regra in regras:
             produto = regra.product_id
@@ -24,8 +26,15 @@ class BotecoListaCompras(models.TransientModel):
             comprar = max(regra.product_max_qty, regra.product_min_qty) - disponivel
             vendedor = produto.seller_ids[:1]
             fornecedor = vendedor.partner_id
+            codigo = vendedor.product_code
+            if radar:
+                # Radar de preços (Etapa 18): cotação recente mais barata manda no fornecedor
+                barato, _preco = Historico.melhor_fornecedor(produto)
+                if barato and barato != fornecedor:
+                    fornecedor = barato
+                    codigo = produto.seller_ids.filtered(lambda s, b=barato: s.partner_id == b)[:1].product_code
             por_fornecedor.setdefault(fornecedor.id or 0, []).append(
-                (produto, comprar, disponivel, regra.product_min_qty, vendedor.product_code))
+                (produto, comprar, disponivel, regra.product_min_qty, codigo))
         linhas = [fields.Command.clear()]
         empresa = self.env.company.name
         for fornecedor_id, itens in por_fornecedor.items():

@@ -6,6 +6,15 @@
         </xpath>
     </t>
 
+    <!-- Rendimento claro no cartão do produto: "Serve até 3 pessoas" -->
+    <t t-name="boteco_autoatendimento.ProductCard" t-inherit="pos_self_order.ProductCard" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('product-infos')]/span" position="after">
+            <span t-if="props.product.boteco_serve_pessoas > 1" class="bt-serve">
+                Serve até <t t-esc="props.product.boteco_serve_pessoas"/> pessoas
+            </span>
+        </xpath>
+    </t>
+
     <t t-name="boteco_autoatendimento.BotecoMesa">
         <t t-if="ativo">
             <!-- Ofertas relâmpago no topo -->
@@ -23,7 +32,7 @@
 
             <!-- Barra fixa -->
             <nav class="bt-barra" aria-label="Atendimento da mesa">
-                <button class="bt-barra__btn" t-att-class="{'ativo': mesa.chamou_garcom}" t-on-click="() => this.chamar('garcom')">
+                <button class="bt-barra__btn" t-att-class="{'ativo': mesa.chamou_garcom}" t-on-click="() => this.tocarChamar('garcom')">
                     <span class="bt-barra__icone">🙋</span><span>Chamar garçom</span>
                 </button>
                 <button class="bt-barra__btn" t-on-click="() => this.abrirPedirDeNovo()" t-att-disabled="mesa.estado !== 'aprovado'">
@@ -33,7 +42,7 @@
                     <span class="bt-barra__icone">🧾</span><span>Minha conta</span>
                 </button>
                 <button class="bt-barra__btn bt-barra__btn--conta" t-att-class="{'ativo': mesa.pediu_conta}"
-                        t-on-click="() => this.chamar('conta')" t-att-disabled="mesa.estado !== 'aprovado'">
+                        t-on-click="() => this.tocarChamar('conta')" t-att-disabled="mesa.estado !== 'aprovado'">
                     <span class="bt-barra__icone">💳</span><span>Pedir a conta</span>
                 </button>
                 <button t-if="mesa.tablet" class="bt-barra__sair" t-on-click="() => this.abrirSaida()" aria-label="Gerente">⚙</button>
@@ -70,6 +79,22 @@
                                 <span t-esc="b.nome"/>
                                 <b>+1</b>
                             </button>
+                        </div>
+                    </t>
+                    <t t-elif="state.painel === 'chamar_garcom'">
+                        <h2>O que você precisa?</h2>
+                        <div class="bt-chamadas">
+                            <button t-on-click="() => this.chamarComMotivo('garcom', null)">🙋 Só chamar o garçom</button>
+                            <button t-on-click="() => this.chamarComMotivo('garcom', 'copos_gelo')">🧊 Trazer copos / gelo</button>
+                            <button t-on-click="() => this.chamarComMotivo('garcom', 'guardanapos')">🧻 Trazer guardanapos</button>
+                        </div>
+                    </t>
+                    <t t-elif="state.painel === 'chamar_conta'">
+                        <h2>Como vai pagar?</h2>
+                        <div class="bt-chamadas">
+                            <button t-on-click="() => this.chamarComMotivo('conta', 'conta_cartao')">💳 Cartão</button>
+                            <button t-on-click="() => this.chamarComMotivo('conta', 'conta_pix')">⚡ Pix</button>
+                            <button t-on-click="() => this.chamarComMotivo('conta', null)">💵 Outro</button>
                         </div>
                     </t>
                     <t t-elif="state.painel === 'sair'">

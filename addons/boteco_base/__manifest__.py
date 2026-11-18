@@ -45,6 +45,7 @@ Fundação do Sistema Boteco Raiz (Etapa 0 do PRD).
         "views/boteco_setor_views.xml",
         "views/boteco_termo_views.xml",
         "views/res_company_views.xml",
+        "views/boteco_atualizacao_views.xml",
         "views/stock_warehouse_views.xml",
         "views/pin_templates.xml",
         "views/saude_templates.xml",

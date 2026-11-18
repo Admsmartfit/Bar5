@@ -14,6 +14,13 @@ _logger = logging.getLogger(__name__)
 
 COOKIE = "boteco_disp"
 COOKIE_IDADE = 60 * 60 * 12  # 12 horas: uma noite
+# Botões de chamada qualificada do tablet (lista fechada: o tablet não manda texto livre)
+MOTIVOS_CHAMADA = {
+    "copos_gelo": "trazer copos / gelo",
+    "guardanapos": "trazer guardanapos",
+    "conta_cartao": "conta no CARTÃO (levar a maquininha)",
+    "conta_pix": "conta no PIX",
+}
 
 
 def _config_e_mesa(access_token, table_identifier):
@@ -89,6 +96,11 @@ class BotecoMesaController(http.Controller):
             "maior18_confirmado": mesa.boteco_maior18_confirmado,
             "limite_qr": config.boteco_limite_qr,
             "descanso_segundos": config.boteco_descanso_segundos or 120,
+            # Central de Recursos: só o que o tablet precisa saber
+            "recursos": {
+                codigo: config.company_id.boteco_recurso_ativo(codigo)
+                for codigo in ("tablet_neutro_anti_burst", "tablet_chamada_qualificada")
+            },
         }
 
     @http.route("/boteco/mesa/solicitar", type="json", auth="public", csrf=False, website=False)
@@ -123,7 +135,7 @@ class BotecoMesaController(http.Controller):
         return dados
 
     @http.route("/boteco/mesa/chamar", type="json", auth="public", csrf=False, website=False)
-    def chamar(self, access_token, table_identifier, tipo="garcom"):
+    def chamar(self, access_token, table_identifier, tipo="garcom", motivo=None):
         config, mesa = _config_e_mesa(access_token, table_identifier)
         dispositivo = _dispositivo_do_cookie(mesa)
         if not dispositivo or not _na_rede_do_bar(config, dispositivo):
@@ -134,6 +146,13 @@ class BotecoMesaController(http.Controller):
             mesa.boteco_marcar(pediu_conta=True)
         else:
             mesa.boteco_marcar(chamou_garcom=True)
+        # Chamada qualificada (Etapa 16): o garçom já sabe o que levar
+        texto = MOTIVOS_CHAMADA.get(motivo or "")
+        if texto and config.company_id.boteco_recurso_ativo("tablet_chamada_qualificada"):
+            for cfg in mesa.floor_id.pos_config_ids:
+                if cfg.current_session_id:
+                    cfg._notify("BOTECO_ALERTA", {"mensagem": _("Mesa %(m)s: %(t)s", m=mesa.table_number, t=texto),
+                                                  "tipo": "chamada"})
         return {"ok": True}
 
     @http.route("/boteco/mesa/sair_quiosque", type="json", auth="public", csrf=False, website=False)

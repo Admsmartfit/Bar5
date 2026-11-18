@@ -28,6 +28,7 @@ ACOES = [
     ("quiosque", "Saída do modo quiosque"),
     ("fiscal", "Controle fiscal"),
     ("lgpd", "Dados pessoais (LGPD)"),
+    ("atualizacao", "Atualização do sistema"),
     ("outro", "Outro"),
 ]
 

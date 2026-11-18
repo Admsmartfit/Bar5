@@ -11,6 +11,11 @@
                     <field name="boteco_meta_kg_b2b_mes"/>
                     <field name="boteco_meta_bares_assessoria"/>
                 </group>
+                <group string="Rateio da taxa de serviço (soma 100%)">
+                    <field name="boteco_rateio_garcom_pct"/>
+                    <field name="boteco_rateio_producao_pct"/>
+                    <field name="boteco_rateio_casa_pct"/>
+                </group>
             </xpath>
         </field>
     </record>

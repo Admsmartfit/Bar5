@@ -42,6 +42,10 @@
               action="action_boteco_perfil"/>
     <menuitem id="menu_boteco_setores" name="Setores de produção" parent="menu_boteco_config" sequence="30"
               action="action_boteco_setor"/>
+    <menuitem id="menu_boteco_central_recursos" name="Habilitar / Desabilitar Recursos" parent="menu_boteco_config"
+              sequence="5" action="action_boteco_central_recursos"/>
+    <menuitem id="menu_boteco_atualizacao" name="Atualizar sistema" parent="menu_boteco_config"
+              sequence="95" action="action_boteco_atualizacao"/>
     <menuitem id="menu_boteco_termos" name="Termos de boteco" parent="menu_boteco_config" sequence="90"
               action="action_boteco_termo"/>
 </odoo>

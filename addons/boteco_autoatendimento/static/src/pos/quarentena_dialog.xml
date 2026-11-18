@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_autoatendimento.QuarentenaDialog">
+        <Dialog title="'Mesa ' + dados.mesa + ': confira o pedido do tablet'" size="'md'">
+            <div class="o_boteco_quarentena">
+                <p class="mb-2">O pedido não foi para a cozinha/bar. Confira com a mesa e escolha:</p>
+                <ul class="o_boteco_quarentena__motivos">
+                    <li t-foreach="dados.motivos" t-as="motivo" t-key="motivo_index" t-esc="motivo"/>
+                </ul>
+
+                <h5 class="mt-3">1. Pessoas na mesa</h5>
+                <div class="o_boteco_quarentena__stepper">
+                    <button class="btn btn-secondary btn-lg" t-on-click="() => this.mudarClientes(-1)">−</button>
+                    <span class="fs-2 fw-bold" t-esc="state.clientes"/>
+                    <button class="btn btn-secondary btn-lg" t-on-click="() => this.mudarClientes(1)">+</button>
+                </div>
+
+                <h5 class="mt-3">2. Itens deste envio</h5>
+                <div t-foreach="state.linhas" t-as="linha" t-key="linha.id" class="o_boteco_quarentena__linha">
+                    <span class="flex-grow-1" t-esc="linha.nome"/>
+                    <button class="btn btn-secondary" t-on-click="() => this.mudarLinha(linha, -1)">−</button>
+                    <span class="fs-4 fw-bold px-2" t-esc="linha.nova"/>
+                    <button class="btn btn-secondary" t-on-click="() => this.mudarLinha(linha, 1)">+</button>
+                </div>
+            </div>
+            <t t-set-slot="footer">
+                <div class="d-grid gap-2 w-100">
+                    <button class="btn btn-primary btn-lg" t-att-disabled="!mudouClientes or state.ocupado"
+                            t-on-click="() => this.ajustarClientes()">
+                        Ajustar para <t t-esc="state.clientes"/> pessoa(s) e liberar
+                    </button>
+                    <button class="btn btn-primary btn-lg" t-att-disabled="!mudouItens or state.ocupado"
+                            t-on-click="() => this.corrigirItens()">Corrigir itens e liberar</button>
+                    <button class="btn btn-warning btn-lg" t-att-disabled="state.ocupado"
+                            t-on-click="() => this.liberarExcecao()">Liberar assim mesmo (exceção)</button>
+                    <button class="btn btn-outline-danger" t-att-disabled="state.ocupado"
+                            t-on-click="() => this.recusar()">Recusar o que não foi enviado</button>
+                </div>
+            </t>
+        </Dialog>
+    </t>
+</templates>

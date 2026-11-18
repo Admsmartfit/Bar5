@@ -51,6 +51,13 @@ class BotecoKdsPedido(models.Model):
     company_id = fields.Many2one(related="order_id.company_id", store=True, index=True)
     minutos_preparo = fields.Float("Minutos até ficar pronto", compute="_compute_minutos", store=True)
     minutos_entrega = fields.Float("Minutos até entregar", compute="_compute_minutos", store=True)
+    # Etapa 15: avisos de utensílios (copos, taças, pratos) e Hold & Fire de sobremesa
+    avisos = fields.Text("Avisos no ticket", help="Um aviso por linha, impresso em destaque.")
+    segundo_tempo = fields.Boolean("2º tempo", help="Sobremesa pedida junto com prato principal: "
+                                   "só preparar quando o prato principal sair.")
+    segundo_tempo_liberado = fields.Boolean("2º tempo liberado", copy=False)
+    # Etapa 21 (pacing): prato rápido espera para sair junto com o demorado da mesma mesa
+    iniciar_apos = fields.Datetime("Começar a partir de")
 
     @api.depends("mesa", "setor_id", "order_id")
     def _compute_titulo(self):
@@ -70,18 +77,25 @@ class BotecoKdsPedido(models.Model):
     def _criar_dos_envios(self, pedido, mudancas):
         """Agrupa as mudanças por setor e cria um ticket para cada (pedido e cancelamento)."""
         Produto = self.env["product.product"].sudo()
+        company = pedido.company_id
+        produtos = {m.get("produto_id"): Produto.browse(m.get("produto_id")).exists() for m in mudancas}
+        segurar = company.boteco_recurso_ativo("hold_fire_sobremesa_2_tempo") and self._tem_prato_principal(pedido, mudancas, produtos)
         grupos = {}
         for mudanca in mudancas:
-            produto = Produto.browse(mudanca.get("produto_id")).exists()
+            produto = produtos[mudanca.get("produto_id")]
             setor = produto.boteco_setor_id
             if not setor:
                 continue
             tipo = "novo" if mudanca["quantidade"] > 0 else "cancelamento"
-            grupos.setdefault((setor, tipo), []).append((produto, mudanca))
+            segundo = tipo == "novo" and segurar and produto.boteco_tipo_consumo == "sobremesa"
+            grupos.setdefault((setor, tipo, segundo), []).append((produto, mudanca))
         mesa = (_("Mesa %s", pedido.table_id.table_number) if pedido.table_id
                 else pedido.floating_order_name or _("Balcão"))
         tickets = self.browse()
-        for (setor, tipo), itens in grupos.items():
+        for (setor, tipo, segundo), itens in grupos.items():
+            avisos = self._avisos_utensilios(pedido, [p for p, _m in itens]) if tipo == "novo" else []
+            if segundo:
+                avisos.insert(0, _("*** 2º TEMPO: SÓ PREPARAR QUANDO O PRATO PRINCIPAL SAIR ***"))
             ticket = self.sudo().create({
                 "order_id": pedido.id,
                 "setor_id": setor.id,
@@ -89,6 +103,8 @@ class BotecoKdsPedido(models.Model):
                 "mesa": mesa,
                 "garcom_id": pedido.user_id.id,
                 "nota_geral": pedido.general_note or False,
+                "avisos": "\n".join(avisos) or False,
+                "segundo_tempo": segundo,
                 "estado": "aguardando" if tipo == "novo" else "pronto",
                 "item_ids": [
                     fields.Command.create({
@@ -105,11 +121,137 @@ class BotecoKdsPedido(models.Model):
                 ],
             })
             tickets |= ticket
+        if company.boteco_recurso_ativo("kds_totalizador_pacing"):
+            tickets._aplicar_pacing()
         for ticket in tickets:
             ticket._imprimir()
         if tickets:
             tickets._avisar_telas("novo")
         return tickets
+
+    # ------------------------------------------------------------------
+    # Etapa 21: pacing entre praças e totalizador de grelha
+    # ------------------------------------------------------------------
+    def _tempo_preparo(self):
+        self.ensure_one()
+        return max([i.product_id.boteco_tempo_preparo or 0 for i in self.item_ids] or [0])
+
+    def _aplicar_pacing(self):
+        """No mesmo envio, cada praça começa de modo que tudo fique pronto junto com o item mais demorado."""
+        novos = self.filtered(lambda t: t.tipo == "novo" and not t.segundo_tempo)
+        if len(novos) < 2:
+            return
+        tempos = {t: t._tempo_preparo() for t in novos}
+        maior = max(tempos.values())
+        for ticket, tempo in tempos.items():
+            if tempo and tempo < maior:
+                ticket.iniciar_apos = ticket.criado_em + timedelta(minutes=maior - tempo)
+                aviso = _("PACING: começar às %s", self._hora_local(ticket.iniciar_apos))
+                ticket.avisos = "\n".join(filter(None, [aviso, ticket.avisos]))
+
+    @api.model
+    def _hora_local(self, momento):
+        tz = self.env.company._boteco_tz()
+        return fields.Datetime.context_timestamp(self.with_context(tz=tz.zone), momento).strftime("%H:%M")
+
+    # ------------------------------------------------------------------
+    # Etapa 15: utensílios na impressão e Hold & Fire
+    # ------------------------------------------------------------------
+    @api.model
+    def _n_clientes(self, pedido):
+        if pedido.table_id:
+            return pedido.table_id.boteco_n_clientes()
+        return max(pedido.customer_count or 1, 1)
+
+    @api.model
+    def _tem_prato_principal(self, pedido, mudancas, produtos):
+        """Prato principal no mesmo envio ou ainda sendo preparado para a mesa/conta."""
+        pratos = ("prato_individual", "prato_compartilhado")
+        if any(m["quantidade"] > 0 and produtos[m.get("produto_id")].boteco_tipo_consumo in pratos for m in mudancas):
+            return True
+        dominio = [("pedido_id.tipo", "=", "novo"), ("estado", "in", ("aguardando", "preparando")),
+                   ("pedido_id.segundo_tempo", "=", False), ("product_id.boteco_tipo_consumo", "in", pratos)]
+        if pedido.table_id:
+            dominio.append(("pedido_id.order_id.table_id", "in", pedido.table_id._boteco_grupo().ids))
+        else:
+            dominio.append(("pedido_id.order_id", "=", pedido.id))
+        return bool(self.env["boteco.kds.item"].sudo().search_count(dominio, limit=1))
+
+    @api.model
+    def _avisos_utensilios(self, pedido, produtos):
+        """Avisos impressos em destaque no ticket, conforme a Central de Recursos."""
+        company = pedido.company_id
+        mesa = pedido.table_id.sudo()
+        regras = {p.boteco_regra_utensilio for p in produtos if p.boteco_regra_utensilio}
+        if not regras:
+            return []
+        n = self._n_clientes(pedido)
+        avisos = []
+        if "copo_cerveja" in regras and company.boteco_recurso_ativo("insumo_copos_primeira_cerveja"):
+            levados = mesa.boteco_copos_enviados if mesa else 0
+            if not levados:
+                avisos.append(_(">>> 1º PEDIDO DE CERVEJA DA MESA - LEVAR %s COPOS / TULIPAS <<<", n))
+            elif n > levados:
+                avisos.append(_(">>> CHEGARAM +%(d)s CLIENTES NA MESA - LEVAR +%(d)s COPOS EXTRAS <<<", d=n - levados))
+            if mesa and n > levados:
+                mesa.boteco_copos_enviados = n
+        vinho = regras & {"taca_vinho", "taca_vinho_gelo"}
+        if vinho and company.boteco_recurso_ativo("correlacao_vinho_agua"):
+            levadas = mesa.boteco_tacas_enviadas if mesa else 0
+            if not levadas:
+                texto = _(">>> ENVIAR %s TAÇAS DE VINHO + SACA-ROLHAS", n)
+            elif n > levadas:
+                texto = _(">>> ENVIAR +%s TAÇAS DE VINHO + SACA-ROLHAS", n - levadas)
+            else:
+                texto = _(">>> ENVIAR SACA-ROLHAS")
+            if "taca_vinho_gelo" in vinho:
+                texto += _(" + BALDE COM GELO E ÁGUA")
+            avisos.append(texto + " <<<")
+            if mesa and n > levadas:
+                mesa.boteco_tacas_enviadas = n
+            self._alertar_vinho_sem_agua(pedido)
+        if "pratos_compartilhados" in regras and company.boteco_recurso_ativo("insumo_pratos_compartilhados"):
+            avisos.append(_(">>> MONTAR C/ %(n)s PRATOS RASOS QUENTES + %(n)s KITS TALHERES + PEGADOR <<<", n=n))
+        if "guardanapo_reforcado" in regras and company.boteco_recurso_ativo("insumo_pratos_compartilhados"):
+            avisos.append(_(">>> ENVIAR CESTA DE GUARDANAPOS REFORÇADA + SACHÊS p/ %s PESSOAS <<<", n))
+        return avisos
+
+    @api.model
+    def _alertar_vinho_sem_agua(self, pedido):
+        """Mesa pediu vinho e não tem água mineral na conta: o garçom recebe o aviso para oferecer."""
+        if pedido.table_id:
+            contas = self.env["pos.order"].sudo().search([("table_id", "in", pedido.table_id._boteco_grupo().ids),
+                                                          ("state", "=", "draft")])
+        else:
+            contas = pedido
+        if any(l.qty > 0 and l.product_id.boteco_tipo_consumo == "agua" for l in contas.lines):
+            return False
+        local = _("Mesa %s", pedido.table_id.table_number) if pedido.table_id else (pedido.floating_order_name or _("Balcão"))
+        mensagem = _("🍷 %s pediu vinho e está sem água. Ofereça água mineral!", local)
+        configs = pedido.table_id.floor_id.pos_config_ids if pedido.table_id else pedido.config_id
+        for config in configs:
+            if config.current_session_id:
+                config._notify("BOTECO_ALERTA", {"mensagem": mensagem, "tipo": "vinho_sem_agua"})
+        return True
+
+    def _liberar_segundo_tempo(self):
+        """Prato principal ficou pronto: libera as sobremesas seguradas da mesma mesa."""
+        for ticket in self.filtered(lambda t: not t.segundo_tempo and t.tipo == "novo"):
+            pedido = ticket.order_id
+            dominio = [("segundo_tempo", "=", True), ("segundo_tempo_liberado", "=", False),
+                       ("estado", "=", "aguardando")]
+            if pedido.table_id:
+                dominio.append(("order_id.table_id", "in", pedido.table_id._boteco_grupo().ids))
+            else:
+                dominio.append(("order_id", "=", pedido.id))
+            segurados = self.search(dominio)
+            if not segurados:
+                continue
+            # Só libera quando não sobrou prato principal em preparo
+            if self._tem_prato_principal(pedido, [], {}):
+                continue
+            segurados.write({"segundo_tempo_liberado": True})
+            segurados._avisar_telas("segundo_tempo")
 
     # ------------------------------------------------------------------
     # Ticket impresso (ESC/POS)
@@ -126,6 +268,10 @@ class BotecoKdsPedido(models.Model):
         if self.garcom_id:
             t.texto(_("Garçom: %s", self.garcom_id.name.split(" ")[0]))
         t.separador("=")
+        for aviso in (self.avisos or "").splitlines():
+            t.texto(aviso, negrito=True, inverso=True)
+        if self.avisos:
+            t.separador("=")
         for item in self.item_ids:
             quantidade = int(item.quantidade) if item.quantidade == int(item.quantidade) else item.quantidade
             t.texto("%s x %s" % (quantidade, item.nome), tamanho=2, negrito=True)
@@ -172,6 +318,9 @@ class BotecoKdsPedido(models.Model):
                 "criado_em": fields.Datetime.to_string(t.criado_em),
                 "segundos": int((agora - t.criado_em).total_seconds()),
                 "pronto_em": fields.Datetime.to_string(t.pronto_em) if t.pronto_em else False,
+                "avisos": (t.avisos or "").splitlines(),
+                "segundo_tempo": t.segundo_tempo and not t.segundo_tempo_liberado,
+                "iniciar_em_segundos": max(int((t.iniciar_apos - agora).total_seconds()), 0) if t.iniciar_apos else 0,
                 "itens": [
                     {"id": i.id, "nome": i.nome, "quantidade": i.quantidade, "nota": i.nota or "",
                      "atributos": i.atributos or "", "maior_18": i.maior_18}
@@ -230,6 +379,8 @@ class BotecoKdsPedido(models.Model):
                 vals.update(pronto_em=False)
             ticket.write(vals)
         self._avisar_telas(novo)
+        if novo in ("pronto", "entregue"):
+            self._liberar_segundo_tempo()
         return True
 
     def kds_avancar(self):
@@ -272,6 +423,8 @@ class BotecoKdsPedido(models.Model):
         impressoras_paradas = self.env["boteco.impressora"].search([("estado", "=", "erro")])
         pendentes = self.env["boteco.impressao.job"].search_count([("estado", "=", "esperando")])
         return {
+            # Etapa 21: totalizador de grelha, pacing e bump bar (a tela calcula e mostra)
+            "avancado": self.env.company.boteco_recurso_ativo("kds_totalizador_pacing"),
             "tickets": tickets._dados_tela(),
             "cancelamentos": cancelamentos._dados_tela(),
             "canal": canal_kds(self.env.company.id),

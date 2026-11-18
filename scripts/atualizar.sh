@@ -3,7 +3,7 @@
 #
 #   ./scripts/atualizar.sh                -> atualiza os módulos boteco_* (código já copiado/git pull)
 #   ./scripts/atualizar.sh --git          -> faz git pull antes
-#   ./scripts/atualizar.sh --imagem       -> também baixa a imagem odoo:18 mais nova (correções do Odoo)
+#   ./scripts/atualizar.sh --imagem       -> também reconstrói sobre a odoo:18 mais nova (correções do Odoo)
 #
 # Faça fora do horário de funcionamento: o sistema fica fora do ar por alguns minutos.
 set -Eeuo pipefail
@@ -14,12 +14,19 @@ source .env; set +a
 DB="${BOTECO_DB:-boteco}"
 MODULOS="boteco_base,boteco_cardapio,boteco_pos,boteco_kds,boteco_autoatendimento,boteco_estoque,boteco_cozinha_central,boteco_b2b,boteco_painel,boteco_fiscal_export"
 
+GIT=(git -c "safe.directory=$(pwd)")
+# Versão de antes: se a atualização falhar, o código volta junto com o banco
+VERSAO_ANTES="$("${GIT[@]}" rev-parse HEAD 2>/dev/null || true)"
+PUXAR_BASE=""
 for arg in "$@"; do
   case "$arg" in
-    --git) git pull --ff-only ;;
-    --imagem) docker compose pull odoo ;;
+    --git) "${GIT[@]}" pull --ff-only ;;
+    --imagem) PUXAR_BASE="--pull" ;;
   esac
 done
+echo "    versão: ${VERSAO_ANTES:0:7} -> $("${GIT[@]}" rev-parse --short HEAD 2>/dev/null || echo '?')"
+# Imagem própria (docker/odoo/Dockerfile): rápida quando nada mudou (usa o cache)
+docker compose build $PUXAR_BASE -q odoo
 
 echo "==> 1/4 Backup antes de atualizar"
 docker compose exec -T backup bash /usr/local/bin/backup-loop.sh --uma-vez
@@ -39,8 +46,13 @@ if docker compose run --rm -T odoo odoo -c /etc/odoo/odoo.conf -d "$DB" --worker
 else
   echo "FALHOU. Trecho do log:"
   grep -E " (ERROR|CRITICAL) " -A15 "$LOG" | tail -40
+  if [[ -n "$VERSAO_ANTES" && "$("${GIT[@]}" rev-parse HEAD)" != "$VERSAO_ANTES" ]]; then
+    echo "==> Voltando o código para a versão ${VERSAO_ANTES:0:7}"
+    "${GIT[@]}" reset --hard "$VERSAO_ANTES"
+    docker compose build -q odoo
+  fi
   echo "==> Voltando o backup de antes (volta automática)"
-  yes RESTAURAR | ./scripts/restaurar.sh "$DUMP"
+  yes RESTAURAR | bash scripts/restaurar.sh "$DUMP"
   echo "Sistema voltou para como estava antes. Log completo: $LOG"
   exit 1
 fi

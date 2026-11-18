@@ -42,6 +42,132 @@ class ResCompany(models.Model):
     )
 
     # ------------------------------------------------------------------
+    # Central de Recursos (Liga/Desliga) — Etapa 11 do PRD Master
+    # Toda regra nova checa company.boteco_recurso_ativo("<codigo>") antes de rodar.
+    # ------------------------------------------------------------------
+    # Grupo 1: Validação inteligente de pedidos e salão
+    boteco_flag_ocupacao_padrao_mesa = fields.Boolean(
+        string="Sugerir capacidade padrão na abertura da mesa", default=True,
+        help="Ao abrir a mesa, o número de clientes já vem com os lugares cadastrados da mesa.",
+    )
+    boteco_flag_salao_juncao_mesas = fields.Boolean(
+        string="Juntar mesas somando o número de clientes", default=False,
+    )
+    boteco_flag_tablet_neutro_anti_burst = fields.Boolean(
+        string="Tablet neutro (sem ajuste de clientes) + trava anti-toque repetido", default=True,
+    )
+    boteco_flag_tablet_chamada_qualificada = fields.Boolean(
+        string="Botões de chamada qualificada no tablet (copos/gelo, guardanapos, conta)",
+        default=False,
+    )
+    boteco_flag_quarentena_pedidos_anomalos = fields.Boolean(
+        string="Motor de quarentena (N+X): barrar pedidos fora do padrão e alertar garçom/caixa",
+        default=True,
+    )
+    boteco_flag_validacao_zscore_ticket = fields.Boolean(
+        string="Trava de anomalia financeira (3x ticket médio / Z-Score)", default=True,
+    )
+
+    # Grupo 2: Utensílios na impressão e correlações de consumo
+    boteco_flag_insumo_copos_primeira_cerveja = fields.Boolean(
+        string="1ª cerveja: imprimir aviso de [N] copos no bar (e delta de novos clientes)",
+        default=True,
+    )
+    boteco_flag_correlacao_vinho_agua = fields.Boolean(
+        string="Vinho: imprimir [N] taças/balde no bar e alertar garçom para oferecer água",
+        default=True,
+    )
+    boteco_flag_insumo_pratos_compartilhados = fields.Boolean(
+        string="Pratos compartilhados/lanches: imprimir [N] pratos e cesta de guardanapos",
+        default=True,
+    )
+    boteco_flag_hold_fire_sobremesa_2_tempo = fields.Boolean(
+        string="Hold & Fire: reter sobremesa (2º tempo) quando pedida junto com prato principal",
+        default=True,
+    )
+
+    # Grupo 3: Cozinha central de congelados e proteção bar vs. B2B
+    boteco_flag_capacidade_finita_congelados = fields.Boolean(
+        string="Limitar plano de produção pela capacidade diária da cozinha", default=True,
+    )
+    boteco_flag_controle_volume_freezer = fields.Boolean(
+        string="Controlar espaço livre nos freezers / câmara fria (litros)", default=True,
+    )
+    boteco_flag_reserva_estoque_bar_b2b = fields.Boolean(
+        string="Proteger reserva mínima de congelados do bar contra vendas B2B", default=True,
+    )
+    boteco_flag_explosao_insumos_fator_coccao = fields.Boolean(
+        string="Fator de correção/cocção na receita e alerta de matéria-prima faltante",
+        default=True,
+    )
+
+    # Grupo 4: Inteligência de compras
+    boteco_flag_leitor_orcamento_pdf_imagem = fields.Boolean(
+        string="Leitor de orçamentos em PDF e foto/imagem", default=True,
+    )
+    boteco_flag_monitor_instagram_fornecedores = fields.Boolean(
+        string="Monitorar ofertas no Instagram dos fornecedores", default=False,
+        help="Lê posts públicos dos perfis cadastrados. Depende do Instagram não bloquear a leitura.",
+    )
+    boteco_flag_radar_precos_oportunidade = fields.Boolean(
+        string="Radar de preços interessantes e economia nos congelados", default=True,
+    )
+
+    # Grupo 5: Recursos opcionais (PDV, portaria, KDS, WhatsApp IA, financeiro)
+    boteco_flag_pdv_atalhos_f1_f12 = fields.Boolean(
+        string="Atalhos F1-F12 no PDV e edição de pagamento pós-venda", default=False,
+    )
+    boteco_flag_pdv_fichas_avulsas = fields.Boolean(
+        string="Fichas avulsas por unidade com código de barras", default=False,
+    )
+    boteco_flag_pdv_balanca_ean13 = fields.Boolean(
+        string="Etiqueta de balança EAN-13 e produtos meio a meio", default=False,
+    )
+    boteco_flag_portaria_validador_saida = fields.Boolean(
+        string="Validador de saída na portaria (comanda paga vs. pendente)", default=False,
+    )
+    boteco_flag_garcom_tags_rapidas = fields.Boolean(
+        string="Tags rápidas de observação para o garçom e DeepLink Smart POS", default=False,
+    )
+    boteco_flag_kds_totalizador_pacing = fields.Boolean(
+        string="KDS avançado: totalizador de grelha, pacing de praças e bump bar", default=False,
+    )
+    boteco_flag_crm_whatsapp_ia = fields.Boolean(
+        string="Régua de clientes sumidos/aniversariantes (e futuro agente de WhatsApp)", default=False,
+    )
+    boteco_flag_delivery_roteirizacao_motoboy = fields.Boolean(
+        string="Delivery: taxa por bairro, entregas e acerto de motoboys", default=False,
+    )
+    boteco_flag_financeiro_pix_rateio = fields.Boolean(
+        string="Rateio da taxa de serviço (10%) entre garçons, cozinha/bar e casa", default=False,
+    )
+
+    def boteco_recurso_ativo(self, nome_flag):
+        """True se o recurso ``nome_flag`` está ligado na Central de Recursos.
+
+        Aceita o código curto ("quarentena_pedidos_anomalos") ou o nome do campo
+        ("boteco_flag_quarentena_pedidos_anomalos"). Flag desconhecida = desligada.
+        """
+        company = self[:1] or self.env.company
+        campo = nome_flag if nome_flag.startswith("boteco_flag_") else f"boteco_flag_{nome_flag}"
+        if campo not in company._fields:
+            return False
+        return bool(company.sudo()[campo])
+
+    @api.model
+    def action_boteco_central_recursos(self):
+        """Abre a Central de Recursos da empresa atual."""
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Central de Recursos (Liga/Desliga)",
+            "res_model": "res.company",
+            "res_id": self.env.company.id,
+            "view_mode": "form",
+            "views": [(self.env.ref("boteco_base.res_company_view_form_central_recursos").id, "form")],
+            "target": "current",
+        }
+
+    # ------------------------------------------------------------------
     # Dia de operação
     # ------------------------------------------------------------------
     def _boteco_tz(self):

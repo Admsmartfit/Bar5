@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_atualizacao_view_form" model="ir.ui.view">
+        <field name="name">boteco.atualizacao.form</field>
+        <field name="model">boteco.atualizacao</field>
+        <field name="arch" type="xml">
+            <form string="Atualizar sistema" create="0" delete="0">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Atualizar sistema</h1>
+                    </div>
+
+                    <div class="alert alert-secondary" role="status" invisible="estado != 'sem_agente'">
+                        <strong>A atualização pela tela ainda não está ativa neste computador.</strong>
+                        No servidor Linux, rode <code>sudo ./instalar.sh</code> uma vez para instalar o agente de atualização.
+                    </div>
+                    <div class="alert alert-success" role="status" invisible="estado != 'em_dia'">
+                        <strong>O sistema está em dia.</strong> Não há versão nova no GitHub.
+                    </div>
+                    <div class="alert alert-warning" role="status" invisible="estado != 'disponivel'">
+                        <strong>Há <field name="quantidade" class="d-inline"/> versão(ões) nova(s) no GitHub.</strong>
+                        Atualize fora do horário de funcionamento.
+                    </div>
+                    <div class="alert alert-info" role="status" invisible="estado not in ('pedido', 'em_andamento')">
+                        <strong>Atualizando…</strong> O sistema pode sair do ar por alguns minutos. Recarregue a página depois.
+                    </div>
+                    <div class="alert alert-danger" role="alert" invisible="estado != 'falhou'">
+                        <strong>A última atualização falhou</strong> e o sistema voltou automaticamente para como estava.
+                        Veja o relatório abaixo e mande para quem faz o sistema.
+                    </div>
+                    <div class="alert alert-danger" role="alert" invisible="estado != 'erro'">
+                        <strong>O servidor não conseguiu consultar o GitHub.</strong> <field name="mensagem" class="d-inline"/>
+                    </div>
+
+                    <group>
+                        <group string="Situação">
+                            <field name="estado" invisible="1"/>
+                            <field name="versao_atual"/>
+                            <field name="verificado_em"/>
+                            <field name="ultima_atualizacao"/>
+                            <field name="contas_abertas" decoration-danger="contas_abertas &gt; 0"/>
+                        </group>
+                        <group string="Atualizar" invisible="estado not in ('disponivel', 'falhou', 'em_dia')">
+                            <field name="atualizar_imagem"/>
+                            <field name="confirmo"/>
+                        </group>
+                    </group>
+                    <group string="O que vem na atualização" invisible="not novidades">
+                        <field name="novidades" nolabel="1" colspan="2"/>
+                    </group>
+
+                    <div class="d-flex gap-2 my-3">
+                        <button name="action_atualizar" type="object" string="Atualizar agora" class="btn-primary btn-lg"
+                                invisible="estado not in ('disponivel', 'falhou')"
+                                confirm="O sistema vai sair do ar por alguns minutos (backup, atualização e volta automática se der erro). Continuar?"/>
+                        <button name="action_verificar" type="object" string="Procurar atualizações agora" class="btn-secondary btn-lg"
+                                invisible="estado in ('sem_agente', 'pedido', 'em_andamento')"/>
+                    </div>
+
+                    <group string="Relatório da última atualização" invisible="not ultimo_log">
+                        <field name="ultimo_log" nolabel="1" colspan="2" class="font-monospace small"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boteco_atualizacao" model="ir.actions.server">
+        <field name="name">Atualizar sistema</field>
+        <field name="model_id" ref="model_boteco_atualizacao"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_abrir()</field>
+    </record>
+</odoo>

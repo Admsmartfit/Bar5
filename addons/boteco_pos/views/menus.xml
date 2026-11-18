@@ -8,6 +8,17 @@
               action="action_boteco_fechamento_caixa"/>
     <menuitem id="menu_boteco_contas" name="Contas (pedidos)" parent="menu_boteco_salao" sequence="30"
               action="point_of_sale.action_pos_pos_form"/>
+    <menuitem id="menu_boteco_entregas" name="Entregas (delivery)" parent="menu_boteco_salao" sequence="40"
+              action="action_boteco_entregas"/>
+    <menuitem id="menu_boteco_acerto_motoboy" name="Acerto de motoboys" parent="menu_boteco_salao" sequence="45"
+              action="action_boteco_acerto_motoboy"/>
+    <menuitem id="menu_boteco_regua_crm" name="Clientes sumidos e aniversariantes" parent="menu_boteco_salao" sequence="50"
+              action="action_boteco_regua_crm"/>
     <menuitem id="menu_boteco_motivos" name="Motivos" parent="boteco_base.menu_boteco_config" sequence="40"
               action="action_boteco_motivo"/>
+    <menuitem id="menu_boteco_bairros" name="Bairros e taxas de entrega" parent="boteco_base.menu_boteco_config" sequence="45"
+              action="action_boteco_bairro"/>
+    <!-- Portaria: qualquer pessoa da equipe com login (a tela confere a Central de Recursos) -->
+    <menuitem id="menu_boteco_portaria" name="Portaria (validar saída)" parent="boteco_base.menu_boteco_operacao" sequence="20"
+              action="action_boteco_portaria_url"/>
 </odoo>

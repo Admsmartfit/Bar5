@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Etapa 20: observações de 1 toque (só aparecem no PDV com o recurso ligado na Central) -->
+    <record id="tag_sem_cebola" model="pos.note"><field name="name">Sem cebola</field><field name="sequence">1</field><field name="boteco_tag_rapida" eval="True"/></record>
+    <record id="tag_ao_ponto" model="pos.note"><field name="name">Ao ponto</field><field name="sequence">2</field><field name="boteco_tag_rapida" eval="True"/></record>
+    <record id="tag_bem_passado" model="pos.note"><field name="name">Bem passado</field><field name="sequence">3</field><field name="boteco_tag_rapida" eval="True"/></record>
+    <record id="tag_gelo_limao" model="pos.note"><field name="name">Gelo e limão</field><field name="sequence">4</field><field name="boteco_tag_rapida" eval="True"/></record>
+    <record id="tag_sem_gelo" model="pos.note"><field name="name">Sem gelo</field><field name="sequence">5</field><field name="boteco_tag_rapida" eval="True"/></record>
+    <record id="tag_bem_gelada" model="pos.note"><field name="name">Bem gelada</field><field name="sequence">6</field><field name="boteco_tag_rapida" eval="True"/></record>
+    <record id="tag_sem_sal" model="pos.note"><field name="name">Sem sal</field><field name="sequence">7</field><field name="boteco_tag_rapida" eval="True"/></record>
+    <record id="tag_para_viagem" model="pos.note"><field name="name">Para viagem</field><field name="sequence">8</field><field name="boteco_tag_rapida" eval="True"/></record>
+</odoo>

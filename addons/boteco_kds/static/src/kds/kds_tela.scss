@@ -75,6 +75,15 @@ body.o_boteco_kds_cheia .o_main_navbar { display: none !important; }
     .item__qtd { display: inline-block; min-width: 36px; color: $kds-amarelo; }
     .item__atributos { font-size: 17px; font-weight: 500; color: #cbd5e1; padding-left: 36px; }
     .item__nota { background: #fde047; color: #111; font-weight: 800; padding: 4px 8px; border-radius: 6px; margin-top: 4px; text-transform: uppercase; }
+    .cartao__aviso { background: #f8fafc; color: #0f172a; font-weight: 800; padding: 6px 8px; border-radius: 6px; margin: 4px 0; font-size: 15px; }
+    .cartao__pacing { background: #0ea5e9; color: #fff; font-weight: 800; padding: 6px 8px; border-radius: 6px; margin: 4px 0; }
+    .cartao__tecla { background: #f8fafc; color: #0f172a; font-weight: 900; border-radius: 6px; padding: 0 8px; margin-right: 6px; }
+    .o_boteco_kds__totalizador {
+        background: #111827; border: 2px solid #f59e0b; border-radius: 12px; padding: 8px 12px; margin: 8px 12px;
+        h3 { font-size: 18px; margin: 0 0 6px; color: #f59e0b; }
+        .totalizador__item { font-size: 20px; display: inline-block; margin-right: 18px; }
+    }
+    .cartao__segundo_tempo { background: #7c3aed; color: #fff; font-weight: 800; padding: 6px 8px; border-radius: 6px; margin: 4px 0; }
     .cartao__rodape {
         min-height: 64px; display: grid; place-items: center; border-radius: 10px;
         background: #334155; font-size: 22px; font-weight: 800;

@@ -24,6 +24,16 @@ class ProductTemplate(models.Model):
         "Validade resfriado (dias)", help="Se o produto for mantido resfriado em vez de congelado.")
     boteco_dias_cobertura = fields.Integer(
         "Dias de estoque a manter", default=2, help="O plano de produção sugere o suficiente para estes dias.")
+    # Etapa 17: capacidade finita, freezer e reserva do bar
+    boteco_lote_max_diario = fields.Float(
+        "Produção máxima por dia", help="Quanto a cozinha consegue produzir deste item num dia "
+        "(na unidade do produto). 0 = sem limite.")
+    boteco_volume_freezer_litros = fields.Float(
+        "Volume no freezer (L por unidade)", digits=(16, 3),
+        help="Espaço que 1 unidade (ex.: 1 kg) ocupa no freezer/câmara fria. 0 = não controla.")
+    boteco_estoque_min_bar = fields.Float(
+        "Reserva mínima do bar", help="Estoque que fica guardado para o salão do bar. "
+        "Vendas B2B não podem consumir esta reserva. 0 = sem reserva.")
 
     @api.onchange("boteco_produzido_cozinha")
     def _onchange_boteco_produzido_cozinha(self):

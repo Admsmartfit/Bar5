@@ -114,7 +114,44 @@ class BotecoPainel(models.AbstractModel):
             "receber_vencido": {"quantidade": len(receber), "valor": round(sum(receber.mapped("amount_residual")), 2)},
             "pagar_vencido": {"quantidade": len(pagar), "valor": round(sum(pagar.mapped("amount_residual")), 2)},
             "alertas": alertas,
+            "oportunidades_compra": self._oportunidades_compra(company),
         }
+
+    @api.model
+    def _oportunidades_compra(self, company):
+        """Etapa 18: insumos com preço interessante e quanto economizam nas receitas de congelados."""
+        if not company.boteco_recurso_ativo("radar_precos_oportunidade"):
+            return []
+        cozinha = self.env["stock.warehouse"].sudo().search(
+            [("company_id", "=", company.id), ("boteco_tipo_unidade", "=", "cozinha_central")],
+            order="boteco_capacidade_freezer_litros desc, id", limit=1)
+        livre = cozinha.boteco_freezer_livre_litros if cozinha and cozinha.boteco_capacidade_freezer_litros else None
+        resultado = []
+        for cotacao in self.env["boteco.historico.preco"].sudo().with_company(company).oportunidades():
+            insumo = cotacao.product_id
+            linhas = self.env["mrp.bom.line"].sudo().search([
+                ("product_id", "=", insumo.id), ("bom_id.active", "=", True),
+                ("bom_id.product_tmpl_id.boteco_produzido_cozinha", "=", True),
+            ])
+            receitas = []
+            for linha in linhas:
+                qtd = linha.product_uom_id._compute_quantity(linha.product_qty, insumo.uom_id)
+                receitas.append({
+                    "produto": linha.bom_id.product_tmpl_id.name,
+                    "economia_receita": round((cotacao.media_60d - cotacao.preco_unitario) * qtd, 2),
+                })
+            resultado.append({
+                "insumo": insumo.display_name,
+                "fornecedor": cotacao.partner_id.name or "",
+                "preco": cotacao.preco_unitario,
+                "media": round(cotacao.media_60d, 2),
+                "queda_pct": round(-cotacao.variacao_pct, 1),
+                "origem": dict(cotacao._fields["origem"].selection).get(cotacao.origem, ""),
+                "receitas": receitas,
+                "economia_total_receita": round(sum(r["economia_receita"] for r in receitas), 2),
+                "freezer_livre_litros": round(livre, 1) if livre is not None else None,
+            })
+        return sorted(resultado, key=lambda r: -r["economia_total_receita"])[:8]
 
     @api.model
     def _alertas_extras(self, company):

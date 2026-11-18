@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Histórico de preços / radar -->
+    <record id="boteco_historico_preco_view_list" model="ir.ui.view">
+        <field name="name">boteco.historico.preco.list</field>
+        <field name="model">boteco.historico.preco</field>
+        <field name="arch" type="xml">
+            <list string="Histórico de preços" decoration-success="preco_interessante" create="1" editable="top">
+                <field name="data"/>
+                <field name="product_id"/>
+                <field name="partner_id"/>
+                <field name="preco_unitario"/>
+                <field name="media_60d" optional="show"/>
+                <field name="minimo_90d" optional="show"/>
+                <field name="variacao_pct" optional="show" widget="float" digits="[16,1]"/>
+                <field name="preco_interessante" optional="show"/>
+                <field name="origem" optional="show"/>
+                <field name="referencia" optional="hide"/>
+                <field name="descricao_original" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_historico_preco_view_search" model="ir.ui.view">
+        <field name="name">boteco.historico.preco.search</field>
+        <field name="model">boteco.historico.preco</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <field name="partner_id"/>
+                <filter name="interessante" string="Preços interessantes" domain="[('preco_interessante', '=', True)]"/>
+                <separator/>
+                <filter name="por_insumo" string="Insumo" context="{'group_by': 'product_id'}"/>
+                <filter name="por_fornecedor" string="Fornecedor" context="{'group_by': 'partner_id'}"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_boteco_historico_preco" model="ir.actions.act_window">
+        <field name="name">Radar de preços</field>
+        <field name="res_model">boteco.historico.preco</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nenhuma cotação ainda</p>
+            <p>Cada NF-e importada e cada orçamento lido vira cotação aqui. Preço 10% abaixo da média dos
+               últimos 60 dias aparece em verde.</p>
+        </field>
+    </record>
+
+    <!-- Leitor de orçamento -->
+    <record id="boteco_importar_orcamento_view_form" model="ir.ui.view">
+        <field name="name">boteco.importar.orcamento.form</field>
+        <field name="model">boteco.importar.orcamento</field>
+        <field name="arch" type="xml">
+            <form string="Ler orçamento do fornecedor">
+                <p>Envie o PDF ou a foto do orçamento/encarte, ou cole a lista de preços que chegou no WhatsApp.</p>
+                <group>
+                    <group>
+                        <field name="partner_id" options="{'no_create': True}"/>
+                        <field name="data"/>
+                    </group>
+                    <group>
+                        <field name="arquivo" filename="nome_arquivo"/>
+                        <field name="nome_arquivo" invisible="1"/>
+                        <field name="lido" invisible="1"/>
+                    </group>
+                </group>
+                <field name="texto" placeholder="Cebola kg 3,99&#10;Batata lavada kg 4,50" invisible="lido"/>
+                <field name="linha_ids" invisible="not lido">
+                    <list editable="bottom" create="false" decoration-warning="not product_id">
+                        <field name="descricao" readonly="1"/>
+                        <field name="unidade" readonly="1"/>
+                        <field name="preco"/>
+                        <field name="product_id" options="{'no_create': True}"/>
+                        <field name="fator"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_ler" type="object" string="Ler" class="btn-primary" invisible="lido"/>
+                    <button name="action_registrar" type="object" string="Registrar cotações" class="btn-primary" invisible="not lido"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_importar_orcamento" model="ir.actions.act_window">
+        <field name="name">Ler orçamento (PDF / foto)</field>
+        <field name="res_model">boteco.importar.orcamento</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Instagram no cadastro do fornecedor -->
+    <record id="res_partner_form_boteco_instagram" model="ir.ui.view">
+        <field name="name">res.partner.form.boteco.instagram</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="website" position="after">
+                <field name="boteco_instagram_handle" placeholder="perfil_do_fornecedor"/>
+            </field>
+        </field>
+    </record>
+</odoo>

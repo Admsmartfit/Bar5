@@ -8,17 +8,27 @@
                 <p>Sugestão pela saída média no mesmo dia da semana (últimas 4 semanas), pedidos B2B em aberto e estoque.</p>
                 <group>
                     <field name="data"/>
+                    <field name="warehouse_id"/>
                 </group>
+                <div class="alert alert-warning" role="alert" invisible="not alertas">
+                    <strong>Antes de ligar o fogão:</strong>
+                    <field name="alertas" nolabel="1"/>
+                </div>
                 <field name="linha_ids">
-                    <list editable="bottom" create="false" decoration-bf="quantidade &gt; 0">
+                    <list editable="bottom" create="false" decoration-bf="quantidade &gt; 0"
+                          decoration-warning="limitado_por or insumos_faltando">
                         <field name="product_id" readonly="1"/>
                         <field name="bom_id" readonly="1"/>
                         <field name="media_saida" readonly="1"/>
                         <field name="dias_cobertura" readonly="1"/>
                         <field name="pedidos_b2b" readonly="1"/>
+                        <field name="reserva_bar" readonly="1" optional="show"/>
                         <field name="estoque" readonly="1"/>
                         <field name="em_producao" readonly="1"/>
+                        <field name="necessidade" readonly="1" optional="show"/>
                         <field name="quantidade"/>
+                        <field name="limitado_por" readonly="1" optional="show"/>
+                        <field name="insumos_faltando" readonly="1" optional="show"/>
                     </list>
                 </field>
                 <footer>

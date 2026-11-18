@@ -186,6 +186,14 @@ class BotecoNfeImportacao(models.TransientModel):
             recebimento.move_ids.picked = True
             recebimento.button_validate()
         self.purchase_id = compra
+        # Radar de preços (Etapa 18): cada nota vira cotação no histórico
+        Historico = self.env["boteco.historico.preco"]
+        for linha in self.linha_ids:
+            quantidade = linha.quantidade * (linha.fator or 1.0)
+            if quantidade:
+                Historico.registrar(linha.product_id, linha.valor_total / quantidade, fornecedor=self.partner_id,
+                                    origem="nfe", referencia="NF %s" % (self.numero or ""), data=self.emissao,
+                                    descricao=linha.descricao)
         return {"type": "ir.actions.act_window", "res_model": "purchase.order", "res_id": compra.id, "view_mode": "form"}
 
 

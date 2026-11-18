@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Ofertas no Instagram dos fornecedores: 2x por dia, 8:00 e 14:00 (horário da empresa).
+         Só faz algo se 'Monitorar ofertas no Instagram' estiver ligado na Central de Recursos. -->
+    <record id="ir_cron_boteco_monitor_instagram" model="ir.cron">
+        <field name="name">Boteco: ler ofertas no Instagram dos fornecedores (8:00)</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_monitorar_instagram()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+    <record id="ir_cron_boteco_monitor_instagram_tarde" model="ir.cron">
+        <field name="name">Boteco: ler ofertas no Instagram dos fornecedores (14:00)</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_monitorar_instagram()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- Acerta a próxima execução para 8:00 e 14:00 no fuso da empresa -->
+    <function model="res.partner" name="_boteco_agendar_monitor_instagram"/>
+</odoo>

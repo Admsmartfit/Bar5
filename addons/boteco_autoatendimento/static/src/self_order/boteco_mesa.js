@@ -85,6 +85,20 @@ export class BotecoMesa extends Component {
         await this.selfOrder.botecoChamar(tipo);
     }
 
+    /** Com a chamada qualificada ligada, pergunta o que a mesa precisa (o garçom já vem com tudo). */
+    async tocarChamar(tipo) {
+        if (this.selfOrder.botecoRecurso?.("tablet_chamada_qualificada")) {
+            this.state.painel = tipo === "conta" ? "chamar_conta" : "chamar_garcom";
+            return;
+        }
+        await this.chamar(tipo);
+    }
+
+    async chamarComMotivo(tipo, motivo) {
+        this.state.painel = null;
+        await this.selfOrder.botecoChamar(tipo, motivo);
+    }
+
     async abrirConta() {
         await this.selfOrder.botecoAtualizarStatus();
         this.state.painel = "conta";

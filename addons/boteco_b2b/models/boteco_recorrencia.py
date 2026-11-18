@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 DIAS = [("0", "Segunda"), ("1", "Terça"), ("2", "Quarta"), ("3", "Quinta"), ("4", "Sexta"), ("5", "Sábado"), ("6", "Domingo")]
 
@@ -45,7 +46,11 @@ class BotecoB2bRecorrencia(models.Model):
                 "order_line": [fields.Command.create({"product_id": l.product_id.id, "product_uom_qty": l.quantidade})
                                for l in r.linha_ids],
             })
-            pedido.action_confirm()
+            try:
+                pedido.action_confirm()
+            except UserError as erro:
+                # Ex.: reserva mínima do bar (Etapa 17). Fica como cotação para o comercial decidir.
+                pedido.message_post(body=_("Pedido recorrente não confirmado: %s", erro.args[0] if erro.args else erro))
             r.ultimo_pedido_id = pedido
             pedidos |= pedido
         if len(pedidos) == 1:

@@ -7,6 +7,10 @@
         <field name="arch" type="xml">
             <field name="boteco_tipo_unidade" position="after">
                 <field name="boteco_impressora_etiqueta_id"/>
+                <field name="boteco_capacidade_prod_diaria_kg"/>
+                <field name="boteco_capacidade_freezer_litros"/>
+                <field name="boteco_freezer_ocupado_litros" invisible="not boteco_capacidade_freezer_litros"/>
+                <field name="boteco_freezer_livre_litros" invisible="not boteco_capacidade_freezer_litros"/>
             </field>
         </field>
     </record>

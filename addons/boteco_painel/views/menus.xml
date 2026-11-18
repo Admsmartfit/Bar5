@@ -8,6 +8,8 @@
               action="action_fechamento_dia"/>
     <menuitem id="menu_dre" name="DRE por frente" parent="menu_boteco_relatorios" sequence="20"
               action="action_dre" groups="boteco_base.group_dono"/>
+    <menuitem id="menu_rateio_taxa" name="Rateio da taxa de serviço" parent="menu_boteco_relatorios" sequence="25"
+              action="action_boteco_rateio_taxa"/>
     <menuitem id="menu_pagar" name="Contas a pagar" parent="menu_boteco_relatorios" sequence="30"
               action="account.action_move_in_invoice_type" groups="boteco_base.group_dono"/>
 </odoo>

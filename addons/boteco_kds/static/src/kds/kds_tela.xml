@@ -33,6 +33,14 @@
                 <t t-else="">Nenhum pedido na fila. 🍺</t>
             </div>
 
+            <aside t-if="totalizador.length" class="o_boteco_kds__totalizador">
+                <h3>Na grelha agora</h3>
+                <div t-foreach="totalizador" t-as="tot" t-key="tot_index" class="totalizador__item">
+                    <b t-esc="formatarQtd(tot.quantidade)"/>× <t t-esc="tot.nome"/>
+                    <small t-if="tot.atributos"> (<t t-esc="tot.atributos"/>)</small>
+                </div>
+            </aside>
+
             <main class="o_boteco_kds__grade">
                 <t t-foreach="ticketsVisiveis" t-as="ticket" t-key="ticket.id">
                     <article class="o_boteco_kds__cartao" t-att-data-tempo="corTempo(ticket)" t-att-data-estado="ticket.estado"
@@ -40,6 +48,7 @@
                              t-on-pointerdown="() => this.inicioToque(ticket)"
                              t-on-pointerup="() => this.fimToque()" t-on-pointerleave="() => this.fimToque()">
                         <div class="cartao__topo">
+                            <span t-if="state.avancado and ticket_index &lt; 9" class="cartao__tecla" t-esc="ticket_index + 1"/>
                             <span class="cartao__mesa" t-esc="ticket.mesa"/>
                             <span class="cartao__tempo" t-esc="cronometro(ticket)"/>
                         </div>
@@ -49,6 +58,9 @@
                             <span t-if="ticket.garcom" t-esc="ticket.garcom"/>
                             <span t-if="setor === 'todos'" class="text-uppercase" t-esc="ticket.setor"/>
                         </div>
+                        <div t-if="ticket.segundo_tempo" class="cartao__segundo_tempo">⏸ 2º TEMPO – espere o prato principal sair</div>
+                        <div t-if="esperaPacing(ticket)" class="cartao__pacing">⏳ Começar em <t t-esc="formatarEspera(esperaPacing(ticket))"/></div>
+                        <div t-foreach="ticket.avisos or []" t-as="aviso" t-key="aviso_index" class="cartao__aviso" t-esc="aviso"/>
                         <ul class="cartao__itens">
                             <li t-foreach="ticket.itens" t-as="item" t-key="item.id">
                                 <span class="item__qtd" t-esc="formatarQtd(item.quantidade)"/>

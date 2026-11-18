@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_rateio_taxa_view_form" model="ir.ui.view">
+        <field name="name">boteco.rateio.taxa.form</field>
+        <field name="model">boteco.rateio.taxa</field>
+        <field name="arch" type="xml">
+            <form string="Rateio da taxa de serviço">
+                <p>Divide a taxa de serviço das contas pagas no período conforme os percentuais da empresa
+                   (aba Boteco). A parte dos garçons é proporcional à taxa gerada nas contas de cada um.</p>
+                <group>
+                    <group>
+                        <field name="data_inicio"/>
+                        <field name="data_fim"/>
+                    </group>
+                    <group>
+                        <field name="total_taxa"/>
+                    </group>
+                </group>
+                <field name="linha_ids">
+                    <list create="false" delete="false">
+                        <field name="papel"/>
+                        <field name="beneficiario"/>
+                        <field name="base"/>
+                        <field name="valor" sum="Total"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_calcular" type="object" string="Calcular" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_rateio_taxa" model="ir.actions.act_window">
+        <field name="name">Rateio da taxa de serviço</field>
+        <field name="res_model">boteco.rateio.taxa</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

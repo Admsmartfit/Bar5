@@ -19,6 +19,24 @@ patch(PosStore.prototype, {
         return this.session?._boteco || {};
     },
 
+    /** Central de Recursos (Liga/Desliga): flag ligada para esta empresa? */
+    botecoRecurso(codigo) {
+        return Boolean(this.botecoDados.recursos?.[codigo]);
+    },
+
+    // ------------------------------------------------------------------
+    // Ocupação padrão: conta nova de mesa já vem com os lugares da mesa (Etapa 13)
+    // ------------------------------------------------------------------
+    createNewOrder() {
+        const order = super.createNewOrder(...arguments);
+        const mesa = order?.table_id;
+        if (mesa && this.botecoRecurso("ocupacao_padrao_mesa") && (order.customer_count || 0) <= 1) {
+            const sugestao = mesa.boteco_clientes_atuais || mesa.seats || 2;
+            order.setCustomerCount?.(sugestao);
+        }
+        return order;
+    },
+
     // ------------------------------------------------------------------
     // Mesas: "chamou garçom" / "pediu a conta" chegam em tempo real
     // ------------------------------------------------------------------
@@ -32,6 +50,7 @@ patch(PosStore.prototype, {
             boteco_chamou_garcom_em: dados.boteco_chamou_garcom_em,
             boteco_pediu_conta: dados.boteco_pediu_conta,
             boteco_pediu_conta_em: dados.boteco_pediu_conta_em,
+            boteco_clientes_atuais: dados.boteco_clientes_atuais,
         });
         if (dados.evento === "pediu_conta") {
             tocarSom("bell");

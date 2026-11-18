@@ -6,6 +6,10 @@
               action="action_boteco_nfe_importacao"/>
     <menuitem id="menu_boteco_lista_compras" name="Lista de compras (WhatsApp)" parent="menu_boteco_estoque" sequence="20"
               action="action_boteco_lista_compras"/>
+    <menuitem id="menu_boteco_importar_orcamento" name="Ler orçamento (PDF / foto)" parent="menu_boteco_estoque" sequence="22"
+              action="action_boteco_importar_orcamento"/>
+    <menuitem id="menu_boteco_radar_precos" name="Radar de preços" parent="menu_boteco_estoque" sequence="24"
+              action="action_boteco_historico_preco"/>
     <menuitem id="menu_boteco_contagem" name="Contagem de estoque" parent="menu_boteco_estoque" sequence="30"
               action="action_boteco_contagem"/>
     <menuitem id="menu_boteco_perdas" name="Perdas" parent="menu_boteco_estoque" sequence="40"

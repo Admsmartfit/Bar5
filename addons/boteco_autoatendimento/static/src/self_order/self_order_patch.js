@@ -98,7 +98,15 @@ patch(SelfOrder.prototype, {
                 { silent: true }
             );
             const estavaEsperando = this.botecoMesa.aguardandoLiberacao;
+            const estavaEmConferencia = this.botecoMesa.conta?.em_conferencia;
             Object.assign(this.botecoMesa, dados, { semRede: false });
+            const emConferencia = Boolean(dados.conta?.em_conferencia);
+            if (emConferencia && !estavaEmConferencia) {
+                this.notification.add(
+                    _t("Recebemos seu pedido! O garçom vai confirmar com a mesa antes de preparar."),
+                    { type: "info" }
+                );
+            }
             if (estavaEsperando && dados.estado === "aprovado") {
                 this.botecoMesa.aguardandoLiberacao = false;
                 this._botecoFecharAviso?.();
@@ -110,11 +118,16 @@ patch(SelfOrder.prototype, {
         }
     },
 
-    async botecoChamar(tipo) {
+    botecoRecurso(codigo) {
+        return Boolean(this.botecoMesa?.recursos?.[codigo]);
+    },
+
+    async botecoChamar(tipo, motivo = null) {
         const resposta = await rpc("/boteco/mesa/chamar", {
             access_token: this.access_token,
             table_identifier: this.botecoIdentificador,
             tipo,
+            motivo,
         });
         if (resposta.ok) {
             this.notification.add(
@@ -181,6 +194,32 @@ patch(SelfOrder.prototype, {
         if (!mesa || !this.botecoIdentificador || this.config.self_ordering_mode !== "mobile") {
             return super.sendDraftOrderToServer(...arguments);
         }
+        // Tablet neutro (Etapa 16): trava de envio duplo enquanto o primeiro toque não terminou.
+        // O próprio pedido tem uuid único: o servidor também nunca duplica.
+        const travar = this.botecoRecurso("tablet_neutro_anti_burst");
+        if (travar && this._botecoEnviando) {
+            return false;
+        }
+        this._botecoEnviando = travar;
+        try {
+            if (!(await this._botecoPodeEnviar(mesa))) {
+                return false;
+            }
+            const resultado = await super.sendDraftOrderToServer(...arguments);
+            if (resultado === false && !navigator.onLine) {
+                mesa.envioPendente = true;
+            }
+            if (resultado) {
+                this.botecoAtualizarStatus();
+            }
+            return resultado;
+        } finally {
+            this._botecoEnviando = false;
+        }
+    },
+
+    /** Conferências antes do envio: rede, liberação do celular e aviso de +18. */
+    async _botecoPodeEnviar(mesa) {
         if (!navigator.onLine) {
             mesa.envioPendente = true;
             mesa.semRede = true;
@@ -219,13 +258,6 @@ patch(SelfOrder.prototype, {
                 { type: "warning", sticky: true }
             );
         }
-        const resultado = await super.sendDraftOrderToServer(...arguments);
-        if (resultado === false && !navigator.onLine) {
-            mesa.envioPendente = true;
-        }
-        if (resultado) {
-            this.botecoAtualizarStatus();
-        }
-        return resultado;
+        return true;
     },
 });

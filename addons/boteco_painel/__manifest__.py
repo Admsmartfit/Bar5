@@ -29,6 +29,7 @@ Programado aqui:
         "views/res_company_views.xml",
         "views/pos_payment_method_views.xml",
         "views/painel_views.xml",
+        "views/boteco_rateio_views.xml",
         "report/fechamento_dia_report.xml",
         "report/dre_report.xml",
         "views/menus.xml",

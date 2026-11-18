@@ -5,11 +5,17 @@
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='bom_line_ids']//field[@name='product_qty']" position="before">
+                <field name="boteco_qtd_liquida" optional="show"/>
+                <field name="boteco_fator_correcao" optional="show"/>
+            </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="Receita (cozinha)" name="boteco_receita">
                     <group>
                         <field name="boteco_perda_esperada"/>
                         <field name="boteco_tempo_preparo_min"/>
+                        <field name="boteco_fator_coccao"/>
+                        <field name="boteco_rendimento_estimado"/>
                     </group>
                     <field name="boteco_modo_preparo" placeholder="Passo a passo, com fotos se quiser"/>
                 </page>

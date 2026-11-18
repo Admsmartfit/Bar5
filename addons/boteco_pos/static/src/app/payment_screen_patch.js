@@ -51,7 +51,24 @@ patch(PaymentScreen.prototype, {
             const valor = indice < n - 1 ? Math.min(this.botecoValoresPartes[indice], restante) : restante;
             nova.set_amount(Math.round(valor * 100) / 100);
         }
+        if (resultado) {
+            this.botecoAbrirMaquininha(paymentMethod, this.paymentLines.at(-1));
+        }
         return resultado;
+    },
+
+    /** Etapa 20 (DeepLink Smart POS): abre o app da maquininha já com o valor, sem digitar. */
+    botecoAbrirMaquininha(paymentMethod, linha) {
+        const modelo = paymentMethod?.boteco_deeplink;
+        if (!modelo || !linha || !this.pos.botecoRecurso?.("garcom_tags_rapidas")) {
+            return;
+        }
+        const valor = Math.round((linha.amount || 0) * 100) / 100;
+        const url = modelo
+            .replaceAll("{valor_centavos}", String(Math.round(valor * 100)))
+            .replaceAll("{valor}", valor.toFixed(2))
+            .replaceAll("{pedido}", encodeURIComponent(this.currentOrder?.pos_reference || this.currentOrder?.uuid || ""));
+        window.location.href = url;
     },
 
     async botecoCpfNaNota() {

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ Delivery (Etapa 22) ============ -->
+    <record id="boteco_delivery_bairro_view_list" model="ir.ui.view">
+        <field name="name">boteco.delivery.bairro.list</field>
+        <field name="model">boteco.delivery.bairro</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="taxa" widget="monetary"/>
+                <field name="tempo_estimado_min"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_boteco_bairro" model="ir.actions.act_window">
+        <field name="name">Bairros e taxas de entrega</field>
+        <field name="res_model">boteco.delivery.bairro</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="boteco_delivery_entrega_view_list" model="ir.ui.view">
+        <field name="name">boteco.delivery.entrega.list</field>
+        <field name="model">boteco.delivery.entrega</field>
+        <field name="arch" type="xml">
+            <list editable="top" decoration-muted="estado in ('entregue', 'cancelada')" decoration-warning="estado == 'saiu'">
+                <field name="data" readonly="1"/>
+                <field name="order_id" options="{'no_create': True}"/>
+                <field name="cliente_id" readonly="1"/>
+                <field name="endereco"/>
+                <field name="bairro_id" options="{'no_create': True}"/>
+                <field name="taxa" widget="monetary"/>
+                <field name="motoboy_id" options="{'no_create': True}"/>
+                <field name="estado"/>
+                <button name="action_saiu" type="object" string="Saiu" invisible="estado != 'preparando'"/>
+                <button name="action_entregue" type="object" string="Entregue" invisible="estado != 'saiu'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_boteco_entregas" model="ir.actions.act_window">
+        <field name="name">Entregas</field>
+        <field name="res_model">boteco.delivery.entrega</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nenhuma entrega</p>
+            <p>Ligue o delivery na Central de Recursos, cadastre os bairros e lance aqui as contas que saem para entrega.</p>
+        </field>
+    </record>
+
+    <record id="boteco_delivery_acerto_view_form" model="ir.ui.view">
+        <field name="name">boteco.delivery.acerto.form</field>
+        <field name="model">boteco.delivery.acerto</field>
+        <field name="arch" type="xml">
+            <form string="Acerto de motoboys">
+                <group>
+                    <field name="data_inicio"/>
+                    <field name="data_fim"/>
+                </group>
+                <field name="linha_ids">
+                    <list create="false" delete="false">
+                        <field name="motoboy_id"/>
+                        <field name="entregas" sum="Total"/>
+                        <field name="total_taxas" sum="Total"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_calcular" type="object" string="Calcular" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_acerto_motoboy" model="ir.actions.act_window">
+        <field name="name">Acerto de motoboys</field>
+        <field name="res_model">boteco.delivery.acerto</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ============ Régua de clientes (Etapa 22) ============ -->
+    <record id="boteco_regua_crm_view_form" model="ir.ui.view">
+        <field name="name">boteco.regua.crm.form</field>
+        <field name="model">boteco.regua.crm</field>
+        <field name="arch" type="xml">
+            <form string="Clientes sumidos e aniversariantes">
+                <group>
+                    <field name="dias_sumido"/>
+                    <field name="dias_aniversario"/>
+                </group>
+                <field name="linha_ids">
+                    <list create="false" delete="false">
+                        <field name="motivo"/>
+                        <field name="partner_id"/>
+                        <field name="ultima_visita"/>
+                        <field name="dias"/>
+                        <field name="aniversario"/>
+                        <field name="visitas"/>
+                        <field name="total_gasto"/>
+                        <field name="mensagem" optional="hide"/>
+                        <button name="action_abrir_whatsapp" type="object" string="WhatsApp" icon="fa-whatsapp"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_gerar" type="object" string="Gerar lista" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_regua_crm" model="ir.actions.act_window">
+        <field name="name">Clientes sumidos e aniversariantes</field>
+        <field name="res_model">boteco.regua.crm</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Cliente: aniversário e motoboy -->
+    <record id="res_partner_form_boteco_canais" model="ir.ui.view">
+        <field name="name">res.partner.form.boteco.canais</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="category_id" position="after">
+                <field name="boteco_aniversario"/>
+                <field name="boteco_motoboy"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- ============ DeepLink da maquininha (Etapa 20) ============ -->
+    <record id="pos_payment_method_form_boteco_deeplink" model="ir.ui.view">
+        <field name="name">pos.payment.method.form.boteco.deeplink</field>
+        <field name="model">pos.payment.method</field>
+        <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
+        <field name="arch" type="xml">
+            <field name="journal_id" position="after">
+                <field name="boteco_deeplink" placeholder="app-da-maquininha://pagar?valor={valor_centavos}"/>
+            </field>
+        </field>
+    </record>
+</odoo>

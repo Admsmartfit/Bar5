@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -20,6 +21,7 @@ CAMPOS_SERVIDOR_LINHA = {
 }
 
 ORIGENS = [("garcom", "Garçom"), ("caixa", "Caixa"), ("tablet", "Tablet da mesa"), ("qr", "QR Code")]
+PAGOS = ("paid", "done", "invoiced")
 
 
 class PosOrder(models.Model):
@@ -114,6 +116,7 @@ class PosOrder(models.Model):
         vals_list = [self._boteco_normalizar(dict(v)) for v in vals_list]
         pedidos = super().create(vals_list)
         pedidos._boteco_conferir_conta_especial()
+        pedidos._boteco_sincronizar_clientes_mesa()
         return pedidos
 
     def write(self, vals):
@@ -126,7 +129,17 @@ class PosOrder(models.Model):
         res = super().write(vals)
         if "boteco_tipo_conta" in vals or "boteco_autorizacao_ref" in vals:
             self._boteco_conferir_conta_especial()
+        if "customer_count" in vals or "table_id" in vals:
+            self._boteco_sincronizar_clientes_mesa()
         return res
+
+    def _boteco_sincronizar_clientes_mesa(self):
+        """O número de pessoas que o garçom/caixa digitou na conta vira o N da mesa (Etapa 13)."""
+        for pedido in self:
+            if (pedido.state == "draft" and pedido.table_id and pedido.customer_count > 0
+                    and pedido.boteco_origem in ("garcom", "caixa")
+                    and pedido.table_id.boteco_clientes_atuais != pedido.customer_count):
+                pedido.table_id.sudo().boteco_clientes_atuais = pedido.customer_count
 
     def _boteco_conferir_conta_especial(self):
         """Consumo de funcionário precisa de permissão ou PIN do gerente (uma vez por conta)."""
@@ -231,6 +244,44 @@ class PosOrder(models.Model):
             super(PosOrder, pedido).write({"last_order_preparation_change": json.dumps(snapshot)})
         self._boteco_processar_envio()
         return True
+
+    # ------------------------------------------------------------------
+    # Portaria (Etapa 20): comanda paga ou pendente
+    # ------------------------------------------------------------------
+    @api.model
+    def boteco_validar_saida(self, codigo):
+        """Código bipado (QR/código do cupom, referência do pedido ou 'MESA 5') -> cor da tela da portaria."""
+        codigo = (codigo or "").strip()
+        if not codigo:
+            return {"cor": "cinza", "titulo": _("Bipe a comanda"), "detalhe": ""}
+        Pedido = self.sudo()
+        dominio_empresa = [("company_id", "=", self.env.company.id)]
+        mesa_numero = re.fullmatch(r"(?i)mesa\s*(\d+)", codigo)
+        if mesa_numero:
+            abertas = Pedido.search(dominio_empresa + [("table_id.table_number", "=", int(mesa_numero.group(1))),
+                                                       ("state", "=", "draft")])
+            if abertas:
+                return self._boteco_resposta_pendente(abertas, _("Mesa %s", mesa_numero.group(1)))
+            return {"cor": "verde", "titulo": _("Mesa %s sem conta aberta", mesa_numero.group(1)), "detalhe": ""}
+        criterios = [("uuid", "=", codigo), ("pos_reference", "=", codigo), ("name", "=", codigo)]
+        if codigo.isdigit() and len(codigo) <= 3:  # número curto do pedido (o Odoo só busca até 3 dígitos)
+            criterios.append(("tracking_number", "=", codigo))
+        pedido = Pedido.search(dominio_empresa + ["|"] * (len(criterios) - 1) + criterios, order="id desc", limit=1)
+        if not pedido:
+            return {"cor": "vermelho", "titulo": _("Comanda não encontrada"), "detalhe": codigo}
+        if pedido.state in PAGOS:
+            return {"cor": "verde", "titulo": _("PAGA"),
+                    "detalhe": _("%(ref)s · %(total)s", ref=pedido.pos_reference or pedido.name,
+                                 total=pedido.currency_id.format(pedido.amount_total))}
+        if pedido.state == "cancel":
+            return {"cor": "vermelho", "titulo": _("Comanda cancelada"), "detalhe": pedido.pos_reference or ""}
+        return self._boteco_resposta_pendente(pedido, pedido.pos_reference or pedido.name)
+
+    def _boteco_resposta_pendente(self, pedidos, rotulo):
+        falta = sum(p.amount_total - p.amount_paid for p in pedidos)
+        moeda = pedidos[:1].currency_id
+        return {"cor": "vermelho", "titulo": _("PENDENTE"),
+                "detalhe": _("%(r)s · falta pagar %(v)s", r=rotulo, v=moeda.format(falta))}
 
     # ------------------------------------------------------------------
     def _process_saved_order(self, draft):

@@ -17,6 +17,11 @@
                             <field name="expiration_time" string="Validade congelado (dias)"/>
                             <field name="boteco_validade_resfriado_dias"/>
                         </group>
+                        <group string="Capacidade e reserva" invisible="not boteco_produzido_cozinha">
+                            <field name="boteco_lote_max_diario"/>
+                            <field name="boteco_volume_freezer_litros"/>
+                            <field name="boteco_estoque_min_bar"/>
+                        </group>
                     </group>
                 </page>
             </xpath>

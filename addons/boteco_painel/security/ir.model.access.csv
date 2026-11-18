@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_boteco_fechamento_dia_gerente,boteco.fechamento.dia gerente,model_boteco_fechamento_dia,boteco_base.group_gerente,1,1,1,1
 access_boteco_dre_dono,boteco.dre dono,model_boteco_dre,boteco_base.group_dono,1,1,1,1
+access_boteco_rateio_taxa_gerente,boteco.rateio.taxa gerente,model_boteco_rateio_taxa,boteco_base.group_gerente,1,1,1,1
+access_boteco_rateio_taxa_linha_gerente,boteco.rateio.taxa.linha gerente,model_boteco_rateio_taxa_linha,boteco_base.group_gerente,1,1,1,1

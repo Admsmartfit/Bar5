@@ -32,6 +32,11 @@ class PosSession(models.Model):
             "motivos": [
                 {"id": m.id, "nome": m.name, "tipo": m.tipo, "pede_detalhe": m.pede_detalhe} for m in motivos
             ],
+            # Central de Recursos: a tela confere as flags antes de cada regra nova
+            "recursos": {
+                nome[len("boteco_flag_"):]: bool(config.company_id[nome])
+                for nome in config.company_id._fields if nome.startswith("boteco_flag_")
+            },
             "taxa_pct": config.boteco_taxa_servico_pct,
             "taxa_no_balcao": config.boteco_taxa_no_balcao,
             "produto_taxa_id": config.boteco_produto_taxa_id.id,

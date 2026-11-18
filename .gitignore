@@ -2,6 +2,7 @@
 config/odoo.conf
 config/certs/
 backups/
+atualizacao/
 *.pyc
 __pycache__/
 .vscode/

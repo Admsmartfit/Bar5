@@ -49,7 +49,9 @@ export class KdsTela extends Component {
             conectado: true,
             telaCheia: false,
             carregando: true,
+            avancado: false, // Etapa 21: totalizador de grelha, pacing e bump bar
         });
+        this._aoTecla = (ev) => this.aoTecla(ev);
         this.criadoLocal = new Map(); // id -> instante local em que o ticket foi criado
         this.som = new Audio("/point_of_sale/static/src/sounds/bell.mp3");
         this.canal = null;
@@ -65,6 +67,7 @@ export class KdsTela extends Component {
             this.bus.subscribe("boteco_kds/alerta", this._aoAlerta);
             this.timers.push(setInterval(() => (this.state.agora = Date.now()), 1000));
             this.timers.push(setInterval(() => this.carregar(), CONFERENCIA_MS));
+            window.addEventListener("keydown", this._aoTecla);
         });
         onWillUnmount(() => {
             this.bus.unsubscribe("boteco_kds/atualizar", this._aoNotificar);
@@ -74,6 +77,7 @@ export class KdsTela extends Component {
                 this.bus.deleteChannel(this.canal);
             }
             this.timers.forEach(clearInterval);
+            window.removeEventListener("keydown", this._aoTecla);
             document.body.classList.remove("o_boteco_kds_cheia");
         });
     }
@@ -90,6 +94,7 @@ export class KdsTela extends Component {
             this.state.cancelamentos = dados.cancelamentos;
             this.state.impressorasParadas = dados.impressoras_paradas;
             this.state.esperandoImpressao = dados.tickets_esperando_impressao;
+            this.state.avancado = Boolean(dados.avancado);
             this.state.conectado = true;
         } catch {
             this.state.conectado = false;
@@ -101,6 +106,69 @@ export class KdsTela extends Component {
     registrarRelogio(ticket) {
         if (!this.criadoLocal.has(ticket.id)) {
             this.criadoLocal.set(ticket.id, Date.now() - (ticket.segundos || 0) * 1000);
+        }
+        if (ticket.iniciar_em_segundos) {
+            this.iniciarLocal = this.iniciarLocal || new Map();
+            this.iniciarLocal.set(ticket.id, Date.now() + ticket.iniciar_em_segundos * 1000);
+        }
+    }
+
+    // ------------------------------------------------------------------ Etapa 21 (KDS avançado)
+    /** Totalizador de grelha: soma dos itens iguais ainda na fila ou em preparo. */
+    get totalizador() {
+        if (!this.state.avancado) {
+            return [];
+        }
+        const soma = new Map();
+        for (const t of this.ticketsVisiveis) {
+            if (!["aguardando", "preparando"].includes(t.estado)) {
+                continue;
+            }
+            for (const i of t.itens) {
+                const chave = `${i.nome}|${i.atributos || ""}`;
+                const atual = soma.get(chave) || { nome: i.nome, atributos: i.atributos, quantidade: 0 };
+                atual.quantidade += i.quantidade;
+                soma.set(chave, atual);
+            }
+        }
+        return [...soma.values()].sort((a, b) => b.quantidade - a.quantidade);
+    }
+
+    /** Pacing: quanto falta para começar este cartão (0 = já pode). */
+    esperaPacing(ticket) {
+        if (!this.state.avancado || ticket.estado !== "aguardando") {
+            return 0;
+        }
+        const quando = this.iniciarLocal?.get(ticket.id);
+        return quando ? Math.max(0, Math.ceil((quando - this.state.agora) / 1000)) : 0;
+    }
+
+    formatarEspera(segundos) {
+        return `${Math.floor(segundos / 60)}:${String(segundos % 60).padStart(2, "0")}`;
+    }
+
+    /** Bump bar (teclado numérico USB): 1-9 avança o cartão daquela posição; 0 desfaz. */
+    aoTecla(ev) {
+        if (!this.state.avancado || ev.ctrlKey || ev.altKey || ev.metaKey) {
+            return;
+        }
+        if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
+            return;
+        }
+        const tecla = ev.key;
+        if (tecla === "0" || tecla === "Backspace") {
+            ev.preventDefault();
+            this.desfazer();
+            return;
+        }
+        const n = parseInt(tecla, 10);
+        if (n >= 1 && n <= 9) {
+            const ticket = this.ticketsVisiveis[n - 1];
+            if (ticket) {
+                ev.preventDefault();
+                this._longo = false;
+                this.tocarCartao(ticket);
+            }
         }
     }
 

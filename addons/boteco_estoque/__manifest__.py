@@ -25,7 +25,9 @@ Programado aqui:
     "data": [
         "security/ir.model.access.csv",
         "data/stock_scrap_reason_data.xml",
+        "data/ir_cron_data.xml",
         "views/boteco_cmv_views.xml",
+        "views/boteco_compras_inteligentes_views.xml",
         "views/boteco_nfe_views.xml",
         "views/boteco_lista_compras_views.xml",
         "views/boteco_contagem_views.xml",

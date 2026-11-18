@@ -13,6 +13,24 @@ _logger = logging.getLogger(__name__)
 
 TAMANHO_FOTO = 1024
 
+# Taxonomia semântica de consumo (Etapa 12): base do motor N+X e das regras de utensílios
+TIPOS_CONSUMO = [
+    ("prato_individual", "Prato individual"),
+    ("prato_compartilhado", "Prato compartilhado (porção/tábua)"),
+    ("sobremesa", "Sobremesa"),
+    ("bebida_giro", "Bebida de giro (chope, lata, dose)"),
+    ("garrafa", "Garrafa compartilhada (vinho, destilado)"),
+    ("agua", "Água mineral"),
+    ("outro", "Outro (sem regra)"),
+]
+REGRAS_UTENSILIO = [
+    ("copo_cerveja", "Copo de cerveja (1ª cerveja da mesa)"),
+    ("taca_vinho", "Taça de vinho + saca-rolhas"),
+    ("taca_vinho_gelo", "Taça de vinho + balde com gelo (branco/rosé/espumante)"),
+    ("pratos_compartilhados", "Pratos rasos + talheres + pegador"),
+    ("guardanapo_reforcado", "Cesta de guardanapos reforçada (lanches/finger food)"),
+]
+
 
 def recortar_quadrado(imagem_b64):
     """Recorta a foto no centro, em quadrado, e limita a 1024 px (cardápio carrega rápido)."""
@@ -65,6 +83,31 @@ class ProductTemplate(models.Model):
         help="Preço durante o happy hour. Vazio ou zero = o produto não entra no happy hour.",
     )
     boteco_destaque = fields.Boolean("Destaque no tablet", help="Aparece na tela inicial do tablet.")
+
+    # --- Consumo e utensílios (Etapa 12) --------------------------------------
+    boteco_tipo_consumo = fields.Selection(
+        TIPOS_CONSUMO, string="Tipo de consumo",
+        help="Usado para conferir se o pedido do tablet faz sentido para o número de pessoas da mesa. "
+        "Vazio = o item não entra nas regras.",
+    )
+    boteco_serve_pessoas = fields.Integer(
+        "Serve quantas pessoas", default=1,
+        help="Rendimento do item. Ex.: tábua para 3 pessoas = 3. Aparece no tablet ('Serve até 3 pessoas').",
+    )
+    boteco_max_por_rodada_sku = fields.Integer(
+        "Máximo por rodada", default=0,
+        help="Quantas unidades deste item podem ir num mesmo envio do tablet sem conferência. 0 = automático (N+1).",
+    )
+    boteco_regra_utensilio = fields.Selection(
+        REGRAS_UTENSILIO, string="Utensílios a enviar",
+        help="O que o ticket de produção manda separar junto com o item.",
+    )
+
+    @api.constrains("boteco_serve_pessoas", "boteco_max_por_rodada_sku")
+    def _check_boteco_consumo(self):
+        for produto in self:
+            if produto.boteco_serve_pessoas < 0 or produto.boteco_max_por_rodada_sku < 0:
+                raise ValidationError(_("Rendimento e máximo por rodada não podem ser negativos."))
 
     # --- Fiscal (para a emissão posterior) -----------------------------------
     boteco_ncm = fields.Char("NCM", help="8 números. Ex.: 2203.00.00 (cerveja de malte).")
@@ -199,6 +242,10 @@ class ProductProduct(models.Model):
             "boteco_descricao_curta",
             "boteco_destaque",
             "boteco_tempo_preparo",
+            "boteco_tipo_consumo",
+            "boteco_serve_pessoas",
+            "boteco_max_por_rodada_sku",
+            "boteco_regra_utensilio",
         ]
 
     def _boteco_preco_promocional(self, momento=None, qtd=1.0):

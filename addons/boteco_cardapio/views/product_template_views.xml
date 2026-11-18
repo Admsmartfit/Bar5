@@ -45,6 +45,16 @@
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
+                    <group string="Consumo e utensílios (conferência do tablet e ticket)">
+                        <group>
+                            <field name="boteco_tipo_consumo"/>
+                            <field name="boteco_serve_pessoas"/>
+                        </group>
+                        <group>
+                            <field name="boteco_max_por_rodada_sku"/>
+                            <field name="boteco_regra_utensilio"/>
+                        </group>
+                    </group>
                     <group string="Dados fiscais (para a nota emitida depois)">
                         <group>
                             <field name="categ_id" string="Categoria (traz o padrão fiscal)"/>
@@ -124,6 +134,9 @@
                 <field name="list_price" widget="monetary"/>
                 <field name="boteco_preco_happy" widget="monetary" optional="show"/>
                 <field name="boteco_maior_18" optional="show"/>
+                <field name="boteco_tipo_consumo" optional="show"/>
+                <field name="boteco_serve_pessoas" optional="hide"/>
+                <field name="boteco_regra_utensilio" optional="hide"/>
                 <field name="boteco_esgotado" widget="boolean_toggle" optional="show"/>
                 <field name="boteco_ncm" optional="hide"/>
                 <field name="boteco_cfop" optional="hide"/>
@@ -178,6 +191,12 @@
                         <group string="Produção">
                             <field name="boteco_setor_id"/>
                             <field name="boteco_tempo_preparo"/>
+                        </group>
+                        <group string="Consumo e utensílios">
+                            <field name="boteco_tipo_consumo"/>
+                            <field name="boteco_serve_pessoas"/>
+                            <field name="boteco_max_por_rodada_sku"/>
+                            <field name="boteco_regra_utensilio"/>
                         </group>
                     </group>
                 </page>

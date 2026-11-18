@@ -18,6 +18,7 @@ class RestaurantTable(models.Model):
         if not self.boteco_codigo_sessao:
             self.sudo().write({"boteco_codigo_sessao": secrets.token_hex(8),
                                "boteco_sessao_aberta_em": fields.Datetime.now()})
+            self.boteco_iniciar_ocupacao()
         return self.boteco_codigo_sessao
 
     def _boteco_mesa_aberta(self):

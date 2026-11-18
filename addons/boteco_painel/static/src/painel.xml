@@ -49,6 +49,25 @@
                     </div>
                 </section>
 
+                <section t-if="d.oportunidades_compra and d.oportunidades_compra.length" class="pn__bloco">
+                    <h2>Oportunidades de compra</h2>
+                    <ul class="pn__ranking">
+                        <li t-foreach="d.oportunidades_compra" t-as="o" t-key="o_index">
+                            <span>
+                                <b t-esc="o.insumo"/> a <t t-esc="reais(o.preco)"/>
+                                <small class="text-muted"> (−<t t-esc="o.queda_pct"/>% vs. média <t t-esc="reais(o.media)"/>
+                                    <t t-if="o.fornecedor"> · <t t-esc="o.fornecedor"/></t>)</small>
+                                <div t-foreach="o.receitas" t-as="r" t-key="r_index" class="small">
+                                    Economiza <b t-esc="reais(r.economia_receita)"/> por receita de <t t-esc="r.produto"/>
+                                </div>
+                                <div t-if="o.freezer_livre_litros !== null" class="small text-muted">
+                                    <t t-esc="o.freezer_livre_litros"/> L livres no freezer
+                                </div>
+                            </span>
+                        </li>
+                    </ul>
+                </section>
+
                 <section class="pn__bloco">
                     <h2>Mais vendidos hoje</h2>
                     <div t-if="!d.mais_vendidos.length" class="text-muted">Nenhuma venda ainda.</div>

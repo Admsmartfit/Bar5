@@ -38,8 +38,12 @@ patch(PosStore.prototype, {
         await super.setup(...arguments);
         this.botecoProntos = { quantidade: 0 };
         this.data.connectWebSocket("BOTECO_PRONTO", (dados) => this.botecoAoFicarPronto(dados));
+        // Atraso = vermelho e fixo; dicas de atendimento (vinho sem água, chamada qualificada) = amarelo
         this.data.connectWebSocket("BOTECO_ALERTA", (dados) =>
-            this.notification.add(dados.mensagem, { type: "danger", sticky: true })
+            this.notification.add(dados.mensagem, {
+                type: dados.tipo ? "warning" : "danger",
+                sticky: !dados.tipo || dados.tipo === "chamada",
+            })
         );
     },
 

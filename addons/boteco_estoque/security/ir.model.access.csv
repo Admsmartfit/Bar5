@@ -5,5 +5,8 @@ access_boteco_nfe_importacao_gerente,boteco.nfe.importacao gerente,model_boteco_
 access_boteco_nfe_importacao_linha_gerente,boteco.nfe.importacao.linha gerente,model_boteco_nfe_importacao_linha,boteco_base.group_gerente,1,1,1,1
 access_boteco_lista_compras_gerente,boteco.lista.compras gerente,model_boteco_lista_compras,boteco_base.group_gerente,1,1,1,1
 access_boteco_lista_compras_linha_gerente,boteco.lista.compras.linha gerente,model_boteco_lista_compras_linha,boteco_base.group_gerente,1,1,1,1
+access_boteco_historico_preco_gerente,boteco.historico.preco gerente,model_boteco_historico_preco,boteco_base.group_gerente,1,1,1,1
+access_boteco_importar_orcamento_gerente,boteco.importar.orcamento gerente,model_boteco_importar_orcamento,boteco_base.group_gerente,1,1,1,1
+access_boteco_importar_orcamento_linha_gerente,boteco.importar.orcamento.linha gerente,model_boteco_importar_orcamento_linha,boteco_base.group_gerente,1,1,1,1
 access_boteco_contagem_user,boteco.contagem usuario,model_boteco_contagem,stock.group_stock_user,1,1,1,0
 access_boteco_contagem_linha_user,boteco.contagem.linha usuario,model_boteco_contagem_linha,stock.group_stock_user,1,1,1,1

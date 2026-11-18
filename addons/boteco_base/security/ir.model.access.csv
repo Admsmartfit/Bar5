@@ -11,3 +11,4 @@ access_boteco_setor_user,boteco.setor usuario,model_boteco_setor,base.group_user
 access_boteco_setor_dono,boteco.setor dono,model_boteco_setor,group_dono,1,1,1,1
 access_boteco_setor_public,boteco.setor publico,model_boteco_setor,base.group_public,1,0,0,0
 access_boteco_termo_dono,boteco.termo dono,model_boteco_termo,group_dono,1,1,1,1
+access_boteco_atualizacao_dono,boteco.atualizacao dono,model_boteco_atualizacao,group_dono,1,1,1,1
