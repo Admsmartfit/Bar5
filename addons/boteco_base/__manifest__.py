@@ -57,6 +57,9 @@ Fundação do Sistema Boteco Raiz (Etapa 0 do PRD).
             "boteco_base/static/src/css/boteco_backend.scss",
             "boteco_base/static/src/js/botao_ajuda.js",
             "boteco_base/static/src/js/botao_ajuda.xml",
+            "boteco_base/static/src/css/boteco_aparencia.scss",
+            "boteco_base/static/src/js/aparencia.js",
+            "boteco_base/static/src/js/aparencia.xml",
         ],
         "boteco_base.assets_pin": [
             "boteco_base/static/src/css/boteco_tokens.css",

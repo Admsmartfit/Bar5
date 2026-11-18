@@ -1,0 +1,119 @@
+// Aparência do sistema (botão de sol/lua na barra de cima). Cada pessoa escolhe a sua.
+// Os atributos ficam no <html>: data-bt-escuro, data-bt-contraste, data-bt-fonte, data-bt-cor.
+
+// ---------------------------------------------------------------- tamanho da letra
+// O Odoo 18 mede tudo em rem: mudar o tamanho da raiz aumenta a tela inteira, por igual.
+html[data-bt-fonte="grande"] { font-size: 112.5%; }
+html[data-bt-fonte="maior"] { font-size: 125%; }
+
+// ---------------------------------------------------------------- alto contraste
+// Textos cinza-claros viram quase pretos; bordas e caixas de marcar ficam visíveis.
+html[data-bt-contraste] {
+    .o_web_client, .modal-content, .dropdown-menu, .popover { color: #111827; }
+    .text-muted, .o_form_label.text-muted, .form-text, small.text-muted,
+    .o_setting_right_pane .text-muted, .o_setting_box .text-muted { color: #374151 !important; }
+    .text-500, .text-600, .text-700 { color: #374151 !important; }
+    .o_form_label, .o_setting_right_pane > .o_form_label, label { color: #111827; font-weight: 600; }
+    ::placeholder { color: #6b7280 !important; opacity: 1; }
+    .o_input, .form-control, .form-select, .o_field_widget input, .o_field_widget select, textarea {
+        border-color: #6b7280 !important;
+    }
+    .form-check-input { border: 2px solid #4b5563; }
+    .o_list_table thead th { color: #111827; font-weight: 700; }
+    .o_list_table td { color: #111827; }
+    // Faixas de seção das Configurações ("Permissões", "Integrações"...)
+    .app_settings_block h2, .o_settings_container h2, .o_setting_container h2 {
+        color: #111827 !important; background-color: #e5e7eb !important; font-weight: 700;
+    }
+    .o_control_panel .breadcrumb-item, .o_control_panel .o_last_breadcrumb_item { color: #111827; }
+    .btn-link, a:not(.btn):not(.dropdown-item):not(.nav-link):not(.o_menu_brand) { font-weight: 600; }
+    .o_main_navbar { box-shadow: 0 1px 0 rgba(0, 0, 0, .25); }
+    :focus-visible { outline: 3px solid var(--bt-cor, #714b67) !important; outline-offset: 2px; }
+}
+
+// ---------------------------------------------------------------- cor de destaque
+// "roxo" é a cor original do Odoo: nada a trocar.
+html[data-bt-cor="azul"] { --bt-cor: #1d4ed8; --bt-cor-escura: #1e3a8a; }
+html[data-bt-cor="verde"] { --bt-cor: #15803d; --bt-cor-escura: #14532d; }
+html[data-bt-cor="laranja"] { --bt-cor: #c2410c; --bt-cor-escura: #7c2d12; }
+html[data-bt-cor="grafite"] { --bt-cor: #374151; --bt-cor-escura: #111827; }
+
+html[data-bt-cor]:not([data-bt-cor="roxo"]) {
+    .o_main_navbar { background: var(--bt-cor-escura) !important; border-bottom-color: var(--bt-cor-escura) !important; }
+    .btn-primary {
+        --bs-btn-bg: var(--bt-cor); --bs-btn-border-color: var(--bt-cor);
+        --bs-btn-hover-bg: var(--bt-cor-escura); --bs-btn-hover-border-color: var(--bt-cor-escura);
+        --bs-btn-active-bg: var(--bt-cor-escura); --bs-btn-active-border-color: var(--bt-cor-escura);
+        --bs-btn-disabled-bg: var(--bt-cor); --bs-btn-disabled-border-color: var(--bt-cor);
+    }
+    .btn-primary {
+        background-color: var(--bt-cor) !important; border-color: var(--bt-cor) !important; color: #fff !important;
+        &:hover, &:focus, &:active, &.active { background-color: var(--bt-cor-escura) !important; border-color: var(--bt-cor-escura) !important; }
+    }
+    .o_action_manager .btn-link, .modal .btn-link,
+    .o_action_manager a:not(.btn):not(.dropdown-item):not(.nav-link) { color: var(--bt-cor); }
+    // Na barra de cima, ícones e menus continuam brancos e sem caixas de fundo
+    .o_main_navbar {
+        .o_menu_sections .o_nav_entry, .o_menu_sections .dropdown-toggle, .o_menu_brand, .o_navbar_apps_menu .dropdown-toggle {
+            background-color: transparent !important;
+            &:hover, &.show, &.active { background-color: rgba(255, 255, 255, .15) !important; }
+        }
+        .btn, .btn-link, a, .fa, .o_menu_brand { color: #fff !important; }
+    }
+    .text-primary { color: var(--bt-cor) !important; }
+    .bg-primary { background-color: var(--bt-cor) !important; }
+    .form-check-input:checked { background-color: var(--bt-cor); border-color: var(--bt-cor); }
+    .nav-tabs .nav-link.active, .o_notebook .nav-link.active { border-top-color: var(--bt-cor); color: var(--bt-cor-escura); }
+    .o_arrow_button_current, .o_statusbar_status .btn.active { --bs-btn-color: var(--bt-cor-escura); }
+    .o_searchview .o_facet_values, .badge.text-bg-primary { background-color: var(--bt-cor) !important; }
+}
+
+// ---------------------------------------------------------------- tema escuro
+// O Odoo Community não traz tema escuro (só o Enterprise). Técnica usada pelos módulos de
+// "dark mode" do Community: inverte as cores da página e "desinverte" fotos e imagens, que
+// continuam com as cores reais. Assim funciona em todas as telas, inclusive as que vierem depois.
+html[data-bt-escuro] {
+    background: #fff;
+    filter: invert(1) hue-rotate(180deg) contrast(0.9);
+    color-scheme: light; // o navegador não deve escurecer de novo os campos
+
+    img, video, canvas, picture, iframe, object, embed,
+    .o_image, .o_avatar, .o_field_image, .o_kanban_image, .o_kanban_image_fill,
+    [style*="background-image"], .o_boteco_nao_inverter,
+    // Barra de cima e botões principais mantêm a cor de destaque original (escura), como nos apps modernos
+    .o_main_navbar, .btn-primary {
+        filter: invert(1) hue-rotate(180deg) contrast(1.1);
+    }
+    // Dentro do que já foi desinvertido, nada inverte de novo
+    .o_field_image img, .o_avatar img, .o_kanban_image img, [style*="background-image"] img,
+    .o_main_navbar img, .o_main_navbar .o_avatar, .o_main_navbar [style*="background-image"],
+    .btn-primary img { filter: none; }
+    .o_main_navbar {
+        background: #2b2335;
+        .o_menu_sections .o_nav_entry, .o_menu_sections .dropdown-toggle, .o_menu_brand, .o_navbar_apps_menu .dropdown-toggle {
+            background-color: transparent !important;
+            &:hover, &.show, &.active { background-color: rgba(255, 255, 255, .15) !important; }
+        }
+        .btn, .btn-link, a, .fa, .o_menu_brand { color: #fff !important; }
+    }
+    ::-webkit-scrollbar { background: #e5e7eb; }
+    ::-webkit-scrollbar-thumb { background: #9ca3af; }
+}
+
+// ---------------------------------------------------------------- menu de aparência
+.o_bt_aparencia {
+    min-width: 280px;
+    padding: 10px 12px;
+    .o_bt_aparencia__titulo { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin: 10px 0 6px; }
+    .o_bt_aparencia__grupo { display: flex; gap: 6px; flex-wrap: wrap; }
+    .o_bt_aparencia__opcao {
+        flex: 1 1 0; min-height: 40px; border: 2px solid #d1d5db; border-radius: 10px; background: transparent;
+        font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 4px 8px;
+        &.ativo { border-color: var(--bt-cor, #714b67); background: rgba(113, 75, 103, .08); }
+    }
+    .o_bt_aparencia__cor {
+        width: 34px; height: 34px; border-radius: 50%; border: 3px solid transparent; cursor: pointer;
+        &.ativo { border-color: #111827; box-shadow: 0 0 0 2px #fff inset; }
+    }
+    .o_bt_aparencia__linha { display: flex; align-items: center; justify-content: space-between; min-height: 40px; }
+}

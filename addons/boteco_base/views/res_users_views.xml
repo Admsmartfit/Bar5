@@ -97,4 +97,25 @@
         <field name="url">/boteco/inicio</field>
         <field name="target">self</field>
     </record>
+
+    <!-- Preferências da própria pessoa (menu do avatar > Preferências): aparência do sistema -->
+    <record id="res_users_preferencias_aparencia" model="ir.ui.view">
+        <field name="name">res.users.preferences.boteco.aparencia</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Aparência" name="boteco_aparencia">
+                    <group>
+                        <field name="boteco_tema" widget="radio" options="{'horizontal': true}" readonly="0"/>
+                        <field name="boteco_alto_contraste" widget="boolean_toggle" readonly="0"/>
+                        <field name="boteco_tamanho_fonte" widget="radio" options="{'horizontal': true}" readonly="0"/>
+                        <field name="boteco_cor_destaque" widget="radio" options="{'horizontal': true}" readonly="0"/>
+                    </group>
+                    <p class="text-muted">Também dá para mudar na hora pelo botão de sol/lua na barra de cima.
+                        Depois de salvar aqui, recarregue a página.</p>
+                </page>
+            </xpath>
+        </field>
+    </record>
 </odoo>

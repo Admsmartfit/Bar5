@@ -18,6 +18,11 @@ PIN_CRYPT = CryptContext(["pbkdf2_sha256"], pbkdf2_sha256__default_rounds=50000)
 
 PIN_RE = re.compile(r"^\d{4,6}$")
 
+TEMAS = [("claro", "Claro"), ("escuro", "Escuro"), ("auto", "Automático (igual ao aparelho)")]
+TAMANHOS_FONTE = [("normal", "Normal"), ("grande", "Grande"), ("maior", "Muito grande")]
+CORES_DESTAQUE = [("roxo", "Roxo"), ("azul", "Azul"), ("verde", "Verde"), ("laranja", "Laranja"), ("grafite", "Grafite")]
+CAMPOS_APARENCIA = ["boteco_tema", "boteco_alto_contraste", "boteco_tamanho_fonte", "boteco_cor_destaque"]
+
 
 def pin_trivial(pin):
     """PINs fáceis demais: todos iguais (1111) ou sequência (1234, 4321)."""
@@ -54,13 +59,30 @@ class ResUsers(models.Model):
     boteco_tour_visto = fields.Boolean("Já viu o tour", copy=False)
     boteco_bloqueado = fields.Boolean(compute="_compute_boteco_bloqueado", string="PIN bloqueado")
 
+    # Aparência do sistema (cada pessoa escolhe a sua, pelo botão de sol/lua na barra de cima)
+    boteco_tema = fields.Selection(TEMAS, string="Tema", default="claro", required=True)
+    boteco_alto_contraste = fields.Boolean("Alto contraste", default=True,
+                                           help="Textos mais escuros e bordas mais fortes: mais fácil de ler.")
+    boteco_tamanho_fonte = fields.Selection(TAMANHOS_FONTE, string="Tamanho da letra", default="normal", required=True)
+    boteco_cor_destaque = fields.Selection(CORES_DESTAQUE, string="Cor de destaque", default="roxo", required=True)
+
     @property
     def SELF_READABLE_FIELDS(self):
-        return super().SELF_READABLE_FIELDS + ["boteco_perfil_id", "boteco_perfil_codigo", "boteco_tem_pin", "boteco_tour_visto"]
+        return super().SELF_READABLE_FIELDS + ["boteco_perfil_id", "boteco_perfil_codigo", "boteco_tem_pin", "boteco_tour_visto"] + CAMPOS_APARENCIA
 
     @property
     def SELF_WRITEABLE_FIELDS(self):
-        return super().SELF_WRITEABLE_FIELDS + ["boteco_tour_visto"]
+        return super().SELF_WRITEABLE_FIELDS + ["boteco_tour_visto"] + CAMPOS_APARENCIA
+
+    def boteco_aparencia(self):
+        """Preferências de aparência que a tela aplica ao abrir."""
+        self.ensure_one()
+        return {
+            "tema": self.boteco_tema or "claro",
+            "alto_contraste": self.boteco_alto_contraste,
+            "fonte": self.boteco_tamanho_fonte or "normal",
+            "cor": self.boteco_cor_destaque or "roxo",
+        }
 
     # ------------------------------------------------------------------
     # Campos calculados
