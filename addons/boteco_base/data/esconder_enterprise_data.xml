@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Aplicativos: não lista os aplicativos pagos (Enterprise), que só têm o botão "Upgrade" -->
+    <record id="base.open_module_tree" model="ir.actions.act_window">
+        <field name="domain">[('to_buy', '=', False)]</field>
+    </record>
+</odoo>

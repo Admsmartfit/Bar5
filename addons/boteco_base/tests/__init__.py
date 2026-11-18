@@ -5,3 +5,4 @@ from . import test_escpos
 from . import test_central_recursos
 from . import test_atualizacao
 from . import test_aparencia
+from . import test_sem_enterprise
