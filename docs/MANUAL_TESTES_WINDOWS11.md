@@ -75,8 +75,14 @@ Para testar o sistema sem precisar cadastrar tudo do zero, você pode inserir os
 No terminal Git Bash, execute:
 
 ```bash
-docker compose run --rm -T odoo odoo shell -c /etc/odoo/odoo.conf -d boteco --no-http < scripts/dados_exemplo.py
+MSYS_NO_PATHCONV=1 docker compose run --rm -T odoo odoo shell -c /etc/odoo/odoo.conf -d boteco --no-http < scripts/dados_exemplo.py
 ```
+
+> 💡 **Ou execute o script facilitador:**
+> ```bash
+> ./scripts/carregar_dados.sh
+> ```
+> *(A variável `MSYS_NO_PATHCONV=1` é necessária no Git Bash do Windows para evitar que o terminal converta o caminho Linux `/etc/...` em `C:/Program Files/Git/etc/...`).*
 
 ---
 
