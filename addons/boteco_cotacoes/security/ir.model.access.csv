@@ -4,3 +4,4 @@ access_boteco_cotacao_log_dono,cotacao log dono,model_boteco_cotacao_log,boteco_
 access_boteco_cotacoes_config_gerente,cotacoes config gerente,model_boteco_cotacoes_config,boteco_base.group_gerente,1,1,1,0
 access_boteco_oportunidade_gerente,oportunidade gerente,model_boteco_oportunidade_compra,boteco_base.group_gerente,1,1,0,0
 access_boteco_alerta_marketing_gerente,alerta marketing gerente,model_boteco_alerta_marketing,boteco_base.group_gerente,1,1,0,0
+access_boteco_cotacao_sinonimo_gerente,cotacao sinonimo gerente,model_boteco_cotacao_sinonimo,boteco_base.group_gerente,1,1,1,1

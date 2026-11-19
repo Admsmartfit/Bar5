@@ -6,6 +6,9 @@
 
     {"id_fornecedor": "atacadao", "id_produto_interno": "CERV-600", "unidade_medida": "cx",
      "quantidade_embalagem": 24, "preco_cotado": 189.90, "descricao": "Brahma 600ml cx c/24", "referencia": "wa:ABC123"}
+    ou só com nome e telefone: {"telefone_origem": "5528999991234", "produto_nome_bruto": "Alcatra Grill",
+                               "unidade_medida": "kg", "preco_cotado": 49.9, "condicao_promocional": "leve 4 pague 3",
+                               "link_comprovante": "https://.../encarte.jpg"}
     ou {"cotacoes": [ {...}, {...} ]}
 
 Respostas: 200 com o resultado de cada item | 401 token | 400 JSON inválido | 429 limite por minuto | 503 desligado.

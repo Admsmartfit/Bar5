@@ -34,20 +34,35 @@ Regras de acesso:
   "quantidade_embalagem": 24,
   "preco_cotado": 189.90,
   "descricao": "Brahma 600ml cx c/24",
-  "referencia": "whatsapp:msg-123"
+  "referencia": "whatsapp:msg-123",
+  "condicao_promocional": "leve 4 pague 3",
+  "link_comprovante": "https://.../encarte.jpg"
 }
+```
+Só com o nome (o n8n não sabe o código do Odoo) e o telefone de quem mandou:
+```json
+{"telefone_origem": "5528999991234", "produto_nome_bruto": "Alcatra Grill",
+ "unidade_medida": "kg", "preco_cotado": 49.90}
 ```
 Vários itens de uma vez: `{"cotacoes": [ {...}, {...} ]}` (até 500).
 
 | Campo | Obrigatório | O que é |
 |---|---|---|
-| `id_fornecedor` | sim | O **ID no serviço de cotações** do cadastro do fornecedor, ou o número do fornecedor no Odoo. O fornecedor precisa estar com *Aceitar cotações automáticas* marcado. |
-| `id_produto_interno` | um dos dois | O **código interno** do insumo (`default_code`), ou o número do produto no Odoo |
-| `codigo_barras` | um dos dois | EAN do insumo; tem prioridade sobre o código interno |
+| `id_fornecedor` | um dos dois | O **ID no serviço de cotações** do cadastro do fornecedor, ou o número do fornecedor no Odoo |
+| `telefone_origem` | um dos dois | Telefone de quem mandou a mensagem. O Odoo procura no telefone/celular dos fornecedores e dos contatos deles (DDD + 8 últimos dígitos, com ou sem o 9 e o 55). Se o número estiver em mais de um fornecedor, recusa |
+| `id_produto_interno` | não | O **código interno** do insumo (`default_code`), ou o número do produto no Odoo |
+| `codigo_barras` | não | EAN do insumo; tem prioridade sobre o código interno |
+| `produto_nome_bruto` | não | O nome como o fornecedor escreveu (ex.: "Alcatra Grill"). Usado quando não vem código nem EAN |
 | `unidade_medida` | sim | `un`, `kg`, `g`, `l`, `ml`, `dz`; ou embalagem: `cx`, `fardo`, `pct`, `saco`, `bandeja`, `pack` |
 | `quantidade_embalagem` | se for embalagem | Unidades do insumo na embalagem (ex.: 24 latas na caixa) |
 | `preco_cotado` | sim | Preço em reais da unidade informada (ponto ou vírgula decimal) |
-| `descricao`, `referencia` | não | Como veio escrito e de onde veio (aparecem no radar e na revisão) |
+| `condicao_promocional` | não | A condição da oferta (ex.: "leve 4 pague 3", "acima de 10 cx"). Aparece ao lado do preço no Radar e na revisão |
+| `link_comprovante` | não | Endereço `https://` da foto ou do encarte original. Vira o botão "Ver encarte" no Radar e na revisão (outros tipos de link são ignorados) |
+| `descricao`, `referencia` | não | Como veio escrito e de onde veio |
+
+O fornecedor encontrado precisa estar com *Aceitar cotações automáticas* marcado; se estiver desmarcado, o item volta com `status: "recusado"`.
+
+**Como o produto é identificado:** código de barras → código interno → **sinônimos** (*Compras › Sinônimos de produtos*) → de-para da NF-e e nome no cadastro do fornecedor. Se nada bater, o item **não é rejeitado**: entra em *Cotações para revisar* com `status: "revisar"`, já com a sugestão de insumo mais parecida marcada. Quando o gerente toca em **Ligar**, o nome vira sinônimo daquele fornecedor, e da próxima vez o preço entra sozinho. Nome só "parecido" nunca grava preço sozinho.
 
 O Odoo converte para a unidade do insumo. Por exemplo: R$ 189,90 a caixa com 24 vira R$ 7,91 a garrafa, e R$ 0,0036 o grama vira R$ 3,60 o kg. Se a unidade não converter (kg para um insumo em unidade, ou caixa sem quantidade), o item vai para *Cotações para revisar*.
 

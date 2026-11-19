@@ -142,3 +142,52 @@ class TestApiCotacoes(HttpCase):
         item.write({"product_id": self.cerveja.id, "fator": 12})
         item.action_ligar()
         self.assertTrue(self.Historico.search([("product_id", "=", self.cerveja.id), ("preco_unitario", "=", 10.0)]))
+
+    # ------------------------------------------------------------------ ticket: nome bruto, telefone, condição
+    def test_so_nome_bruto_vai_para_revisar_e_aprende_sinonimo(self):
+        r = self._post({"id_fornecedor": "atacadao", "produto_nome_bruto": "Alcatra Grill", "unidade_medida": "kg",
+                        "preco_cotado": 49.9, "condicao_promocional": "leve 4 pague 3",
+                        "link_comprovante": "https://exemplo.com/encarte.jpg"}).json()
+        self.assertEqual(r["resultados"][0]["status"], "revisar")
+        item = self.env["boteco.cotacao.revisar"].search([("descricao", "=", "Alcatra Grill")])
+        self.assertEqual(item.condicao_promocional, "leve 4 pague 3")
+        self.assertEqual(item.link_comprovante, "https://exemplo.com/encarte.jpg")
+        alcatra = self.env["product.product"].create({
+            "name": "Alcatra", "purchase_ok": True, "uom_id": self.env.ref("uom.product_uom_kgm").id,
+            "uom_po_id": self.env.ref("uom.product_uom_kgm").id})
+        item.product_id = alcatra
+        item.action_ligar()
+        cotacao = self.Historico.search([("product_id", "=", alcatra.id)])
+        self.assertAlmostEqual(cotacao.preco_unitario, 49.9)
+        self.assertEqual(cotacao.condicao_promocional, "leve 4 pague 3")
+        self.assertEqual(cotacao.link_comprovante, "https://exemplo.com/encarte.jpg")
+        # Sinônimo aprendido: da próxima vez (com outra grafia de maiúsculas/acentos) entra sozinho
+        r = self._post({"id_fornecedor": "atacadao", "produto_nome_bruto": "ALCATRA  grill", "unidade_medida": "g",
+                        "preco_cotado": 0.0459, "link_comprovante": "javascript:alert(1)"}).json()
+        self.assertEqual(r["resultados"][0]["status"], "ok")
+        self.assertAlmostEqual(r["resultados"][0]["preco_unidade_insumo"], 45.9)
+        self.assertFalse(self.Historico.search([("product_id", "=", alcatra.id)], limit=1).link_comprovante)
+
+    def test_nome_parecido_nao_entra_sozinho(self):
+        r = self._post({"id_fornecedor": "atacadao", "produto_nome_bruto": "Cebola", "unidade_medida": "kg",
+                        "preco_cotado": 3.5}).json()
+        self.assertEqual(r["resultados"][0]["status"], "revisar")
+        item = self.env["boteco.cotacao.revisar"].search([("descricao", "=", "Cebola")])
+        self.assertEqual(item.product_id, self.cebola)  # sugestão marcada: 1 toque
+
+    def test_fornecedor_pelo_telefone_e_flag_desligada(self):
+        contato = self.env["res.partner"].create({"name": "Vendedor Perim", "supplier_rank": 1,
+                                                  "mobile": "(28) 99999-1234"})
+        base = {"id_produto_interno": "CEB", "unidade_medida": "kg", "preco_cotado": 3.9}
+        r = self._post(dict(base, telefone_origem="5528999991234")).json()
+        self.assertEqual(r["resultados"][0]["status"], "ok")
+        r = self._post(dict(base, telefone_origem="+55 28 9999-1234")).json()  # sem o 9 extra
+        self.assertEqual(r["resultados"][0]["status"], "ok")
+        self.assertEqual(self.env["boteco.cotacoes"]._fornecedor_por_telefone("5527999991234"),
+                         self.env["res.partner"])  # outro DDD
+        contato.boteco_cotacao_confiavel = False
+        r = self._post(dict(base, telefone_origem="5528999991234")).json()
+        self.assertEqual(r["resultados"][0]["status"], "recusado")
+        self.fornecedor.boteco_cotacao_confiavel = False
+        r = self._post(dict(base, id_fornecedor="atacadao")).json()
+        self.assertEqual(r["resultados"][0]["status"], "recusado")
