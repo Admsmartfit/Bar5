@@ -149,7 +149,6 @@ company.write({
     "boteco_flag_reserva_estoque_bar_b2b": True,
     "boteco_flag_explosao_insumos_fator_coccao": True,
     "boteco_flag_leitor_orcamento_pdf_imagem": True,
-    "boteco_flag_monitor_instagram_fornecedores": False,
     "boteco_flag_radar_precos_oportunidade": True,
 })
 log("Central de Recursos configurada")
@@ -239,7 +238,7 @@ if cozinha:
 
     Parceiro = env["res.partner"]
     peixaria = Parceiro.search([("name", "=", "Peixaria do Porto")], limit=1) or Parceiro.create(
-        {"name": "Peixaria do Porto", "is_company": True, "supplier_rank": 1, "boteco_instagram_handle": "peixariadoporto"})
+        {"name": "Peixaria do Porto", "is_company": True, "supplier_rank": 1})
     Historico = env["boteco.historico.preco"]
     if not Historico.search_count([("product_id", "=", bacalhau.id)]):
         hoje = _dt.date.today()

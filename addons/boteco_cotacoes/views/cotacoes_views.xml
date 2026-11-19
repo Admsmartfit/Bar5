@@ -1,45 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- WhatsApp (conectar): só o dono -->
-    <record id="action_boteco_whatsapp_conectar" model="ir.actions.client">
-        <field name="name">WhatsApp (conectar)</field>
-        <field name="tag">boteco_whatsapp_conectar</field>
-    </record>
-    <menuitem id="menu_boteco_whatsapp_conectar" name="WhatsApp (conectar)" parent="boteco_base.menu_boteco_sec_sistema"
-              action="action_boteco_whatsapp_conectar" sequence="35" groups="boteco_base.group_dono"/>
-
-    <!-- Horários do coletor e tokens -->
+    <!-- Integração: endereço e token para o serviço externo (n8n) -->
     <record id="boteco_cotacoes_config_view_form" model="ir.ui.view">
         <field name="name">boteco.cotacoes.config.form</field>
         <field name="model">boteco.cotacoes.config</field>
         <field name="arch" type="xml">
-            <form string="WhatsApp e coletor">
-                <group string="Coletor de ofertas (sites e Instagram)">
-                    <field name="instagram_hora" placeholder="08:00"/>
-                    <field name="sites_dias" placeholder="0,3"/>
-                    <field name="sites_hora" placeholder="08:00"/>
-                    <field name="coletor_visto_em"/>
-                </group>
-                <group string="Chaves das integrações (troque se vazar)" groups="boteco_base.group_dono">
-                    <field name="token_whatsapp" password="True"/>
-                    <button name="action_trocar_token_whatsapp" type="object" string="Trocar token do WhatsApp"
-                            confirm="Depois de trocar, conecte o WhatsApp de novo para atualizar o endereço." colspan="2"/>
-                    <field name="token_coletor" password="True"/>
-                    <button name="action_trocar_token_coletor" type="object" string="Trocar token do coletor"
-                            confirm="Depois de trocar, atualize o BOTECO_COLETOR_TOKEN no .env do servidor." colspan="2"/>
+            <form string="Integração de cotações">
+                <p>O serviço de cotações (n8n + WhatsApp + IA) lê as mensagens, sites e fotos dos fornecedores e manda
+                   os preços já limpos para este endereço. Passe o endereço e o token para quem configura o n8n
+                   (detalhes em <b>docs/integracao_cotacoes.md</b>).</p>
+                <group>
+                    <field name="endereco" widget="CopyClipboardChar"/>
+                    <field name="token" widget="CopyClipboardChar" groups="boteco_base.group_dono"/>
+                    <field name="ultima_chamada"/>
                 </group>
                 <footer>
-                    <button name="action_salvar" type="object" string="Salvar" class="btn-primary"/>
-                    <button special="cancel" string="Fechar" class="btn-link"/>
+                    <button name="action_trocar_token" type="object" string="Trocar token" groups="boteco_base.group_dono"
+                            confirm="O serviço externo para de funcionar até receber o token novo. Trocar?"/>
+                    <button special="cancel" string="Fechar" class="btn-secondary"/>
                 </footer>
             </form>
         </field>
     </record>
     <record id="action_boteco_cotacoes_config" model="ir.actions.act_window">
-        <field name="name">WhatsApp e coletor</field>
+        <field name="name">Integração de cotações</field>
         <field name="res_model">boteco.cotacoes.config</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
+    </record>
+
+    <!-- Oportunidades de compra -->
+    <record id="boteco_oportunidade_compra_view_list" model="ir.ui.view">
+        <field name="name">boteco.oportunidade.compra.list</field>
+        <field name="model">boteco.oportunidade.compra</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-success="estado == 'nova'" decoration-muted="estado in ('ignorada', 'expirada')">
+                <field name="product_id"/>
+                <field name="partner_id"/>
+                <field name="preco_cotado"/>
+                <field name="preco_medio"/>
+                <field name="queda_pct"/>
+                <field name="sugestao_qtd"/>
+                <field name="uom_id" optional="show"/>
+                <field name="economia_total" sum="Total"/>
+                <field name="valida_ate"/>
+                <field name="estado" widget="badge" decoration-success="estado == 'nova'"/>
+                <button name="action_comprada" type="object" string="Comprei" class="btn-primary" invisible="estado != 'nova'"/>
+                <button name="action_ignorar" type="object" string="Ignorar" invisible="estado != 'nova'"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_oportunidade_compra_view_form" model="ir.ui.view">
+        <field name="name">boteco.oportunidade.compra.form</field>
+        <field name="model">boteco.oportunidade.compra</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button name="action_comprada" type="object" string="Comprei" class="btn-primary" invisible="estado != 'nova'"/>
+                    <button name="action_ignorar" type="object" string="Ignorar" invisible="estado != 'nova'"/>
+                    <field name="estado" widget="statusbar" statusbar_visible="nova,comprada"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group string="Preço">
+                            <field name="partner_id"/>
+                            <field name="preco_cotado"/>
+                            <field name="preco_medio"/>
+                            <field name="base_calculo"/>
+                            <field name="queda_pct"/>
+                            <field name="valida_ate"/>
+                        </group>
+                        <group string="Sugestão de compra">
+                            <field name="estoque_atual"/>
+                            <field name="consumo_diario"/>
+                            <field name="sugestao_qtd"/>
+                            <field name="uom_id"/>
+                            <field name="economia_total"/>
+                        </group>
+                    </group>
+                    <separator string="Ideias de promoção (o item fica mais barato de fazer)"/>
+                    <field name="marketing_ids" readonly="1">
+                        <list>
+                            <field name="product_id"/>
+                            <field name="preco_venda"/>
+                            <field name="custo_atual"/>
+                            <field name="custo_novo"/>
+                            <field name="margem_atual_pct"/>
+                            <field name="preco_promocional"/>
+                            <field name="margem_promocional_pct"/>
+                            <field name="oferta_id"/>
+                            <button name="action_criar_oferta" type="object" string="Criar oferta relâmpago"
+                                    class="btn-primary" invisible="oferta_id"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_oportunidades" model="ir.actions.act_window">
+        <field name="name">Oportunidades de compra</field>
+        <field name="res_model">boteco.oportunidade.compra</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('estado', '=', 'nova')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nenhuma oportunidade agora</p>
+            <p>Quando um fornecedor cotar um insumo abaixo do preço médio das últimas compras, aparece aqui com a
+               sugestão de quanto comprar e as ideias de promoção para o cardápio.</p>
+        </field>
     </record>
 
     <!-- Cotações para revisar -->
@@ -53,9 +122,9 @@
                 <field name="descricao" readonly="1"/>
                 <field name="preco" readonly="1"/>
                 <field name="unidade" readonly="1" optional="show"/>
-                <field name="origem" readonly="1" optional="hide"/>
+                <field name="motivo" readonly="1"/>
                 <field name="product_id" options="{'no_create': True}" readonly="estado != 'revisar'"/>
-                <field name="fator" optional="hide" readonly="estado != 'revisar'"/>
+                <field name="fator" readonly="estado != 'revisar'"/>
                 <field name="estado" widget="badge" decoration-warning="estado == 'revisar'" decoration-success="estado == 'ligado'"/>
                 <button name="action_ligar" type="object" string="Ligar" class="btn-primary" invisible="estado != 'revisar'"/>
                 <button name="action_descartar" type="object" string="Descartar" invisible="estado != 'revisar'"/>
@@ -69,34 +138,19 @@
         <field name="domain">[('estado', '=', 'revisar')]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Nada para revisar</p>
-            <p>Quando um fornecedor manda um item que o sistema não reconhece, ele aparece aqui. Escolha o insumo e toque em
-               Ligar: da próxima vez entra sozinho.</p>
+            <p>Cotações cujo produto ou unidade o sistema não reconheceu. Escolha o insumo e toque em Ligar.</p>
         </field>
     </record>
 
-    <!-- Ofertas encontradas (WhatsApp, sites, Instagram) -->
-    <record id="action_boteco_ofertas_encontradas" model="ir.actions.act_window">
-        <field name="name">Ofertas encontradas</field>
-        <field name="res_model">boteco.historico.preco</field>
-        <field name="view_mode">list,form</field>
-        <field name="domain">[('origem', 'in', ('whatsapp', 'site', 'instagram'))]</field>
-        <field name="context">{'search_default_preco_interessante': 0}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Nenhuma oferta ainda</p>
-            <p>Preços que chegaram pelo WhatsApp dos fornecedores e pelo coletor (sites e Instagram).</p>
-        </field>
-    </record>
-
-    <!-- Registro das integrações -->
+    <!-- Registro da API -->
     <record id="boteco_cotacao_log_view_list" model="ir.ui.view">
         <field name="name">boteco.cotacao.log.list</field>
         <field name="model">boteco.cotacao.log</field>
         <field name="arch" type="xml">
-            <list create="0" edit="0" decoration-danger="resultado in ('recusado', 'erro', 'limite')">
+            <list create="0" edit="0" decoration-danger="resultado in ('recusado', 'erro', 'limite')"
+                  decoration-warning="resultado == 'parcial'">
                 <field name="create_date" string="Quando"/>
-                <field name="canal"/>
                 <field name="resultado"/>
-                <field name="partner_id"/>
                 <field name="itens"/>
                 <field name="ip"/>
                 <field name="detalhe"/>
@@ -104,21 +158,32 @@
         </field>
     </record>
     <record id="action_boteco_cotacao_log" model="ir.actions.act_window">
-        <field name="name">Registro do WhatsApp e coletor</field>
+        <field name="name">Registro da API de cotações</field>
         <field name="res_model">boteco.cotacao.log</field>
         <field name="view_mode">list</field>
     </record>
 
-    <!-- Fornecedor: site, palavras-chave e se aceita cotação automática -->
+    <!-- Fornecedor: só o ID de integração (contato é o padrão do Odoo) -->
     <record id="res_partner_form_boteco_cotacoes" model="ir.ui.view">
         <field name="name">res.partner.form.boteco.cotacoes</field>
         <field name="model">res.partner</field>
-        <field name="inherit_id" ref="boteco_estoque.res_partner_form_boteco_instagram"/>
+        <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <field name="boteco_instagram_handle" position="after">
-                <field name="boteco_site_ofertas" widget="url" placeholder="https://fornecedor.com.br/ofertas"/>
-                <field name="boteco_palavras_chave" placeholder="cerveja 600ml, oferta"/>
-                <field name="boteco_cotacao_confiavel"/>
+            <field name="website" position="after">
+                <field name="boteco_id_externo" invisible="not supplier_rank"/>
+                <field name="boteco_cotacao_confiavel" invisible="not supplier_rank"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Insumo chave (no cadastro do produto) -->
+    <record id="product_template_form_boteco_insumo_chave" model="ir.ui.view">
+        <field name="name">product.template.form.boteco.insumo.chave</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <field name="purchase_ok" position="after">
+                <field name="boteco_insumo_chave" invisible="not purchase_ok"/>
             </field>
         </field>
     </record>
@@ -143,29 +208,30 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='g4']/div[hasclass('o_bt_recursos')]" position="inside">
                 <div class="o_bt_recurso">
-                    <field name="boteco_flag_cotacoes_whatsapp" widget="boolean_toggle" nolabel="1"/>
+                    <field name="boteco_flag_cotacoes_externas" widget="boolean_toggle" nolabel="1"/>
                     <div class="o_bt_recurso__texto">
-                        <label for="boteco_flag_cotacoes_whatsapp" class="o_bt_recurso__nome"/>
-                        <div class="o_bt_recurso__ajuda">Conecte o WhatsApp do bar por QR Code (Configuração › Sistema › WhatsApp). Preços que fornecedores cadastrados mandam entram sozinhos no radar; mensagens de outras pessoas são descartadas sem gravar.</div>
-                    </div>
-                </div>
-                <div class="o_bt_recurso">
-                    <field name="boteco_flag_coletor_ofertas" widget="boolean_toggle" nolabel="1"/>
-                    <div class="o_bt_recurso__texto">
-                        <label for="boteco_flag_coletor_ofertas" class="o_bt_recurso__nome"/>
-                        <div class="o_bt_recurso__ajuda">Serviço separado lê o site e o Instagram dos fornecedores (Instagram 1 vez por dia, sites 2 vezes por semana) sem pesar no caixa. Horários em Compras › WhatsApp e coletor.</div>
+                        <label for="boteco_flag_cotacoes_externas" class="o_bt_recurso__nome"/>
+                        <div class="o_bt_recurso__ajuda">O serviço externo (WhatsApp, sites, Instagram, fotos) manda os preços já limpos pela API. O Odoo grava, atualiza a cotação em aberto e avisa as oportunidades. Endereço e token em Compras › Integração de cotações.</div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-1" invisible="not boteco_flag_cotacoes_externas">
+                            <span class="text-muted">Oportunidade a partir de (% abaixo do médio):</span>
+                            <field name="boteco_radar_queda_pct" style="max-width:70px"/>
+                            <span class="text-muted">Comprar para (dias):</span>
+                            <field name="boteco_estoque_dias_cobertura" style="max-width:70px"/>
+                            <field name="boteco_radar_so_chave" widget="boolean_toggle" nolabel="1"/>
+                            <label for="boteco_radar_so_chave" class="text-muted fw-normal"/>
+                        </div>
                     </div>
                 </div>
             </xpath>
         </field>
     </record>
 
+    <menuitem id="menu_boteco_oportunidades" name="Oportunidades de compra" parent="boteco_base.menu_boteco_sec_comprar"
+              action="action_boteco_oportunidades" sequence="29"/>
     <menuitem id="menu_boteco_cotacao_revisar" name="Cotações para revisar" parent="boteco_base.menu_boteco_sec_comprar"
               action="action_boteco_cotacao_revisar" sequence="31"/>
-    <menuitem id="menu_boteco_ofertas_encontradas" name="Ofertas encontradas" parent="boteco_base.menu_boteco_sec_comprar"
-              action="action_boteco_ofertas_encontradas" sequence="32"/>
-    <menuitem id="menu_boteco_cotacoes_config" name="WhatsApp e coletor" parent="boteco_base.menu_boteco_sec_comprar"
+    <menuitem id="menu_boteco_cotacoes_config" name="Integração de cotações" parent="boteco_base.menu_boteco_sec_comprar"
               action="action_boteco_cotacoes_config" sequence="90" groups="boteco_base.group_gerente"/>
-    <menuitem id="menu_boteco_cotacao_log" name="Registro do WhatsApp e coletor" parent="boteco_base.menu_boteco_gestao"
+    <menuitem id="menu_boteco_cotacao_log" name="Registro da API de cotações" parent="boteco_base.menu_boteco_gestao"
               action="action_boteco_cotacao_log" sequence="40" groups="boteco_base.group_dono"/>
 </odoo>

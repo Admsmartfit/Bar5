@@ -32,10 +32,6 @@ class TestParserOrcamento(BaseCase):
     def test_milhar(self):
         self.assertAlmostEqual(orcamento.ler_texto("Filé mignon peça 1.234,56")[0]["preco"], 1234.56)
 
-    def test_json_da_visao(self):
-        itens = orcamento.normalizar_json('{"itens": [{"descricao": "Alho", "preco": "19,9", "unidade": "KG"}, '
-                                          '{"descricao": "", "preco": 3}]}')
-        self.assertEqual(itens, [{"descricao": "Alho", "preco": 19.9, "unidade": "kg"}])
 
 
 @tagged("post_install", "-at_install", "boteco")
@@ -108,12 +104,6 @@ class TestRadarPrecos(BotecoCase):
         self.assertEqual(assistente.linha_ids.product_id, self.cebola)
         self.assertAlmostEqual(assistente.linha_ids.preco, 3.7)
 
-    def test_foto_sem_chave_pede_configuracao(self):
-        assistente = self.env["boteco.importar.orcamento"].create({
-            "partner_id": self.atacado.id, "arquivo": base64.b64encode(b"\xff\xd8\xff\xe0fakejpeg"),
-            "nome_arquivo": "encarte.jpg"})
-        with self.assertRaises(UserError):
-            assistente.action_ler()
 
     def test_leitor_desligado(self):
         self.env.company.boteco_flag_leitor_orcamento_pdf_imagem = False
@@ -121,41 +111,5 @@ class TestRadarPrecos(BotecoCase):
         with self.assertRaises(UserError):
             assistente.action_ler()
 
-    def test_instagram_desligado_por_padrao_nao_faz_nada(self):
-        self.atacado.boteco_instagram_handle = "atacadao_ofertas"
-        self.assertFalse(self.env.company.boteco_flag_monitor_instagram_fornecedores)
-        self.assertTrue(self.env["res.partner"]._cron_monitorar_instagram())
 
-    def test_instagram_roda_as_8_e_as_14(self):
-        from datetime import datetime
 
-        import pytz
-
-        from odoo.addons.boteco_estoque.models.res_partner import proxima_execucao
-
-        sp = pytz.timezone("America/Sao_Paulo")
-        # 10:00 em São Paulo (13:00 UTC): a das 8h vai para amanhã, a das 14h é hoje
-        agora = datetime(2026, 11, 17, 13, 0)
-        self.assertEqual(proxima_execucao(datetime.min.time().replace(hour=8), sp, agora), datetime(2026, 11, 18, 11, 0))
-        self.assertEqual(proxima_execucao(datetime.min.time().replace(hour=14), sp, agora), datetime(2026, 11, 17, 17, 0))
-        # Instagram 1 vez por dia (decisão do dono): 8:00 por padrão, horário configurável; a das 14:00 sai
-        self.env["res.partner"]._boteco_agendar_monitor_instagram()
-        cron = self.env.ref("boteco_estoque.ir_cron_boteco_monitor_instagram")
-        local = pytz.utc.localize(cron.nextcall).astimezone(self.env.company._boteco_tz())
-        self.assertEqual((local.hour, local.minute), (8, 0))
-        self.assertEqual((cron.interval_number, cron.interval_type), (1, "days"))
-        self.assertFalse(self.env.ref("boteco_estoque.ir_cron_boteco_monitor_instagram_tarde").active)
-        self.env["ir.config_parameter"].sudo().set_param("boteco.instagram_hora", "07:30")
-        self.env["res.partner"]._boteco_agendar_monitor_instagram()
-        local = pytz.utc.localize(cron.nextcall).astimezone(self.env.company._boteco_tz())
-        self.assertEqual((local.hour, local.minute), (7, 30))
-
-    def test_instagram_ligado_registra_precos(self):
-        self.env.company.boteco_flag_monitor_instagram_fornecedores = True
-        self.atacado.boteco_instagram_handle = "atacadao_ofertas"
-        self.patch(type(self.env["res.partner"]), "_boteco_ler_posts",
-                   lambda self_, handle, desde: [("Oferta! Cebola kg 3,80 só hoje", "https://instagram.com/p/x/")])
-        self.env["res.partner"]._cron_monitorar_instagram()
-        cotacao = self.Historico.search([("origem", "=", "instagram")])
-        self.assertEqual(cotacao.product_id, self.cebola)
-        self.assertAlmostEqual(cotacao.preco_unitario, 3.8)

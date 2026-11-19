@@ -1,8 +1,7 @@
-# Imagem do Odoo do Boteco: a oficial odoo:18 + bibliotecas Python extras dos módulos boteco_*.
+# Imagem do Odoo do Boteco: a oficial odoo:18 (+ bibliotecas Python extras dos módulos boteco_*, quando houver).
 # Construída pelo docker compose (./instalar.sh e ./scripts/atualizar.sh já fazem isso).
+#
+# 19/11/2026: o instaloader (leitura do Instagram) saiu. O Odoo não busca mais nada na internet:
+# WhatsApp, sites, Instagram e fotos ficam no serviço externo de cotações (n8n + Evolution API + IA),
+# que manda só dados limpos pela API (docs/integracao_cotacoes.md).
 FROM odoo:18
-
-USER root
-# instaloader: leitura dos posts públicos de fornecedores no Instagram (Etapa 18, radar de preços)
-RUN pip3 install --no-cache-dir --break-system-packages "instaloader==4.14.1"
-USER odoo

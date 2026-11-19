@@ -15,19 +15,6 @@
         <field name="sequencia">10</field>
         <field name="padrao" eval="True"/>
     </record>
-    <record id="ajuda_instagram_fornecedor" model="boteco.ajuda.artigo">
-        <field name="codigo">instagram_fornecedor</field>
-        <field name="titulo">Cadastrar o Instagram do fornecedor</field>
-        <field name="resumo">O sistema lê as ofertas postadas e registra os preços no radar.</field>
-        <field name="sinonimos">instagram, perfil, ofertas, promocao fornecedor, rede social</field>
-        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra o fornecedor em &lt;b&gt;Compras e estoque › Comprar › Fornecedores&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;No campo &lt;b&gt;Instagram do fornecedor&lt;/b&gt;, digite o perfil sem o @.&lt;/li&gt;&lt;li&gt;Ligue &lt;b&gt;Monitorar ofertas no Instagram&lt;/b&gt; na Central de Recursos.&lt;/li&gt;&lt;/ol&gt;</field>
-        <field name="menu_id" ref="boteco_estoque.menu_boteco_fornecedores"/>
-        <field name="acao_xmlid">boteco_estoque.action_boteco_fornecedores</field>
-        <field name="destacar_campo">boteco_instagram_handle</field>
-        <field name="perfis">gerente,dono</field>
-        <field name="sequencia">20</field>
-        <field name="padrao" eval="True"/>
-    </record>
     <record id="ajuda_lista_compras" model="boteco.ajuda.artigo">
         <field name="codigo">lista_compras</field>
         <field name="titulo">Mandar a lista de compras pelo WhatsApp</field>
@@ -42,10 +29,10 @@
     </record>
     <record id="ajuda_ler_orcamento" model="boteco.ajuda.artigo">
         <field name="codigo">ler_orcamento</field>
-        <field name="titulo">Ler o orçamento do fornecedor (PDF, foto ou texto)</field>
+        <field name="titulo">Ler o orçamento do fornecedor (PDF ou texto)</field>
         <field name="resumo">Os preços vão sozinhos para o radar de preços.</field>
-        <field name="sinonimos">orcamento, cotacao, tabela de precos, pdf, foto, encarte</field>
-        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Comprar › Ler orçamento (PDF / foto)&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o fornecedor e envie o PDF ou a foto, ou cole o texto do WhatsApp.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Ler&lt;/b&gt;, confira os insumos e toque em &lt;b&gt;Registrar cotações&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="sinonimos">orcamento, cotacao, tabela de precos, pdf, texto colado</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Comprar › Ler orçamento (PDF / texto)&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o fornecedor e envie o PDF ou cole o texto.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Ler&lt;/b&gt;, confira os insumos e toque em &lt;b&gt;Registrar cotações&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
         <field name="menu_id" ref="boteco_estoque.menu_boteco_importar_orcamento"/>
         <field name="acao_xmlid">boteco_estoque.action_boteco_importar_orcamento</field>
         <field name="perfis">gerente,dono</field>
@@ -149,10 +136,7 @@
         <field name="padrao" eval="True"/>
     </record>
     <record id="ajuda_whatsapp_fornecedor" model="boteco.ajuda.artigo">
-        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_lista_compras'), ref('ajuda_instagram_fornecedor')])]"/>
-    </record>
-    <record id="ajuda_instagram_fornecedor" model="boteco.ajuda.artigo">
-        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_radar_precos')])]"/>
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_lista_compras')])]"/>
     </record>
     <record id="ajuda_lista_compras" model="boteco.ajuda.artigo">
         <field name="relacionados_ids" eval="[Command.set([ref('ajuda_whatsapp_fornecedor'), ref('ajuda_estoque_minimo')])]"/>

@@ -74,6 +74,7 @@ processar() {
   case "$acao" in
     verificar) verificar ;;
     atualizar) atualizar "${imagem:-0}" "${quem:-?}" ;;
+    treino) bash scripts/treinamento.sh > "$PASTA/treino.log" 2>&1 || true ;;
     *) echo "pedido desconhecido: $acao" >&2 ;;
   esac
 }

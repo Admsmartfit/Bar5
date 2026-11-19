@@ -31,6 +31,7 @@ Programado aqui:
         "views/boteco_dispositivo_views.xml",
         "views/pos_config_views.xml",
         "views/menus.xml",
+        "data/menus_recursos_data.xml",
         "data/boteco_ajuda_artigos.xml",
     ],
     "assets": {

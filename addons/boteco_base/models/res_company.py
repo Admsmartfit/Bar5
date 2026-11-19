@@ -106,10 +106,6 @@ class ResCompany(models.Model):
     boteco_flag_leitor_orcamento_pdf_imagem = fields.Boolean(
         string="Leitor de orçamentos em PDF e foto/imagem", default=True,
     )
-    boteco_flag_monitor_instagram_fornecedores = fields.Boolean(
-        string="Monitorar ofertas no Instagram dos fornecedores", default=False,
-        help="Lê posts públicos dos perfis cadastrados. Depende do Instagram não bloquear a leitura.",
-    )
     boteco_flag_radar_precos_oportunidade = fields.Boolean(
         string="Radar de preços interessantes e economia nos congelados", default=True,
     )

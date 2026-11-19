@@ -54,7 +54,7 @@ PASSOS = [
      "Faça no modo treinamento (não entra no faturamento).", True, "manual", None, "abrir_caixa", None),
     ("treinar", "abrir", "Treinar a equipe por função",
      "Cada pessoa entra com o PIN e vê o passo a passo curto do seu perfil.", False, "auto", None, "ajuda_usar", None),
-    ("fornecedores", "depois", "Fornecedores com WhatsApp e Instagram",
+    ("fornecedores", "depois", "Fornecedores com WhatsApp",
      "Para a lista de compras e o radar de preços.", False, "auto",
      "boteco_estoque.action_boteco_fornecedores", "whatsapp_fornecedor", "boteco.historico.preco"),
     ("fichas", "depois", "Fichas técnicas e estoque inicial",
@@ -219,8 +219,9 @@ class BotecoImplantacao(models.AbstractModel):
         return self.env["ir.actions.actions"]._for_xml_id(alvo)
 
     def _acao_empresa(self):
-        return {"type": "ir.actions.act_window", "res_model": "res.company", "res_id": self.env.company.id,
-                "view_mode": "form", "views": [(False, "form")], "target": "current"}
+        """Etapa 1 do assistente (só CNPJ, endereço, logo e fuso), não o cadastro completo da empresa."""
+        self.env.company.sudo().boteco_assistente_visto = False
+        return self.env["ir.actions.actions"]._for_xml_id("boteco_base.action_boteco_primeiros_passos")
 
     def _acao_wifi(self):
         return self.env["boteco.wifi"].abrir()

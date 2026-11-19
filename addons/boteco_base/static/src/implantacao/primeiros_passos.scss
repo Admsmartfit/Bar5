@@ -47,3 +47,37 @@
     .o_bt_pp__botoes { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; flex: 0 0 auto; }
     .o_bt_pp__abrir { text-align: center; margin: 14px 0 4px; }
 }
+
+.o_bt_pp__faltam { display: flex; flex-wrap: wrap; gap: 6px; .btn { font-weight: 700; } }
+.o_bt_pp__destaque { outline: 3px solid #f59e0b; outline-offset: 4px; border-radius: 8px; transition: outline-color .3s; }
+
+// ---------------- assistente de 5 etapas (tela cheia)
+body.o_bt_pp_tela_cheia .o_main_navbar { display: none !important; }
+.o_bt_pp {
+    .o_bt_pp__assistente { max-width: 860px; }
+    .o_bt_pp__etapas {
+        display: flex; gap: 6px; list-style: none; padding: 0; margin: 0 0 22px; flex-wrap: wrap;
+        li { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; cursor: pointer;
+             background: rgba(127, 127, 127, .12); font-weight: 600; font-size: .95rem; }
+        li.atual { background: #2563eb; color: #fff; }
+        li.feita { background: #16a34a; color: #fff; }
+        .o_bt_pp__etapa_n { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+             background: rgba(255, 255, 255, .25); font-size: .8rem; }
+    }
+    h3 { font-size: 1.1rem; font-weight: 800; margin: 18px 0 4px; }
+    .o_bt_pp__duas { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 640px) { .o_bt_pp__duas { grid-template-columns: 1fr; } }
+    .o_bt_pp__logo { max-height: 90px; max-width: 220px; border-radius: 8px; background: #fff; padding: 6px; }
+    .o_bt_pp__ambientes { display: grid; gap: 8px; }
+    .o_bt_pp__ambiente { display: grid; grid-template-columns: 1fr 110px 110px auto; gap: 8px; align-items: end;
+        label { font-size: .85rem; } }
+    .o_bt_pp__pessoa { display: grid; grid-template-columns: 1fr 180px 120px; gap: 8px; margin-bottom: 8px; }
+    @media (max-width: 640px) { .o_bt_pp__ambiente, .o_bt_pp__pessoa { grid-template-columns: 1fr; } }
+    .o_bt_pp__cartao { border: 1px solid rgba(127, 127, 127, .3); border-radius: 14px; padding: 16px; margin-top: 12px; }
+    .o_bt_pp__acoes .btn { min-height: 48px; }
+}
+
+// Confete leve ao concluir uma etapa
+.o_bt_confete { position: fixed; inset: 0; pointer-events: none; z-index: 2000; overflow: hidden;
+    span { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; animation: o_bt_confete_cair 1.4s ease-in forwards; } }
+@keyframes o_bt_confete_cair { to { top: 105%; opacity: .2; margin-left: 40px; } }

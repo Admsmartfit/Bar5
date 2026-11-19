@@ -4,54 +4,198 @@
         <div class="o_bt_pp o_action">
             <t t-set="d" t-value="state.dados"/>
 
-            <!-- ===== Assistente das 3 telas (primeira entrada do dono) ===== -->
+            <!-- ===== Assistente de 5 etapas, em tela cheia (primeira entrada do dono) ===== -->
             <div t-if="d and d.assistente" class="o_bt_pp__assistente">
-                <div class="o_bt_pp__barra"><div t-attf-style="width: {{ state.telaAssistente * 33.3 }}%"/></div>
-                <div class="o_bt_pp__passo_n">Passo <t t-esc="state.telaAssistente"/> de 3</div>
+                <t t-set="w" t-value="state.w"/>
+                <t t-set="n" t-value="state.telaAssistente"/>
+                <ol class="o_bt_pp__etapas" aria-label="Etapas">
+                    <li t-foreach="etapas" t-as="nome" t-key="nome_index"
+                        t-attf-class="{{ nome_index + 1 === n ? 'atual' : '' }} {{ nome_index + 1 &lt; n ? 'feita' : '' }}"
+                        t-on-click="() => this.irTela(nome_index + 1)">
+                        <span class="o_bt_pp__etapa_n" t-esc="nome_index + 1"/><span t-esc="nome"/>
+                    </li>
+                </ol>
 
-                <t t-if="state.telaAssistente === 1">
+                <t t-if="!w"><p class="text-muted">Carregando…</p></t>
+
+                <!-- 1. Identidade -->
+                <t t-elif="n === 1">
                     <h1>Vamos começar pela sua empresa</h1>
-                    <p class="o_bt_pp__dica">Esses dados saem no ticket, no tablet e nas notas. Dá para mudar depois.</p>
+                    <p class="o_bt_pp__dica">Digite o CNPJ e toque em Buscar: o resto vem sozinho. Sai no cupom, no cardápio e nas notas.</p>
                     <div class="o_bt_pp__form">
-                        <label>Nome do boteco<input class="form-control" t-model="state.empresa.nome" placeholder="Boteco Raiz"/></label>
-                        <label>CNPJ<input class="form-control" t-model="state.empresa.cnpj" placeholder="00.000.000/0000-00"/></label>
-                        <label>Endereço<input class="form-control" t-model="state.empresa.rua" placeholder="Rua, número"/></label>
-                        <label>Cidade<input class="form-control" t-model="state.empresa.cidade"/></label>
-                        <label>Telefone / WhatsApp<input class="form-control" t-model="state.empresa.telefone" placeholder="(11) 99999-9999"/></label>
-                    </div>
-                    <div class="o_bt_pp__acoes">
-                        <button class="btn btn-primary btn-lg" t-on-click="proximaTela">Próximo</button>
+                        <label>CNPJ
+                            <div class="d-flex gap-2">
+                                <input class="form-control" t-model="state.emp.cnpj" placeholder="00.000.000/0000-00" inputmode="numeric"/>
+                                <button class="btn btn-secondary" t-att-disabled="state.ocupado" t-on-click="buscarCnpj">Buscar</button>
+                            </div>
+                            <small t-if="state.msg.cnpj" class="text-muted fw-normal" t-esc="state.msg.cnpj"/>
+                        </label>
+                        <label>Nome do boteco (fantasia)<input class="form-control" t-model="state.emp.nome" placeholder="Boteco Raiz"/></label>
+                        <label>Razão social<input class="form-control" t-model="state.emp.razao_social"/></label>
+                        <div class="o_bt_pp__duas">
+                            <label>CEP
+                                <div class="d-flex gap-2">
+                                    <input class="form-control" t-model="state.emp.cep" inputmode="numeric" placeholder="00000-000"/>
+                                    <button class="btn btn-light" t-att-disabled="state.ocupado" t-on-click="buscarCep">Buscar</button>
+                                </div>
+                                <small t-if="state.msg.cep" class="text-muted fw-normal" t-esc="state.msg.cep"/>
+                            </label>
+                            <label>Telefone / WhatsApp<input class="form-control" t-model="state.emp.telefone" placeholder="(28) 99999-9999"/></label>
+                        </div>
+                        <label>Endereço (rua e número)<input class="form-control" t-model="state.emp.rua"/></label>
+                        <div class="o_bt_pp__duas">
+                            <label>Bairro<input class="form-control" t-model="state.emp.bairro"/></label>
+                            <label>Cidade / UF
+                                <div class="d-flex gap-2">
+                                    <input class="form-control" t-model="state.emp.cidade"/>
+                                    <input class="form-control" style="max-width:70px" t-model="state.emp.uf" maxlength="2" placeholder="ES"/>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="o_bt_pp__duas">
+                            <label>Fuso horário (fechamento de caixa e ponto)
+                                <select class="form-select" t-model="state.emp.fuso">
+                                    <option t-foreach="w.fusos" t-as="f" t-key="f[0]" t-att-value="f[0]" t-esc="f[1]"/>
+                                </select>
+                            </label>
+                            <label>Logo (cupom e cardápio)
+                                <input type="file" class="form-control" accept="image/*" t-on-change="escolherLogo"/>
+                                <small t-if="!state.emp.logo and w.empresa.tem_logo" class="text-muted fw-normal">Já tem logo; escolha outra só para trocar.</small>
+                            </label>
+                        </div>
+                        <img t-if="state.emp.logo" t-att-src="state.emp.logo" class="o_bt_pp__logo" alt="Logo"/>
                     </div>
                 </t>
-                <t t-elif="state.telaAssistente === 2">
-                    <h1>Como é o seu negócio?</h1>
-                    <p class="o_bt_pp__dica">Isso liga ou esconde as telas da cozinha central.</p>
+
+                <!-- 2. Entrevista -->
+                <t t-elif="n === 2">
+                    <h1>Como o seu bar funciona?</h1>
+                    <p class="o_bt_pp__dica">Suas respostas ligam só as telas que você vai usar. Dá para mudar depois na Central de Recursos.</p>
+                    <h3>1. Como os clientes fazem pedidos? <small class="text-muted">(pode marcar mais de um)</small></h3>
                     <div class="o_bt_pp__opcoes">
-                        <button t-attf-class="o_bt_pp__opcao {{ state.empresa.tipo_unidade === 'bar' ? 'ativo' : '' }}"
-                                t-on-click="() => this.state.empresa.tipo_unidade = 'bar'">
-                            <span class="fs-1">🍺</span><b>Só o bar</b><small>Salão, caixa, tablet e cozinha do bar</small>
+                        <button t-attf-class="o_bt_pp__opcao {{ state.op.atendimento.includes('garcom') ? 'ativo' : '' }}"
+                                t-on-click="() => this.alternarAtendimento('garcom')">
+                            <span class="fs-1">🙋</span><b>Com garçom</b><small>O garçom lança no celular ou no PDV</small>
                         </button>
-                        <button t-attf-class="o_bt_pp__opcao {{ state.empresa.tipo_unidade === 'bar_e_cozinha' ? 'ativo' : '' }}"
-                                t-on-click="() => this.state.empresa.tipo_unidade = 'bar_e_cozinha'">
-                            <span class="fs-1">🍺 + 🏭</span><b>Bar e cozinha central</b><small>Também produzo congelados (para o bar e para vender)</small>
+                        <button t-attf-class="o_bt_pp__opcao {{ state.op.atendimento.includes('qr') ? 'ativo' : '' }}"
+                                t-on-click="() => this.alternarAtendimento('qr')">
+                            <span class="fs-1">📱</span><b>QR Code / tablet na mesa</b><small>O cliente pede sozinho</small>
+                        </button>
+                        <button t-attf-class="o_bt_pp__opcao {{ state.op.atendimento.includes('balcao') ? 'ativo' : '' }}"
+                                t-on-click="() => this.alternarAtendimento('balcao')">
+                            <span class="fs-1">🧾</span><b>Balcão / ficha</b><small>Pede e paga no caixa</small>
                         </button>
                     </div>
-                    <div class="o_bt_pp__acoes">
-                        <button class="btn btn-secondary btn-lg" t-on-click="voltarTela">Voltar</button>
-                        <button class="btn btn-primary btn-lg" t-on-click="proximaTela">Próximo</button>
+                    <h3>2. Você produz itens em lote antes de abrir? <small class="text-muted">(massa de bolinho, molhos, congelados)</small></h3>
+                    <div class="o_bt_pp__opcoes">
+                        <button t-attf-class="o_bt_pp__opcao {{ state.op.producao_lote ? 'ativo' : '' }}"
+                                t-on-click="() => this.state.op.producao_lote = true">
+                            <span class="fs-1">🏭</span><b>Sim</b><small>Liga a cozinha central: produção, lotes e validades</small>
+                        </button>
+                        <button t-attf-class="o_bt_pp__opcao {{ !state.op.producao_lote ? 'ativo' : '' }}"
+                                t-on-click="() => this.state.op.producao_lote = false">
+                            <span class="fs-1">🍺</span><b>Não</b><small>Só o salão, o bar e a cozinha do dia</small>
+                        </button>
+                    </div>
+                    <h3>3. Quais ambientes o bar tem?</h3>
+                    <p class="o_bt_pp__dica">O sistema monta o mapa de mesas sozinho. Depois é só arrastar para o lugar certo.</p>
+                    <div class="o_bt_pp__ambientes">
+                        <div t-foreach="state.op.ambientes" t-as="a" t-key="a_index" class="o_bt_pp__ambiente">
+                            <input class="form-control" t-model="a.nome" placeholder="Salão, Varanda, Mezanino…" t-att-disabled="a.existente"/>
+                            <label>Mesas<input type="number" min="0" max="80" class="form-control" t-model.number="a.mesas" t-att-disabled="a.existente"/></label>
+                            <label>Lugares<input type="number" min="1" max="30" class="form-control" t-model.number="a.lugares" t-att-disabled="a.existente"/></label>
+                            <small t-if="a.existente" class="text-muted">já existe</small>
+                            <button t-else="" class="btn btn-link text-danger" t-on-click="() => this.removerAmbiente(a_index)" aria-label="Tirar">✕</button>
+                        </div>
+                        <button class="btn btn-light" t-on-click="adicionarAmbiente">+ Outro ambiente</button>
                     </div>
                 </t>
+
+                <!-- 3. Cardápio -->
+                <t t-elif="n === 3">
+                    <h1>Seu cardápio</h1>
+                    <p class="o_bt_pp__dica">O jeito mais rápido: baixe a planilha modelo, preencha no Excel e importe. Já criamos as categorias Bebidas, Porções e Sobremesas.</p>
+                    <div class="o_bt_pp__cartao">
+                        <div class="fs-2 fw-bold"><t t-esc="w.cardapio.itens"/> item(ns) no cardápio</div>
+                        <div class="text-muted"><t t-esc="w.cardapio.categorias"/> categoria(s)</div>
+                        <button class="btn btn-primary btn-lg mt-2" t-on-click="importarPlanilha">📄 Baixar modelo / importar planilha</button>
+                    </div>
+                    <div class="o_bt_pp__cartao">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            <div>
+                                <b>Happy hour</b> (qua a dom, 17h às 21h)
+                                <div class="text-muted small">Veja o preço mudar sozinho no PDV e no QR na hora marcada. O preço de happy hour de cada item fica no cadastro dele.</div>
+                            </div>
+                            <button t-attf-class="btn btn-lg {{ w.cardapio.happy_hour ? 'btn-success' : 'btn-outline-secondary' }}" t-on-click="alternarHappy">
+                                <t t-if="w.cardapio.happy_hour">Ligado</t><t t-else="">Desligado</t>
+                            </button>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- 4. Impressoras -->
+                <t t-elif="n === 4">
+                    <h1>Impressoras: para onde vai cada pedido</h1>
+                    <p class="o_bt_pp__dica">Cada setor imprime na sua impressora. Ex.: cerveja vai para o Bar; porção vai para a Chapa. O IP sai no papel de teste da própria impressora (segure o botão FEED ao ligar).</p>
+                    <div t-foreach="w.setores" t-as="s" t-key="s.id" class="o_bt_pp__cartao o_bt_pp__setor">
+                        <div class="fw-bold fs-5" t-esc="s.nome"/>
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <input class="form-control" style="max-width:220px" t-model="state.ips[s.id]" placeholder="192.168.0.50"/>
+                            <button class="btn btn-primary" t-att-disabled="state.ocupado" t-on-click="() => this.salvarImpressora(s)">Salvar e testar</button>
+                            <button t-if="s.impressora_id" class="btn btn-light" t-att-disabled="state.ocupado" t-on-click="() => this.testarImpressora(s)">🖨 Testar de novo</button>
+                            <span t-if="s.estado === 'ok'" class="badge text-bg-success">funcionando</span>
+                        </div>
+                        <div t-if="state.testes[s.id]" t-attf-class="small mt-1 {{ state.testes[s.id].ok ? 'text-success' : 'text-danger' }}"
+                             t-esc="state.testes[s.id].mensagem"/>
+                    </div>
+                    <p t-if="!w.setores.length" class="text-muted">Nenhum setor cadastrado ainda.</p>
+                </t>
+
+                <!-- 5. Equipe e teste -->
+                <t t-elif="n === 5">
+                    <h1>Sua equipe e a venda de teste</h1>
+                    <p class="o_bt_pp__dica">Cada pessoa entra no PDV com um PIN de 4 a 6 números (sem senha). Comece com 1 gerente e 1 garçom.</p>
+                    <div t-if="w.equipe.length" class="mb-2">
+                        <span class="text-muted">Já cadastrados:</span>
+                        <span t-foreach="w.equipe" t-as="p" t-key="p_index" class="badge text-bg-secondary ms-1"><t t-esc="p.nome"/> · <t t-esc="p.perfil"/></span>
+                    </div>
+                    <div t-foreach="state.equipe" t-as="p" t-key="p_index" class="o_bt_pp__pessoa">
+                        <input class="form-control" t-model="p.nome" placeholder="Nome"/>
+                        <select class="form-select" t-model="p.perfil">
+                            <option value="gerente">Gerente</option>
+                            <option value="caixa">Caixa / barman</option>
+                            <option value="garcom">Garçom</option>
+                            <option value="chapeiro">Chapeiro</option>
+                        </select>
+                        <input class="form-control" t-model="p.pin" placeholder="PIN" inputmode="numeric" maxlength="6"/>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-light" t-on-click="adicionarPessoa">+ Pessoa</button>
+                        <button t-if="state.equipe.length" class="btn btn-primary" t-att-disabled="state.ocupado" t-on-click="salvarEquipe">Cadastrar</button>
+                    </div>
+                    <p t-if="state.msg.equipe" class="text-danger mt-2" t-esc="state.msg.equipe"/>
+                    <div class="o_bt_pp__cartao mt-3">
+                        <b>Venda de teste sem sujar nada</b>
+                        <div class="text-muted small">O modo treinamento é uma cópia do sistema com faixa vermelha: os pedidos de teste não entram no caixa, no estoque nem no CMV, e nada é impresso.</div>
+                        <button class="btn btn-warning mt-2" t-att-disabled="state.ocupado" t-on-click="ligarTreino">🎓 Ligar o modo treinamento</button>
+                        <div t-if="state.msg.treino" class="small mt-1" t-esc="state.msg.treino"/>
+                    </div>
+                </t>
+
+                <!-- Fim -->
                 <t t-else="">
-                    <h1>Pronto para começar 🎉</h1>
-                    <p class="o_bt_pp__dica">Agora é só seguir a lista, no seu ritmo. Cada passo se marca sozinho quando estiver feito.</p>
-                    <ol class="o_bt_pp__resumo">
-                        <li t-foreach="d.fases" t-as="f" t-key="f.codigo"><b t-esc="f.nome"/> — <t t-esc="f.passos.length"/> passo(s)</li>
-                    </ol>
-                    <div class="o_bt_pp__acoes">
-                        <button class="btn btn-secondary btn-lg" t-on-click="voltarTela">Voltar</button>
-                        <button class="btn btn-primary btn-lg" t-att-disabled="state.ocupado" t-on-click="concluirAssistente">Ver meus primeiros passos</button>
-                    </div>
+                    <h1>Pronto! 🎉</h1>
+                    <p class="o_bt_pp__dica">O básico está feito. O que faltar aparece na lista e na caixa amarela lá em cima, no seu ritmo.</p>
                 </t>
+
+                <div t-if="w" class="o_bt_pp__acoes">
+                    <button t-if="n &gt; 1 and n &lt;= 5" class="btn btn-light btn-lg" t-on-click="voltarTela">Voltar</button>
+                    <button t-if="n &lt;= 5" class="btn btn-link btn-lg text-muted" t-on-click="pular">Pular por enquanto</button>
+                    <button t-if="n === 1" class="btn btn-primary btn-lg" t-att-disabled="state.ocupado" t-on-click="salvarIdentidade">Salvar e continuar</button>
+                    <button t-elif="n === 2" class="btn btn-primary btn-lg" t-att-disabled="state.ocupado" t-on-click="salvarOperacao">Salvar e continuar</button>
+                    <button t-elif="n &gt;= 3 and n &lt;= 5" class="btn btn-primary btn-lg" t-on-click="concluiuEtapa">Continuar</button>
+                    <button t-else="" class="btn btn-success btn-lg" t-att-disabled="state.ocupado" t-on-click="concluirAssistente">Ver minha lista</button>
+                </div>
             </div>
 
             <!-- ===== Lista persistente ===== -->
@@ -60,8 +204,15 @@
                     <div>
                         <h1>Primeiros passos</h1>
                         <p t-if="d.concluida" class="text-success fw-bold mb-0">✅ Implantação concluída. A casa está aberta!</p>
-                        <p t-elif="d.faltam" class="mb-0">Faltam <b t-esc="d.faltam"/> passo(s) para abrir a casa.</p>
+                        <t t-elif="d.faltam">
+                            <p class="mb-1">Faltam <b t-esc="d.faltam"/> passo(s) obrigatório(s) para abrir a casa:</p>
+                            <div class="o_bt_pp__faltam">
+                                <button t-foreach="faltando" t-as="p" t-key="p.codigo" class="btn btn-sm btn-warning"
+                                        t-on-click="() => this.irPara(p)"><t t-esc="p.titulo"/> ›</button>
+                            </div>
+                        </t>
                         <p t-else="" class="mb-0">Tudo pronto para abrir a casa! 🎉</p>
+                        <button class="btn btn-link px-0" t-on-click="reabrirAssistente">Abrir o assistente de novo</button>
                     </div>
                     <div class="o_bt_pp__progresso">
                         <div class="o_bt_pp__barra"><div t-attf-style="width: {{ progresso }}%"/></div>
@@ -71,12 +222,15 @@
 
                 <section t-foreach="d.fases" t-as="fase" t-key="fase.codigo" class="o_bt_pp__fase">
                     <h2 t-esc="fase.nome"/>
-                    <div t-foreach="fase.passos" t-as="p" t-key="p.codigo" t-attf-class="o_bt_pp__item {{ p.situacao }}">
+                    <div t-foreach="fase.passos" t-as="p" t-key="p.codigo" t-attf-class="o_bt_pp__item {{ p.situacao }}"
+                         t-att-id="'bt-passo-' + p.codigo">
                         <i t-attf-class="fa fa-lg {{ icone(p) }}"/>
                         <div class="o_bt_pp__texto">
                             <div class="o_bt_pp__titulo">
                                 <t t-esc="p.titulo"/>
                                 <span t-if="p.obrigatorio and p.situacao !== 'feito'" class="badge text-bg-warning ms-1">obrigatório</span>
+                                <span t-elif="p.obrigatorio" class="badge text-bg-success ms-1">obrigatório ✓</span>
+                                <span t-else="" class="badge text-bg-secondary ms-1 fw-normal">opcional</span>
                             </div>
                             <div class="o_bt_pp__explicacao" t-esc="p.explicacao"/>
                         </div>

@@ -38,6 +38,7 @@ Programado aqui:
         "views/separacao_templates.xml",
         "report/temperatura_report.xml",
         "views/menus.xml",
+        "data/menus_recursos_data.xml",
         "data/boteco_ajuda_artigos.xml",
     ],
     "assets": {

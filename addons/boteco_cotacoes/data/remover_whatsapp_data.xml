@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 19/11/2026: WhatsApp/coletor saíram do Odoo. Tarefas antigas (gravadas como noupdate) são apagadas. -->
+    <delete model="ir.cron" search="[('active', 'in', [True, False]), ('code', 'in', ['model._cron_processar()', 'model._cron_verificar()']), ('model_id.model', 'in', ['boteco.cotacao.fila', 'boteco.whatsapp'])]"/>
+</odoo>

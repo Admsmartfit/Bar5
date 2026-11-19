@@ -1,12 +1,10 @@
-"""Leitura de orçamentos de fornecedor: PDF (texto nativo), texto colado e foto (API de visão).
+"""Leitura de orçamentos de fornecedor: PDF (texto nativo) e texto colado.
 
 O parser de texto procura, em cada linha, uma descrição seguida de um preço em reais:
     "Cebola nacional kg ....... R$ 3,99"  ->  ("Cebola nacional", 3.99, "kg")
 """
 
-import base64
 import io
-import json
 import logging
 import re
 
@@ -29,32 +27,50 @@ def numero_br(texto):
     return float(texto)
 
 
+# Linhas que têm valor mas não são produto (condições do fornecedor)
+NAO_E_ITEM = re.compile(
+    r"\b(pedido m[ií]nimo|m[ií]nimo de|frete|entrega|total|subtotal|desconto|pagamento|pix|boleto|"
+    r"cnpj|telefone|whats|hor[aá]rio|validade da tabela|v[aá]lido at[eé])\b", re.IGNORECASE)
+# Enfeites de post (Instagram/encarte) que não fazem parte do nome do produto
+ENFEITE = re.compile(r"#\w+|[^\w\s,./()%$-]|\b(oferta(s)? (do dia|de hoje)?|promo(ção|cao)|s[oó] hoje|imperd[ií]vel|"
+                     r"aproveite|confira|apenas|somente)\b", re.IGNORECASE)
+POR_N = re.compile(r"\b(\d{1,2})\s*(?:por|x)\s*$", re.IGNORECASE)  # "2 por 25,00" = 2 unidades por R$ 25
+CONECTOR = re.compile(r"^(e|ou|,|;|\+|e também)\s+", re.IGNORECASE)
+
+
 def ler_texto(texto):
-    """Linhas de texto -> [{"descricao", "preco", "unidade"}]. Ignora linhas sem preço ou sem nome."""
+    """Linhas de texto -> [{"descricao", "preco", "unidade"}]. Ignora linhas sem preço ou sem nome.
+
+    Uma linha com vários preços (legenda de post: "Alcatra R$ 39,90/kg e Linguiça 2 por 25,00") vira vários itens.
+    """
     itens = []
     for linha in (texto or "").splitlines():
         linha = linha.strip()
-        if len(linha) < 4:
+        if len(linha) < 4 or NAO_E_ITEM.search(linha):
             continue
-        precos = list(PRECO.finditer(linha))
-        if not precos:
-            continue
-        achado = precos[-1]  # o preço costuma ser o último número da linha
-        descricao = LIXO.sub("", re.sub(r"\s+", " ", linha[: achado.start()])).strip()
-        unidade = (achado.group("un") or "").lower()
-        solta = UNIDADE_SOLTA.search(descricao)
-        if solta and not unidade:
-            unidade = solta.group("un").lower()
-            descricao = LIXO.sub("", descricao[: solta.start()]).strip()
-        if len(descricao) < 3 or not re.search(r"[A-Za-zÀ-ú]", descricao):
-            continue
-        try:
-            preco = numero_br(achado.group("preco"))
-        except ValueError:
-            continue
-        if preco <= 0:
-            continue
-        itens.append({"descricao": descricao, "preco": preco, "unidade": unidade})
+        inicio = 0
+        for achado in PRECO.finditer(linha):
+            trecho = linha[inicio: achado.start()]
+            inicio = achado.end()
+            descricao = re.sub(r"\s+", " ", ENFEITE.sub(" ", trecho)).strip()
+            descricao = CONECTOR.sub("", LIXO.sub("", descricao)).strip()
+            unidade = (achado.group("un") or "").lower()
+            solta = UNIDADE_SOLTA.search(descricao)
+            if solta and not unidade:
+                unidade = solta.group("un").lower()
+                descricao = LIXO.sub("", descricao[: solta.start()]).strip()
+            try:
+                preco = numero_br(achado.group("preco"))
+            except ValueError:
+                continue
+            por = POR_N.search(descricao)
+            if por:  # "2 por 25,00": preço de cada um
+                preco = preco / int(por.group(1))
+                descricao = descricao[: por.start()].strip()
+            descricao = LIXO.sub("", descricao).strip()
+            if len(descricao) < 3 or not re.search(r"[A-Za-zÀ-ú]", descricao) or preco <= 0:
+                continue
+            itens.append({"descricao": descricao, "preco": round(preco, 4), "unidade": unidade})
     return itens
 
 
@@ -70,45 +86,4 @@ def texto_do_pdf(conteudo):
     return "\n".join(partes)
 
 
-PROMPT_VISAO = (
-    "Esta imagem é um orçamento, tabela de preços ou encarte de um fornecedor de restaurante no Brasil. "
-    "Liste todos os produtos com preço. Responda só com JSON: "
-    '{"itens": [{"descricao": "texto do produto", "preco": 12.34, "unidade": "kg|un|cx|..."}]}. '
-    "Use ponto como separador decimal. Não invente itens."
-)
 
-
-def ler_imagem_gemini(conteudo, mimetype, chave, modelo="gemini-2.5-flash", timeout=60):
-    """Foto -> itens, pela API do Gemini (saída JSON). Precisa da chave configurada pelo dono."""
-    import requests
-
-    url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % modelo
-    corpo = {
-        "contents": [{"parts": [
-            {"text": PROMPT_VISAO},
-            {"inline_data": {"mime_type": mimetype or "image/jpeg", "data": base64.b64encode(conteudo).decode()}},
-        ]}],
-        "generationConfig": {"responseMimeType": "application/json", "temperature": 0},
-    }
-    resposta = requests.post(url, json=corpo, headers={"x-goog-api-key": chave}, timeout=timeout)
-    resposta.raise_for_status()
-    texto = resposta.json()["candidates"][0]["content"]["parts"][0]["text"]
-    return normalizar_json(texto)
-
-
-def normalizar_json(texto):
-    try:
-        dados = json.loads(texto)
-    except ValueError:
-        _logger.warning("Resposta da leitura de imagem não é JSON: %s", texto[:200])
-        return []
-    itens = []
-    for item in dados.get("itens", []) if isinstance(dados, dict) else []:
-        try:
-            preco = float(str(item.get("preco")).replace(",", "."))
-        except (TypeError, ValueError):
-            continue
-        descricao = str(item.get("descricao") or "").strip()
-        if descricao and preco > 0:
-            itens.append({"descricao": descricao, "preco": preco, "unidade": str(item.get("unidade") or "").lower()})
-    return itens

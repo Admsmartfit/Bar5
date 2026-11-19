@@ -1,164 +1,144 @@
 import json
-from unittest.mock import patch
 
+from odoo import fields
 from odoo.tests import HttpCase, tagged
 
-from odoo.addons.boteco_cotacoes.models.cotacao import PARAM_TOKEN_COLETOR, PARAM_TOKEN_WHATSAPP, mesmo_numero
-
-
-def mensagem(numero, texto, grupo=False, minha=False):
-    return {"event": "messages.upsert", "instance": "bar5", "data": {
-        "key": {"remoteJid": "%s@%s" % (numero, "g.us" if grupo else "s.whatsapp.net"), "fromMe": minha, "id": "X1"},
-        "pushName": "Alguém", "message": {"conversation": texto}, "messageType": "conversation"}}
+ROTA = "/api/boteco/webhook/cotacao_recebida"
 
 
 @tagged("post_install", "-at_install", "boteco")
-class TestCotacoes(HttpCase):
-    """Etapa 35: WhatsApp do bar e coletor externo alimentando o radar de preços."""
+class TestApiCotacoes(HttpCase):
+    """19/11/2026: cotações limpas do serviço externo -> radar, RFQ, oportunidade e ideia de promoção."""
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        company = cls.env.company
-        company.write({"boteco_flag_cotacoes_whatsapp": True, "boteco_flag_coletor_ofertas": True,
-                       "boteco_flag_radar_precos_oportunidade": True})
+        cls.company = cls.env.company
+        cls.company.write({"boteco_flag_cotacoes_externas": True, "boteco_flag_radar_precos_oportunidade": True,
+                           "boteco_radar_queda_pct": 10.0, "boteco_radar_so_chave": False,
+                           "boteco_estoque_dias_cobertura": 21})
+        un = cls.env.ref("uom.product_uom_unit")
         kg = cls.env.ref("uom.product_uom_kgm")
-        cls.cebola = cls.env["product.product"].create({"name": "Cebola", "purchase_ok": True, "type": "consu",
-                                                        "uom_id": kg.id, "uom_po_id": kg.id})
-        cls.hortifruti = cls.env["res.partner"].create({"name": "Hortifruti do Zé", "mobile": "(11) 98888-1234",
-                                                        "supplier_rank": 1})
-        cls.cliente = cls.env["res.partner"].create({"name": "Cliente Qualquer", "mobile": "(11) 97777-0000"})
-        Cotacoes = cls.env["boteco.cotacoes"]
-        cls.token_whats = Cotacoes._token(PARAM_TOKEN_WHATSAPP)
-        cls.token_coletor = Cotacoes._token(PARAM_TOKEN_COLETOR)
+        Produto = cls.env["product.product"]
+        cls.cerveja = Produto.create({
+            "name": "Cerveja 600 ml", "default_code": "CERV-600", "barcode": "7891149101010", "purchase_ok": True,
+            "is_storable": True, "uom_id": un.id, "uom_po_id": un.id, "standard_price": 10.0,
+            "available_in_pos": True, "sale_ok": True, "list_price": 18.0})
+        cls.cebola = Produto.create({"name": "Cebola", "default_code": "CEB", "purchase_ok": True, "is_storable": True,
+                                     "uom_id": kg.id, "uom_po_id": kg.id, "standard_price": 4.0})
+        cls.fornecedor = cls.env["res.partner"].create({"name": "Atacadão Teste", "supplier_rank": 1,
+                                                        "boteco_id_externo": "atacadao"})
+        cls.token = cls.env["boteco.cotacoes"]._token()
         cls.Historico = cls.env["boteco.historico.preco"]
-        cls.Log = cls.env["boteco.cotacao.log"]
-        cls.Fila = cls.env["boteco.cotacao.fila"]
+        cls.Oportunidade = cls.env["boteco.oportunidade.compra"]
 
-    def _post(self, url, dados, headers=None):
+    def _post(self, dados, token=None, cabecalho="Authorization"):
         self.env.flush_all()
-        resposta = self.url_open(url, data=json.dumps(dados), headers={"Content-Type": "application/json", **(headers or {})})
+        valor = ("Bearer %s" % (token or self.token)) if cabecalho == "Authorization" else (token or self.token)
+        r = self.url_open(ROTA, data=json.dumps(dados), headers={"Content-Type": "application/json", cabecalho: valor})
         self.env.invalidate_all()
-        return resposta
+        return r
 
-    def _whats(self, dados, token=None):
-        return self._post("/boteco/compras/whatsapp/%s" % (token or self.token_whats), dados)
+    def _comprar(self, produto, precos):
+        """Compras confirmadas (base do preço médio ponderado)."""
+        for qtd, preco in precos:
+            pedido = self.env["purchase.order"].create({"partner_id": self.fornecedor.id, "order_line": [
+                fields.Command.create({"product_id": produto.id, "product_qty": qtd, "price_unit": preco})]})
+            pedido.button_confirm()
 
-    def _processar(self):
-        self.Fila._cron_processar()
+    # ------------------------------------------------------------------ segurança
+    def test_sem_token_ou_token_errado_401(self):
+        self.assertEqual(self._post({"preco_cotado": 1}, token="errado").status_code, 401)
+        self.assertEqual(self.url_open(ROTA, data="{}", headers={"Content-Type": "application/json"}).status_code, 401)
+        self.assertTrue(self.env["boteco.cotacao.log"].search([("resultado", "=", "recusado")]))
+        self.assertEqual(self._post({"cotacoes": []}, cabecalho="X-API-Key").status_code, 200)
 
-    def test_numero_igual_com_e_sem_nono_digito(self):
-        self.assertTrue(mesmo_numero("(11) 98888-1234", "551198888123" + "4"))
-        self.assertTrue(mesmo_numero("11988881234", "551188881234"))
-        self.assertFalse(mesmo_numero("11988881234", "11988881235"))
+    def test_desligado_responde_503(self):
+        self.company.boteco_flag_cotacoes_externas = False
+        self.assertEqual(self._post({"cotacoes": []}).status_code, 503)
 
-    def test_fornecedor_manda_preco_e_entra_no_radar_com_origem_whatsapp(self):
-        resposta = self._whats(mensagem("5511988881234", "Bom dia! Tabela de hoje:\nCebola kg 3,50\nAlho kg 22,00"))
-        self.assertEqual(resposta.status_code, 200)
-        self.assertEqual(resposta.json()["resultado"], "ok")
-        self._processar()
-        cotacao = self.Historico.search([("origem", "=", "whatsapp"), ("product_id", "=", self.cebola.id)])
-        self.assertEqual(cotacao.partner_id, self.hortifruti)
-        self.assertAlmostEqual(cotacao.preco_unitario, 3.5)
-        info = self.env["product.supplierinfo"].search([("partner_id", "=", self.hortifruti.id),
-                                                        ("product_tmpl_id", "=", self.cebola.product_tmpl_id.id)])
-        self.assertAlmostEqual(info.price, 3.5)
-        # Alho não está cadastrado: vai para "Cotações para revisar"
-        revisar = self.env["boteco.cotacao.revisar"].search([("partner_id", "=", self.hortifruti.id)])
-        self.assertEqual((revisar.descricao, revisar.unidade), ("Alho", "kg"))
-        # LGPD: depois de lido, o texto da mensagem não fica guardado
-        self.assertFalse(self.Fila.search([("partner_id", "=", self.hortifruti.id)]).texto)
+    # ------------------------------------------------------------------ aplicação
+    def test_caixa_vira_preco_por_unidade_atualiza_radar_fornecedor_e_rfq(self):
+        rfq = self.env["purchase.order"].create({"partner_id": self.fornecedor.id, "order_line": [
+            fields.Command.create({"product_id": self.cerveja.id, "product_qty": 48, "price_unit": 9.0})]})
+        r = self._post({"id_fornecedor": "atacadao", "id_produto_interno": "CERV-600", "unidade_medida": "cx",
+                        "quantidade_embalagem": 24, "preco_cotado": 228.0, "descricao": "Brahma 600 cx c/24"}).json()
+        item = r["resultados"][0]
+        self.assertEqual(item["status"], "ok")
+        self.assertAlmostEqual(item["preco_unidade_insumo"], 9.5)
+        self.assertEqual(item["rfq_atualizadas"], 1)
+        self.assertAlmostEqual(rfq.order_line.price_unit, 9.5)
+        cotacao = self.Historico.search([("product_id", "=", self.cerveja.id), ("origem", "=", "servico_externo")])
+        self.assertAlmostEqual(cotacao.preco_unitario, 9.5)
+        info = self.env["product.supplierinfo"].search([("partner_id", "=", self.fornecedor.id),
+                                                        ("product_tmpl_id", "=", self.cerveja.product_tmpl_id.id)])
+        self.assertAlmostEqual(info.price, 9.5)
 
-    def test_ligar_item_revisado_aprende_o_de_para(self):
-        self._whats(mensagem("5511988881234", "Cebola roxa especial 4,10"))
-        self._processar()
-        item = self.env["boteco.cotacao.revisar"].search([("descricao", "=", "Cebola roxa especial")])
-        if not item:  # o parser casou sozinho pela palavra "Cebola": nada a revisar
-            return
-        item.product_id = self.cebola
-        item.action_ligar()
-        self.assertEqual(item.estado, "ligado")
-        self._whats(mensagem("5511988881234", "Cebola roxa especial 3,90"))
-        self._processar()
-        self.assertTrue(self.Historico.search([("product_id", "=", self.cebola.id), ("preco_unitario", "=", 3.9)]))
+    def test_codigo_de_barras_gramas_e_lote_com_pendencias(self):
+        r = self._post({"cotacoes": [
+            {"id_fornecedor": self.fornecedor.id, "codigo_barras": "7891149101010", "unidade_medida": "un", "preco_cotado": 9.8},
+            {"id_fornecedor": "atacadao", "id_produto_interno": "CEB", "unidade_medida": "g", "preco_cotado": 0.0036},
+            {"id_fornecedor": "atacadao", "id_produto_interno": "NAO-EXISTE", "unidade_medida": "un", "preco_cotado": 5,
+             "descricao": "Coisa nova"},
+            {"id_fornecedor": "atacadao", "id_produto_interno": "CEB", "unidade_medida": "l", "preco_cotado": 3},
+            {"id_fornecedor": "desconhecido", "id_produto_interno": "CEB", "unidade_medida": "kg", "preco_cotado": 3},
+        ]}).json()
+        status = [x["status"] for x in r["resultados"]]
+        self.assertEqual(status, ["ok", "ok", "revisar", "revisar", "recusado"])
+        self.assertAlmostEqual(r["resultados"][1]["preco_unidade_insumo"], 3.6)  # R$ 0,0036/g = R$ 3,60/kg
+        revisar = self.env["boteco.cotacao.revisar"].search([("partner_id", "=", self.fornecedor.id)])
+        self.assertEqual(len(revisar), 2)
+        self.assertEqual(r["aplicados"], 2)
+        self.assertTrue(self.env["boteco.cotacao.log"].search([("resultado", "=", "parcial")]))
 
-    def test_numero_nao_cadastrado_grupo_e_proprio_bar_nao_gravam_nada(self):
-        antes = self.Fila.search_count([])
-        self._whats(mensagem("5511977770000", "Cebola kg 2,00"))  # cliente (não é fornecedor)
-        self._whats(mensagem("5511955551111", "Cebola kg 2,00"))  # desconhecido
-        self._whats(mensagem("120363000000@g", "Cebola kg 2,00", grupo=True))
-        self._whats(mensagem("5511988881234", "Cebola kg 2,00", minha=True))
-        self._processar()
-        self.assertEqual(self.Fila.search_count([]), antes)
-        self.assertFalse(self.Historico.search([("preco_unitario", "=", 2.0)]))
-        desconhecidos = self.Log.search([("resultado", "=", "desconhecido")])
-        self.assertEqual(len(desconhecidos), 2)
-        self.assertFalse(any("97777" in (l.detalhe or "") or "55519" in (l.detalhe or "") for l in desconhecidos))
-        self.assertTrue(any("não cadastrado" in a for a in self.env["boteco.painel"]._alertas_extras(self.env.company)))
-
-    def test_token_errado_recusado_e_registrado(self):
-        resposta = self._whats(mensagem("5511988881234", "Cebola kg 1,00"), token="errado")
-        self.assertEqual(resposta.status_code, 401)
-        self.assertTrue(self.Log.search([("canal", "=", "whatsapp"), ("resultado", "=", "recusado")]))
-        resposta = self._post("/boteco/compras/api/cotacoes", {"cotacoes": []}, headers={"Authorization": "Bearer x"})
-        self.assertEqual(resposta.status_code, 401)
-        self.assertEqual(self.url_open("/boteco/compras/api/fontes").status_code, 401)
-
-    def test_coletor_busca_fontes_e_envia_itens(self):
-        self.hortifruti.write({"boteco_site_ofertas": "https://ze.com.br/ofertas", "boteco_instagram_handle": "ze",
-                               "boteco_palavras_chave": "cebola, oferta"})
-        cabecalho = {"Authorization": "Bearer %s" % self.token_coletor}
-        self.env.flush_all()
-        fontes = self.url_open("/boteco/compras/api/fontes", headers=cabecalho).json()
-        self.assertEqual(fontes["instagram_hora"], "08:00")
-        fonte = [f for f in fontes["fontes"] if f["fornecedor_id"] == self.hortifruti.id][0]
-        self.assertEqual(fonte["palavras"], ["cebola", "oferta"])
-        resposta = self._post("/boteco/compras/api/cotacoes", {"coletor_versao": "1", "cotacoes": [{
-            "fornecedor_id": self.hortifruti.id, "fonte": "site", "link": "https://ze.com.br/ofertas",
-            "itens": [{"produto": "Cebola", "preco": "2,99", "unidade": "kg"}]}]}, headers=cabecalho)
-        self.assertEqual(resposta.json()["itens"], 1)
-        cotacao = self.Historico.search([("origem", "=", "site")])
-        self.assertAlmostEqual(cotacao.preco_unitario, 2.99)
-        self.assertEqual(cotacao.referencia, "https://ze.com.br/ofertas")
-
-    def test_lista_de_compras_mostra_melhor_preco_e_fonte(self):
-        self.env["stock.warehouse.orderpoint"].create({"product_id": self.cebola.id, "product_min_qty": 10,
-                                                       "product_max_qty": 20})
-        self.Historico.registrar(self.cebola, 3.2, fornecedor=self.hortifruti, origem="whatsapp")
+    # ------------------------------------------------------------------ inteligência
+    def test_oportunidade_sugestao_e_ideia_de_promocao(self):
+        self._comprar(self.cerveja, [(24, 10.0), (24, 10.0), (48, 11.0)])  # PMP = (240+240+528)/96 = 10,50
+        self.cerveja.standard_price = 10.5
+        self.env["stock.warehouse.orderpoint"].create({"product_id": self.cerveja.id, "product_min_qty": 24,
+                                                       "product_max_qty": 120})
+        gerente = self.env["res.users"].create({
+            "name": "Gerente Radar", "login": "gerente_radar",
+            "groups_id": [fields.Command.set([self.env.ref("base.group_user").id, self.env.ref("boteco_base.group_gerente").id])]})
+        r = self._post({"id_fornecedor": "atacadao", "id_produto_interno": "CERV-600", "unidade_medida": "un",
+                        "preco_cotado": 8.4}).json()
+        oportunidade = self.Oportunidade.browse(r["resultados"][0]["oportunidade_id"])
+        self.assertAlmostEqual(oportunidade.preco_medio, 10.5)
+        self.assertAlmostEqual(oportunidade.queda_pct, 20.0)
+        self.assertEqual(oportunidade.sugestao_qtd, 120 - self.cerveja.qty_available)
+        self.assertIn(gerente, oportunidade.activity_ids.user_id)
+        # Painel do dono e lista de compras
+        self.assertEqual(self.env["boteco.painel"]._oportunidades_compra(self.company)[0]["insumo"], "[CERV-600] Cerveja 600 ml")
         lista = self.env["boteco.lista.compras"].create({})
         lista.action_gerar()
-        self.assertIn("R$ 3.20 – Hortifruti do Zé (WhatsApp do fornecedor", lista.linha_ids.melhor_preco)
+        linha = lista.linha_ids.filtered(lambda l: l.partner_id == self.fornecedor)
+        self.assertIn("oportunidade", linha.itens)
+        self.assertIn("120", linha.itens)
+        # Ideia de promoção: a cerveja é revenda; o custo cai R$ 2,10 e o preço sugerido mantém a margem %
+        ideia = oportunidade.marketing_ids
+        self.assertEqual(ideia.product_id, self.cerveja)
+        self.assertAlmostEqual(ideia.custo_novo, 8.4)
+        self.assertAlmostEqual(ideia.preco_promocional, 14.4)  # 8,40 / (1 - 41,7%) = 14,40
+        self.assertAlmostEqual(ideia.margem_promocional_pct, ideia.margem_atual_pct, delta=0.5)
+        ideia.action_criar_oferta()
+        self.assertEqual(ideia.oferta_id.preco, 14.4)
+        self.assertEqual(ideia.oferta_id.estado, "rascunho")
 
-    def test_whatsapp_desconectado_avisa_painel_e_saude(self):
-        Param = self.env["ir.config_parameter"].sudo()
-        Param.set_param("boteco.evolution_apikey", "chave-teste")
-        resposta = type("R", (), {"status_code": 200, "json": lambda self: {"instance": {"state": "close"}}})()
-        with patch("odoo.addons.boteco_cotacoes.models.whatsapp.requests.request", return_value=resposta):
-            self.env["boteco.whatsapp"]._cron_verificar()
-        self.assertTrue(any("desconectado" in a for a in self.env["boteco.painel"]._alertas_extras(self.env.company)))
-        saude = [i for i in self.env["boteco.saude"]._verificacoes_extras() if "WhatsApp" in i["nome"]]
-        self.assertEqual(saude[0]["estado"], "erro")
-        # Conectou de novo pelo evento do próprio Evolution API
-        self._whats({"event": "connection.update", "data": {"state": "open", "wuid": "5511900001111@s.whatsapp.net"}})
-        self.assertEqual(Param.get_param("boteco.whatsapp_numero"), "5511900001111")
-        self.assertFalse(self.env["boteco.whatsapp"]._alerta())
+    def test_queda_pequena_nao_gera_e_so_chave(self):
+        self._comprar(self.cebola, [(10, 4.0)])
+        self._post({"id_fornecedor": "atacadao", "id_produto_interno": "CEB", "unidade_medida": "kg", "preco_cotado": 3.8})
+        self.assertFalse(self.Oportunidade.search([("product_id", "=", self.cebola.id)]))  # só 5% abaixo
+        self.company.boteco_radar_so_chave = True
+        self._post({"id_fornecedor": "atacadao", "id_produto_interno": "CEB", "unidade_medida": "kg", "preco_cotado": 2.0})
+        self.assertFalse(self.Oportunidade.search([("product_id", "=", self.cebola.id)]))  # cebola não é chave
+        self.cebola.boteco_insumo_chave = True
+        self._post({"id_fornecedor": "atacadao", "id_produto_interno": "CEB", "unidade_medida": "kg", "preco_cotado": 2.0})
+        self.assertTrue(self.Oportunidade.search([("product_id", "=", self.cebola.id)]))
 
-    def test_conectar_mostra_qr_code(self):
-        self.env["ir.config_parameter"].sudo().set_param("boteco.evolution_apikey", "chave-teste")
-        chamadas = []
-
-        def falso(metodo, url, **kwargs):
-            chamadas.append((metodo, url))
-            corpo = {"base64": "data:image/png;base64,AAAA"} if "/instance/connect/" in url else {}
-            return type("R", (), {"status_code": 200, "json": lambda self: corpo})()
-
-        with patch("odoo.addons.boteco_cotacoes.models.whatsapp.requests.request", side_effect=falso):
-            resultado = self.env["boteco.whatsapp"].conectar()
-        self.assertEqual(resultado["qr"], "data:image/png;base64,AAAA")
-        self.assertTrue(any(u.endswith("/instance/create") for _m, u in chamadas))
-
-    def test_flag_desligada_nao_le(self):
-        self.env.company.boteco_flag_cotacoes_whatsapp = False
-        self.assertEqual(self._whats(mensagem("5511988881234", "Cebola kg 1,11")).json()["resultado"], "desligado")
-        self._processar()
-        self.assertFalse(self.Historico.search([("preco_unitario", "=", 1.11)]))
+    def test_revisar_ligar_aplica_preco(self):
+        self._post({"id_fornecedor": "atacadao", "id_produto_interno": "X1", "unidade_medida": "cx", "preco_cotado": 120,
+                    "descricao": "Cerveja caixa"})
+        item = self.env["boteco.cotacao.revisar"].search([("descricao", "=", "Cerveja caixa")])
+        item.write({"product_id": self.cerveja.id, "fator": 12})
+        item.action_ligar()
+        self.assertTrue(self.Historico.search([("product_id", "=", self.cerveja.id), ("preco_unitario", "=", 10.0)]))

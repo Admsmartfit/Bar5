@@ -1,4 +1,5 @@
-from odoo import fields, models
+from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 
 class PosConfig(models.Model):
@@ -29,3 +30,17 @@ class PosConfig(models.Model):
                 especiais |= produto
         configs = self.sudo().search([])
         return especiais | configs.boteco_produto_taxa_id | configs.boteco_produto_couvert_id
+
+    def _check_before_creating_new_session(self):
+        """Onboarding: o caixa só abre com pelo menos 1 item à venda e 1 forma de pagamento."""
+        for config in self:
+            extras = (config.boteco_produto_taxa_id | config.boteco_produto_couvert_id).ids
+            itens = self.env["product.product"].sudo().search_count(
+                [("available_in_pos", "=", True), ("sale_ok", "=", True), ("id", "not in", extras)], limit=1)
+            if not itens:
+                raise UserError(_("Antes de abrir o caixa, cadastre pelo menos um item do cardápio "
+                                  "(Primeiros passos › Cardápio)."))
+            if not config.payment_method_ids:
+                raise UserError(_("Antes de abrir o caixa, escolha pelo menos uma forma de pagamento "
+                                  "(Primeiros passos › Formas de pagamento)."))
+        return super()._check_before_creating_new_session()

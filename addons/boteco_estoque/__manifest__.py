@@ -26,7 +26,6 @@ Programado aqui:
         "security/ir.model.access.csv",
         "data/stock_scrap_reason_data.xml",
         "data/ir_cron_data.xml",
-        "data/instagram_agenda_data.xml",
         "views/boteco_cmv_views.xml",
         "views/boteco_compras_inteligentes_views.xml",
         "views/boteco_nfe_views.xml",

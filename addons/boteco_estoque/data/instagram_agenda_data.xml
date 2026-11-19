@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <!-- Roda a cada atualização: Instagram 1 vez por dia no horário configurado (padrão 8:00) -->
-    <function model="res.partner" name="_boteco_agendar_monitor_instagram"/>
-</odoo>

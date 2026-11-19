@@ -7,6 +7,7 @@
                 <i class="fa fa-rocket me-1" aria-hidden="true"/>
                 <span class="o_bt_pp_systray__texto">Primeiros passos</span>
                 <span class="o_bt_pp_systray__conta"><t t-esc="state.feitos"/>/<t t-esc="state.total"/></span>
+                <span t-if="state.proximo" class="o_bt_pp_systray__proximo">· Falta: <t t-esc="state.proximo"/> — clique aqui</span>
                 <span class="o_bt_pp_systray__barra"><span t-attf-style="width: {{pct}}%"/></span>
             </button>
         </div>

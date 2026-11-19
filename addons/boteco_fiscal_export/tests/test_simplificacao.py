@@ -45,6 +45,8 @@ class TestSimplificacao(BotecoPosCase):
         self.assertIn("delivery%", dominio)
 
     def test_cozinha_central_so_para_quem_produz(self):
+        # Bar que produz em lote (resposta da entrevista dos Primeiros passos): menu ligado, só para quem produz
+        self.env.company.boteco_tipo_unidade = "bar_e_cozinha"
         menu = self.env.ref("boteco_cozinha_central.menu_boteco_cozinha").id
         self.assertNotIn(menu, self._menus_visiveis(self.gerente))
         cozinheiro = self._pessoa("Cozinheira", "cozinheira_simpl", self.env.ref("boteco_base.perfil_cozinheiro"), "5937")

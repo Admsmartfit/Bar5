@@ -7,3 +7,4 @@ from . import mrp_production
 from . import boteco_temperatura
 from . import res_users
 from . import stock_picking
+from . import res_company

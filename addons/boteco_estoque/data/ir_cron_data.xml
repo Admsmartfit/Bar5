@@ -1,25 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="1">
-    <!-- Ofertas no Instagram dos fornecedores: 1x por dia, 8:00 (horário da empresa, configurável). A das 14:00 fica desativada.
-         Só faz algo se 'Monitorar ofertas no Instagram' estiver ligado na Central de Recursos. -->
-    <record id="ir_cron_boteco_monitor_instagram" model="ir.cron">
-        <field name="name">Boteco: ler ofertas no Instagram dos fornecedores (8:00)</field>
-        <field name="model_id" ref="base.model_res_partner"/>
-        <field name="state">code</field>
-        <field name="code">model._cron_monitorar_instagram()</field>
-        <field name="interval_number">1</field>
-        <field name="interval_type">days</field>
-        <field name="active" eval="True"/>
-    </record>
-    <record id="ir_cron_boteco_monitor_instagram_tarde" model="ir.cron">
-        <field name="name">Boteco: ler ofertas no Instagram dos fornecedores (14:00)</field>
-        <field name="model_id" ref="base.model_res_partner"/>
-        <field name="state">code</field>
-        <field name="code">model._cron_monitorar_instagram()</field>
-        <field name="interval_number">1</field>
-        <field name="interval_type">days</field>
-        <field name="active" eval="True"/>
-    </record>
-    <!-- Acerta a próxima execução (ver data/instagram_agenda_data.xml, que roda a cada atualização) -->
-    <function model="res.partner" name="_boteco_agendar_monitor_instagram"/>
+<odoo>
+    <!-- 19/11/2026: a leitura do Instagram saiu do Odoo (serviço externo de cotações). Apaga as tarefas antigas,
+         inclusive as desligadas (o filtro "active" na busca faz o Odoo olhar as duas). -->
+    <delete model="ir.cron" search="[('active', 'in', [True, False]), ('code', 'ilike', '_cron_monitorar_instagram')]"/>
 </odoo>

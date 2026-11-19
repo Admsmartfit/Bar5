@@ -51,7 +51,7 @@
         <field name="model">boteco.importar.orcamento</field>
         <field name="arch" type="xml">
             <form string="Ler orçamento do fornecedor">
-                <p>Envie o PDF ou a foto do orçamento/encarte, ou cole a lista de preços que chegou no WhatsApp.</p>
+                <p>Envie o PDF do orçamento ou cole a lista de preços que chegou no WhatsApp.</p>
                 <group>
                     <group>
                         <field name="partner_id" options="{'no_create': True}"/>
@@ -82,21 +82,21 @@
         </field>
     </record>
     <record id="action_boteco_importar_orcamento" model="ir.actions.act_window">
-        <field name="name">Ler orçamento (PDF / foto)</field>
+        <field name="name">Ler orçamento (PDF / texto)</field>
         <field name="res_model">boteco.importar.orcamento</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
 
-    <!-- Instagram no cadastro do fornecedor -->
+    <!-- 19/11/2026: o campo do Instagram saiu. A tela antiga fica vazia e desligada (bancos já instalados
+         precisam dela durante a atualização; outras telas herdavam dela). -->
     <record id="res_partner_form_boteco_instagram" model="ir.ui.view">
-        <field name="name">res.partner.form.boteco.instagram</field>
+        <field name="name">res.partner.form.boteco.instagram (desativada)</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="active" eval="False"/>
         <field name="arch" type="xml">
-            <field name="website" position="after">
-                <field name="boteco_instagram_handle" placeholder="perfil_do_fornecedor"/>
-            </field>
+            <field name="website" position="after"/>
         </field>
     </record>
 
@@ -109,7 +109,7 @@
         <field name="context">{'default_supplier_rank': 1, 'default_is_company': True, 'res_partner_search_mode': 'supplier'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Cadastre o primeiro fornecedor</p>
-            <p>Com o celular (WhatsApp) dele, a Lista de compras manda o pedido direto; com o Instagram, o radar de preços acha as ofertas.</p>
+            <p>Com o celular (WhatsApp) dele, a Lista de compras manda o pedido direto, o radar de preços acha as ofertas.</p>
         </field>
     </record>
 </odoo>

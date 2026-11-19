@@ -1,3 +1,3 @@
 from . import cotacao
-from . import whatsapp
+from . import oportunidade
 from . import config

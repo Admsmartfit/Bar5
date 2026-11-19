@@ -11,7 +11,7 @@ export class SystrayPrimeirosPassos extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.state = useState({ mostrar: false, feitos: 0, total: 0, faltam: 0 });
+        this.state = useState({ mostrar: false, feitos: 0, total: 0, faltam: 0, proximo: "" });
         onWillStart(() => this.atualizar());
         let timer = null;
         onMounted(() => (timer = setInterval(() => this.atualizar(), 60000)));

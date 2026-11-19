@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-    <!-- Lê as mensagens dos fornecedores (também é disparado na hora em que a mensagem chega) -->
-    <record id="cron_processar_cotacoes" model="ir.cron">
-        <field name="name">Boteco: ler cotações recebidas (WhatsApp e coletor)</field>
-        <field name="model_id" ref="model_boteco_cotacao_fila"/>
+    <record id="cron_expirar_oportunidades" model="ir.cron">
+        <field name="name">Boteco: vencer oportunidades de compra antigas</field>
+        <field name="model_id" ref="model_boteco_oportunidade_compra"/>
         <field name="state">code</field>
-        <field name="code">model._cron_processar()</field>
-        <field name="interval_number">5</field>
-        <field name="interval_type">minutes</field>
+        <field name="code">model._cron_expirar()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
     </record>
-    <record id="cron_verificar_whatsapp" model="ir.cron">
-        <field name="name">Boteco: conferir conexão do WhatsApp</field>
-        <field name="model_id" ref="model_boteco_whatsapp"/>
+    <record id="cron_limpar_log_cotacoes" model="ir.cron">
+        <field name="name">Boteco: limpar registro antigo da API de cotações</field>
+        <field name="model_id" ref="model_boteco_cotacao_log"/>
         <field name="state">code</field>
-        <field name="code">model._cron_verificar()</field>
-        <field name="interval_number">5</field>
-        <field name="interval_type">minutes</field>
+        <field name="code">model._cron_limpar()</field>
+        <field name="interval_number">7</field>
+        <field name="interval_type">days</field>
     </record>
 </odoo>

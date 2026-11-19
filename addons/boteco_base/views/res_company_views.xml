@@ -79,6 +79,13 @@
                                     </div>
                                 </div>
                                 <div class="o_bt_recurso">
+                                    <field name="boteco_flag_autoatendimento_qr" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_autoatendimento_qr" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Cliente pede pelo QR Code ou pelo tablet da mesa. Desligado, os menus de tablets e celulares somem (nada é apagado).</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
                                     <field name="boteco_flag_qr_bebidas" widget="boolean_toggle" nolabel="1"/>
                                     <div class="o_bt_recurso__texto">
                                         <label for="boteco_flag_qr_bebidas" class="o_bt_recurso__nome"/>
@@ -175,14 +182,7 @@
                                     <field name="boteco_flag_leitor_orcamento_pdf_imagem" widget="boolean_toggle" nolabel="1"/>
                                     <div class="o_bt_recurso__texto">
                                         <label for="boteco_flag_leitor_orcamento_pdf_imagem" class="o_bt_recurso__nome"/>
-                                        <div class="o_bt_recurso__ajuda">Lê orçamento de fornecedor em PDF, foto ou texto colado do WhatsApp e guarda os preços.</div>
-                                    </div>
-                                </div>
-                                <div class="o_bt_recurso">
-                                    <field name="boteco_flag_monitor_instagram_fornecedores" widget="boolean_toggle" nolabel="1"/>
-                                    <div class="o_bt_recurso__texto">
-                                        <label for="boteco_flag_monitor_instagram_fornecedores" class="o_bt_recurso__nome"/>
-                                        <div class="o_bt_recurso__ajuda">Lê as ofertas postadas no Instagram dos fornecedores 1 vez por dia (8h; o horário muda em Compras › WhatsApp e coletor).</div>
+                                        <div class="o_bt_recurso__ajuda">Lê orçamento de fornecedor em PDF ou texto colado e guarda os preços. Fotos, WhatsApp, sites e Instagram chegam pelo serviço externo de cotações.</div>
                                     </div>
                                 </div>
                                 <div class="o_bt_recurso">

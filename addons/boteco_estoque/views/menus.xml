@@ -5,7 +5,7 @@
               sequence="5" action="action_boteco_fornecedores"/>
     <menuitem id="menu_boteco_lista_compras" name="Lista de compras (WhatsApp)" parent="boteco_base.menu_boteco_sec_comprar"
               sequence="10" action="action_boteco_lista_compras"/>
-    <menuitem id="menu_boteco_importar_orcamento" name="Ler orçamento (PDF / foto)" parent="boteco_base.menu_boteco_sec_comprar"
+    <menuitem id="menu_boteco_importar_orcamento" name="Ler orçamento (PDF / texto)" parent="boteco_base.menu_boteco_sec_comprar"
               sequence="20" action="action_boteco_importar_orcamento"/>
     <menuitem id="menu_boteco_radar_precos" name="Radar de preços" parent="boteco_base.menu_boteco_sec_comprar"
               sequence="30" action="action_boteco_historico_preco"/>
