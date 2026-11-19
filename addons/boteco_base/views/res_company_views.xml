@@ -20,48 +20,11 @@
                     </group>
                 </page>
                 <page string="Central de Recursos (Liga/Desliga)" name="boteco_recursos" groups="boteco_base.group_dono">
-                    <p class="text-muted">
-                        Ligue ou desligue cada recurso do sistema a qualquer momento. Desligar um recurso
-                        volta o sistema ao comportamento padrão, sem perder dados.
-                    </p>
-                    <group>
-                        <group string="1. Pedidos e salão">
-                            <field name="boteco_flag_ocupacao_padrao_mesa" widget="boolean_toggle"/>
-                            <field name="boteco_flag_salao_juncao_mesas" widget="boolean_toggle"/>
-                            <field name="boteco_flag_tablet_neutro_anti_burst" widget="boolean_toggle"/>
-                            <field name="boteco_flag_tablet_chamada_qualificada" widget="boolean_toggle"/>
-                            <field name="boteco_flag_quarentena_pedidos_anomalos" widget="boolean_toggle"/>
-                            <field name="boteco_flag_validacao_zscore_ticket" widget="boolean_toggle"/>
-                        </group>
-                        <group string="2. Utensílios na impressão">
-                            <field name="boteco_flag_insumo_copos_primeira_cerveja" widget="boolean_toggle"/>
-                            <field name="boteco_flag_correlacao_vinho_agua" widget="boolean_toggle"/>
-                            <field name="boteco_flag_insumo_pratos_compartilhados" widget="boolean_toggle"/>
-                            <field name="boteco_flag_hold_fire_sobremesa_2_tempo" widget="boolean_toggle"/>
-                        </group>
-                        <group string="3. Cozinha central e B2B">
-                            <field name="boteco_flag_capacidade_finita_congelados" widget="boolean_toggle"/>
-                            <field name="boteco_flag_controle_volume_freezer" widget="boolean_toggle"/>
-                            <field name="boteco_flag_reserva_estoque_bar_b2b" widget="boolean_toggle"/>
-                            <field name="boteco_flag_explosao_insumos_fator_coccao" widget="boolean_toggle"/>
-                        </group>
-                        <group string="4. Inteligência de compras">
-                            <field name="boteco_flag_leitor_orcamento_pdf_imagem" widget="boolean_toggle"/>
-                            <field name="boteco_flag_monitor_instagram_fornecedores" widget="boolean_toggle"/>
-                            <field name="boteco_flag_radar_precos_oportunidade" widget="boolean_toggle"/>
-                        </group>
-                        <group string="5. Recursos opcionais">
-                            <field name="boteco_flag_pdv_atalhos_f1_f12" widget="boolean_toggle"/>
-                            <field name="boteco_flag_pdv_fichas_avulsas" widget="boolean_toggle"/>
-                            <field name="boteco_flag_pdv_balanca_ean13" widget="boolean_toggle"/>
-                            <field name="boteco_flag_portaria_validador_saida" widget="boolean_toggle"/>
-                            <field name="boteco_flag_garcom_tags_rapidas" widget="boolean_toggle"/>
-                            <field name="boteco_flag_kds_totalizador_pacing" widget="boolean_toggle"/>
-                            <field name="boteco_flag_crm_whatsapp_ia" widget="boolean_toggle"/>
-                            <field name="boteco_flag_delivery_roteirizacao_motoboy" widget="boolean_toggle"/>
-                            <field name="boteco_flag_financeiro_pix_rateio" widget="boolean_toggle"/>
-                        </group>
-                    </group>
+                    <div class="p-3">
+                        <p>Os recursos ficam numa tela própria, em caixas, com a explicação de cada um.</p>
+                        <button name="action_boteco_central_recursos" type="object" string="Abrir a Central de Recursos"
+                                class="btn-primary btn-lg" icon="fa-sliders"/>
+                    </div>
                 </page>
             </xpath>
         </field>
@@ -73,7 +36,7 @@
         <field name="model">res.company</field>
         <field name="priority">99</field>
         <field name="arch" type="xml">
-            <form string="Central de Recursos" create="0" delete="0" class="o_bt_central">
+            <form string="Central de Recursos" create="0" delete="0" class="o_bt_central" js_class="boteco_central_recursos">
                 <sheet>
                     <div class="oe_title">
                         <h1>Central de Recursos</h1>
@@ -232,6 +195,13 @@
                         </page>
                         <page string="Opcionais" name="g5">
                             <div class="o_bt_recursos">
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_mensagens" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_mensagens" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">A coluna “Enviar mensagem / Notas internas” ao lado dos cadastros. Desligada, as telas ficam mais largas e simples; nada é apagado. Vale depois de recarregar a página.</div>
+                                    </div>
+                                </div>
                                 <div class="o_bt_recurso">
                                     <field name="boteco_flag_ajuda_rapida" widget="boolean_toggle" nolabel="1"/>
                                     <div class="o_bt_recurso__texto">

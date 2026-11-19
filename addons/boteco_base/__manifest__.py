@@ -54,6 +54,7 @@ Fundação do Sistema Boteco Raiz (Etapa 0 do PRD).
         "views/saude_templates.xml",
         "views/ajuda_templates.xml",
         "views/menus.xml",
+        "views/boteco_wifi_views.xml",
         "data/boteco_ajuda_artigos.xml",
         "data/boteco_implantacao_data.xml",
     ],
@@ -71,6 +72,10 @@ Fundação do Sistema Boteco Raiz (Etapa 0 do PRD).
             "boteco_base/static/src/implantacao/primeiros_passos.js",
             "boteco_base/static/src/implantacao/primeiros_passos.xml",
             "boteco_base/static/src/implantacao/primeiros_passos.scss",
+            "boteco_base/static/src/implantacao/systray_primeiros_passos.js",
+            "boteco_base/static/src/implantacao/systray_primeiros_passos.xml",
+            "boteco_base/static/src/implantacao/systray_primeiros_passos.scss",
+            "boteco_base/static/src/js/central_recursos.js",
         ],
         "boteco_base.assets_pin": [
             "boteco_base/static/src/css/boteco_tokens.css",

@@ -16,3 +16,4 @@ access_boteco_ajuda_artigo_user,boteco.ajuda.artigo usuario,model_boteco_ajuda_a
 access_boteco_ajuda_artigo_dono,boteco.ajuda.artigo dono,model_boteco_ajuda_artigo,group_dono,1,1,1,1
 access_boteco_ajuda_busca_dono,boteco.ajuda.busca dono,model_boteco_ajuda_busca,group_dono,1,0,0,1
 access_boteco_implantacao_estado_dono,boteco.implantacao.estado dono,model_boteco_implantacao_estado,group_dono,1,1,1,1
+access_boteco_wifi_dono,boteco.wifi dono,model_boteco_wifi,group_dono,1,1,1,0

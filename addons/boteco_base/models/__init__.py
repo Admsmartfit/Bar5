@@ -17,3 +17,4 @@ from . import res_config_settings
 from . import odoobot
 from . import boteco_ajuda
 from . import boteco_implantacao
+from . import boteco_wifi

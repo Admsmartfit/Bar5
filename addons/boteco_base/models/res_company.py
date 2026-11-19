@@ -2,7 +2,8 @@ from datetime import datetime, time, timedelta
 
 import pytz
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 TIPOS_UNIDADE = [
     ("bar", "Bar"),
@@ -143,6 +144,10 @@ class ResCompany(models.Model):
     )
 
     # Etapas 26 e 33 (PRD de recursos avançados)
+    boteco_flag_mensagens = fields.Boolean(
+        string="Mensagens e notas internas nas telas (Enviar mensagem, Notas internas, histórico)", default=False,
+        help="Desligado, a coluna de conversa do lado dos cadastros some (os registros continuam guardados).",
+    )
     boteco_flag_ajuda_rapida = fields.Boolean(
         string="Ajuda rápida pesquisável (botão ?, F1 e Ctrl+K)", default=True,
     )
@@ -171,6 +176,18 @@ class ResCompany(models.Model):
     boteco_flag_vendas_b2b = fields.Boolean(
         string="Venda a bares (B2B): menus, metas e pedidos recorrentes", default=False,
     )
+
+    def write(self, vals):
+        if vals.get("boteco_flag_assistente_implantacao"):
+            vals = {**vals, "boteco_implantacao_concluida": False}
+        for campo in ("boteco_rede_clientes", "boteco_rede_sistema"):
+            if vals.get(campo):
+                from ..tools.rede import normalizar_redes
+                try:
+                    vals = {**vals, campo: normalizar_redes(vals[campo])}
+                except ValueError:
+                    raise UserError(_("\"%s\" não é uma rede. Use o formato 192.168.0.0/24.", vals[campo])) from None
+        return super().write(vals)
 
     def boteco_recurso_ativo(self, nome_flag):
         """True se o recurso ``nome_flag`` está ligado na Central de Recursos.

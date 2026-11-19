@@ -11,4 +11,5 @@ class IrHttp(models.AbstractModel):
         if user and not user._is_public():
             info["boteco_aparencia"] = user.sudo().boteco_aparencia()
             info["boteco_ajuda_rapida"] = self.env.company.boteco_recurso_ativo("ajuda_rapida")
+            info["boteco_mensagens"] = self.env.company.boteco_recurso_ativo("mensagens")
         return info

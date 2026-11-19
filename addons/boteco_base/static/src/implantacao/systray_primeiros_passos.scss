@@ -1,0 +1,15 @@
+.o_bt_pp_systray {
+    height: 100%;
+    margin-right: 8px;
+    &__botao {
+        position: relative; display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px 4px;
+        border: 2px solid #facc15; border-radius: 8px; background: #fef08a; color: #422006; font-weight: 700;
+        white-space: nowrap; overflow: hidden; animation: o_bt_pp_pulsar 2.4s ease-in-out 3;
+        &:hover { background: #fde047; }
+    }
+    &__conta { background: #422006; color: #fef08a; border-radius: 10px; padding: 0 7px; font-size: 12px; }
+    &__barra { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(66, 32, 6, .2);
+        span { display: block; height: 100%; background: #16a34a; } }
+}
+@media (max-width: 767px) { .o_bt_pp_systray__texto { display: none; } }
+@keyframes o_bt_pp_pulsar { 0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, .7); } 50% { box-shadow: 0 0 0 6px rgba(250, 204, 21, 0); } }

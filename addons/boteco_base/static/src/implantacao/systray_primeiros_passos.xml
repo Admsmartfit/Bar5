@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_base.SystrayPrimeirosPassos">
+        <div t-if="state.mostrar" class="o_bt_pp_systray d-flex align-items-center">
+            <button type="button" class="o_bt_pp_systray__botao" t-on-click="abrir"
+                    t-attf-title="Faltam {{state.faltam}} passo(s) para abrir a casa">
+                <i class="fa fa-rocket me-1" aria-hidden="true"/>
+                <span class="o_bt_pp_systray__texto">Primeiros passos</span>
+                <span class="o_bt_pp_systray__conta"><t t-esc="state.feitos"/>/<t t-esc="state.total"/></span>
+                <span class="o_bt_pp_systray__barra"><span t-attf-style="width: {{pct}}%"/></span>
+            </button>
+        </div>
+    </t>
+</templates>

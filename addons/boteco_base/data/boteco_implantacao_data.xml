@@ -5,8 +5,7 @@
         <field name="name">Primeiros passos</field>
         <field name="tag">boteco_base.primeiros_passos</field>
     </record>
-    <menuitem id="menu_boteco_primeiros_passos" name="Primeiros passos" parent="menu_boteco_operacao" sequence="2"
-              action="action_boteco_primeiros_passos" groups="group_dono"/>
+    <!-- Sem item no menu Início: a caixa "Primeiros passos" fica em destaque na barra de cima até terminar -->
     <!-- Banco que já vende: o assistente das 3 telas não abre (só a lista do que falta) -->
     <function model="boteco.implantacao" name="_marcar_banco_em_uso"/>
 </odoo>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_wifi_view_form" model="ir.ui.view">
+        <field name="name">boteco.wifi.form</field>
+        <field name="model">boteco.wifi</field>
+        <field name="arch" type="xml">
+            <form string="Wi-Fi do bar">
+                <div class="mb-3">
+                    <p><b>Para que serve:</b> o cliente só consegue fazer pedido pelo QR Code da mesa se o celular dele
+                        estiver no Wi-Fi do bar. Quem lê a foto do QR em casa ou na rua só vê o cardápio.</p>
+                    <p class="text-muted mb-0">A "rede" é um endereço no formato <b>192.168.0.0/24</b>. Não sabe qual é?
+                        Faça assim: conecte este aparelho no Wi-Fi certo e toque no botão <b>Usar a rede deste aparelho</b>.
+                        Deixe em branco para não travar (qualquer rede pode pedir).</p>
+                </div>
+                <group string="Este aparelho">
+                    <field name="ip_aparelho"/>
+                    <field name="rede_aparelho" placeholder="(não é uma rede local)"/>
+                </group>
+                <group string="Wi-Fi dos clientes (o que os clientes usam)">
+                    <field name="rede_clientes" placeholder="192.168.20.0/24" nolabel="1" colspan="2"/>
+                    <button name="action_usar_nos_clientes" type="object" string="Usar a rede deste aparelho"
+                            class="btn-secondary" colspan="2" invisible="not rede_aparelho"/>
+                </group>
+                <group string="Rede da equipe (caixa, tablets, impressoras)">
+                    <field name="rede_equipe" placeholder="192.168.10.0/24" nolabel="1" colspan="2"/>
+                    <button name="action_usar_na_equipe" type="object" string="Usar a rede deste aparelho"
+                            class="btn-secondary" colspan="2" invisible="not rede_aparelho"/>
+                </group>
+                <p class="text-muted small">Se o bar tem um Wi-Fi só para todo mundo, preencha só o dos clientes.
+                    Tablets fixos das mesas funcionam em qualquer rede.</p>
+                <footer>
+                    <button name="action_salvar" type="object" string="Salvar" class="btn-primary"/>
+                    <button special="cancel" string="Cancelar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_wifi" model="ir.actions.server">
+        <field name="name">Wi-Fi do bar</field>
+        <field name="model_id" ref="model_boteco_wifi"/>
+        <field name="state">code</field>
+        <field name="code">action = model.abrir()</field>
+        <field name="groups_id" eval="[Command.link(ref('group_dono'))]"/>
+    </record>
+    <menuitem id="menu_boteco_wifi" name="Wi-Fi do bar" parent="menu_boteco_sec_sistema"
+              action="action_boteco_wifi" sequence="30" groups="group_dono"/>
+</odoo>

@@ -21,7 +21,7 @@ PASSOS = [
     ("empresa_dados", "empresa", "Dados da empresa e logo",
      "Nome, CNPJ, endereço e logo: saem no ticket, no tablet e nas notas.", True, "auto", "_acao_empresa", None, None),
     ("redes", "empresa", "Wi-Fi dos clientes e da equipe",
-     "Garante que só quem está no bar consegue pedir pelo QR Code.", False, "auto", "_acao_empresa", None, None),
+     "Garante que só quem está no bar consegue pedir pelo QR Code.", False, "auto", "_acao_wifi", None, None),
     ("equipe_pin", "equipe", "Cadastrar a equipe com perfil e PIN",
      "Pelo menos um gerente ou caixa e um garçom, cada um com o seu PIN.", True, "auto",
      "boteco_base.action_boteco_pessoas", "cadastrar_pessoa_pin", None),
@@ -222,6 +222,9 @@ class BotecoImplantacao(models.AbstractModel):
         return {"type": "ir.actions.act_window", "res_model": "res.company", "res_id": self.env.company.id,
                 "view_mode": "form", "views": [(False, "form")], "target": "current"}
 
+    def _acao_wifi(self):
+        return self.env["boteco.wifi"].abrir()
+
     def _marcar(self, codigo, situacao):
         Estado = self.env["boteco.implantacao.estado"].sudo()
         atual = Estado.search([("company_id", "=", self.env.company.id), ("codigo", "=", codigo)])
@@ -267,12 +270,21 @@ class BotecoImplantacao(models.AbstractModel):
         if estado["faltam"] and not forcar:
             raise UserError(_("Ainda faltam %s passo(s) obrigatório(s).", estado["faltam"]))
         company = self.env.company.sudo()
+        # Concluiu: a caixa some da barra e a chave "Primeiros passos" fica desligada na Central de Recursos
         company.write({"boteco_implantacao_concluida": True, "boteco_implantacao_concluida_em": fields.Datetime.now(),
-                       "boteco_assistente_visto": True})
+                       "boteco_assistente_visto": True, "boteco_flag_assistente_implantacao": False})
         self.env["boteco.auditoria"].registrar(
             "outro", descricao=_("Casa aberta: implantação concluída (%s de %s passos obrigatórios)",
                                  estado["feitos"], estado["total"]))
         return True
+
+    @api.model
+    def resumo(self):
+        """Caixa "Primeiros passos" na barra de cima: só para o dono e enquanto não terminar."""
+        if not self.pendente_para(self.env.user):
+            return {"mostrar": False}
+        estado = self.estado()
+        return {"mostrar": True, "feitos": estado["feitos"], "total": estado["total"], "faltam": estado["faltam"]}
 
     @api.model
     def pendente_para(self, user):

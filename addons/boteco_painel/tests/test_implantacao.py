@@ -1,6 +1,6 @@
 from odoo import fields
 from odoo.exceptions import UserError
-from odoo.tests import tagged
+from odoo.tests import TransactionCase, tagged
 
 from odoo.addons.boteco_cardapio.tests.common_pos import BotecoPosCase
 
@@ -81,3 +81,65 @@ class TestPrimeirosPassos(BotecoPosCase):
         self.assertTrue(acao)
         self.assertEqual(self._passo(self.Impl.estado(), "recursos")["situacao"], "feito")
         self.assertEqual(fields.Date.today(), fields.Date.today())
+
+
+@tagged("post_install", "-at_install", "boteco")
+class TestWifiEMensagens(TransactionCase):
+    """Passo 'Wi-Fi' abre a tela própria (não o cadastro da empresa); chave das mensagens."""
+
+    def test_passo_wifi_abre_tela_propria_e_salva(self):
+        acao = self.env["boteco.implantacao"].acao("redes")
+        self.assertEqual(acao["res_model"], "boteco.wifi")
+        wifi = self.env["boteco.wifi"].browse(acao["res_id"])
+        wifi.rede_clientes = "texto errado"
+        with self.assertRaises(UserError):
+            wifi.action_salvar()
+        wifi.write({"rede_clientes": "192.168.20.0/24", "rede_equipe": ""})
+        wifi.action_salvar()
+        self.assertEqual(self.env.company.boteco_rede_clientes, "192.168.20.0/24")
+        self.assertTrue(self.env["boteco.implantacao"]._v_redes(self.env.company))
+
+    def test_endereco_do_roteador_vira_a_rede_inteira(self):
+        acao = self.env["boteco.implantacao"].acao("redes")
+        wifi = self.env["boteco.wifi"].browse(acao["res_id"])
+        wifi.write({"rede_clientes": "192.168.15.1", "rede_equipe": ""})
+        wifi.action_salvar()
+        self.assertEqual(self.env.company.boteco_rede_clientes, "192.168.15.0/24")
+        self.env.company.boteco_rede_sistema = "10.0.0.7"
+        self.assertEqual(self.env.company.boteco_rede_sistema, "10.0.0.0/24")
+        estado = self.env["boteco.implantacao"].estado()
+        redes = [p for f in estado["fases"] for p in f["passos"] if p["codigo"] == "redes"][0]
+        self.assertEqual(redes["situacao"], "feito")  # mesmo que antes tenha sido pulado
+
+    def test_rede_do_aparelho(self):
+        from odoo.addons.boteco_base.models.boteco_wifi import rede_do_ip
+        self.assertEqual(rede_do_ip("192.168.0.37"), "192.168.0.0/24")
+        self.assertEqual(rede_do_ip("8.8.8.8"), "")  # internet não é rede do bar
+        self.assertEqual(rede_do_ip("172.18.0.1"), "")  # Docker do próprio servidor
+
+    def test_mensagens_desligadas_por_padrao(self):
+        self.assertFalse(self.env["res.company"].new({}).boteco_flag_mensagens)
+
+
+@tagged("post_install", "-at_install", "boteco")
+class TestPrimeirosPassosBarra(TransactionCase):
+    """Caixa "Primeiros passos" na barra de cima: some ao concluir e a chave fica desligada."""
+
+    def test_caixa_some_ao_concluir_e_chave_desliga(self):
+        company = self.env.company
+        company.write({"boteco_flag_assistente_implantacao": True})
+        self.assertFalse(company.boteco_implantacao_concluida)
+        Impl = self.env["boteco.implantacao"]
+        resumo = Impl.resumo()
+        self.assertTrue(resumo["mostrar"])
+        self.assertIn("total", resumo)
+        Impl.concluir(forcar=True)
+        self.assertFalse(company.boteco_flag_assistente_implantacao)
+        self.assertFalse(Impl.resumo()["mostrar"])
+        # Ligar de novo na Central de Recursos reabre os Primeiros passos
+        company.boteco_flag_assistente_implantacao = True
+        self.assertFalse(company.boteco_implantacao_concluida)
+        self.assertTrue(Impl.resumo()["mostrar"])
+
+    def test_sem_menu_no_inicio(self):
+        self.assertFalse(self.env.ref("boteco_base.menu_boteco_primeiros_passos", raise_if_not_found=False))

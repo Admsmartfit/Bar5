@@ -3,6 +3,25 @@
 import ipaddress
 
 
+def normalizar_redes(texto):
+    """'192.168.15.1' (endereço do roteador) -> '192.168.15.0/24' (a rede inteira). Erro se não for rede.
+
+    Quem configura costuma copiar o endereço do roteador; gravar só esse endereço deixaria
+    todos os outros celulares de fora.
+    """
+    resultado = []
+    for parte in (texto or "").replace(";", ",").split(","):
+        parte = parte.strip()
+        if not parte:
+            continue
+        if "/" not in parte:
+            parte += "/24"
+        rede = ipaddress.ip_network(parte, strict=False)  # ValueError se não for rede
+        if str(rede) not in resultado:
+            resultado.append(str(rede))
+    return ", ".join(resultado)
+
+
 def faixas(texto):
     """Converte '192.168.10.0/24, 10.0.0.5' em lista de redes; ignora entradas inválidas."""
     redes = []

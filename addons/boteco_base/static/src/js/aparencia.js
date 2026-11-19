@@ -42,6 +42,8 @@ export function aplicarAparencia(preferencias) {
 
 // Aplica já ao carregar os scripts, antes de desenhar a tela (evita piscar)
 aplicarAparencia(atual);
+// Central de Recursos: coluna de mensagens/notas internas ligada ou não (padrão: escondida)
+definir("data-bt-sem-mensagens", session.boteco_mensagens === false);
 sistemaEscuro?.addEventListener?.("change", () => atual.tema === "auto" && aplicarAparencia(atual));
 
 export class BotecoAparencia extends Component {

@@ -55,7 +55,8 @@ export class PrimeirosPassos extends Component {
     // ---------------------------------------------------------------- lista
     async fazer(passo) {
         const acao = await this.orm.call("boteco.implantacao", "acao", [passo.codigo]);
-        await this.action.doAction(acao);
+        // Janela (ex.: Wi-Fi): ao fechar, a lista se atualiza e o passo aparece como feito
+        await this.action.doAction(acao, { onClose: () => this.carregar() });
     }
 
     verAjuda(passo) {

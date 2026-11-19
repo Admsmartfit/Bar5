@@ -117,3 +117,9 @@ html[data-bt-escuro] {
     }
     .o_bt_aparencia__linha { display: flex; align-items: center; justify-content: space-between; min-height: 40px; }
 }
+
+// Central de Recursos: "Mensagens e notas internas" desligado -> sem a coluna de conversa (o formulário ocupa a largura)
+html[data-bt-sem-mensagens] {
+    .o-mail-Form-chatter, .o_form_renderer .o-mail-ChatterContainer { display: none !important; }
+    .o_form_view .o_form_renderer.o_form_editable, .o_form_view .o_form_renderer { max-width: none; }
+}
