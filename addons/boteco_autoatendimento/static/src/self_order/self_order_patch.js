@@ -175,6 +175,14 @@ patch(SelfOrder.prototype, {
         if (dados.evento === "maior18_ok") {
             this.botecoMesa.maior18_confirmado = true;
         }
+        if (dados.evento === "pedido_aprovado") {
+            this.notification.add(_t("Pedido confirmado pelo garçom e enviado para o preparo."), { type: "success" });
+        } else if (dados.evento === "pedido_recusado") {
+            this.notification.add(
+                _t("O garçom não confirmou o último pedido. Ele vai passar na mesa para conversar com você."),
+                { type: "warning", sticky: true }
+            );
+        }
         if (dados.evento === "liberada") {
             this.botecoAoFecharConta();
         } else {

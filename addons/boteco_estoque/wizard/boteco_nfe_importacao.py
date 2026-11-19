@@ -73,6 +73,13 @@ class BotecoNfeImportacao(models.TransientModel):
     _name = "boteco.nfe.importacao"
     _description = "Importar XML da NF-e do fornecedor"
 
+    fatores_conferidos = fields.Boolean("Conferi os fatores", help="Custos muito diferentes do atual, mas estão certos.")
+    tem_alerta_fator = fields.Boolean(compute="_compute_tem_alerta_fator")
+
+    @api.depends("linha_ids.alerta_fator")
+    def _compute_tem_alerta_fator(self):
+        for w in self:
+            w.tem_alerta_fator = any(w.linha_ids.mapped("alerta_fator"))
     arquivo = fields.Binary("XML da nota", required=True)
     nome_arquivo = fields.Char()
     chave = fields.Char(readonly=True)
@@ -152,6 +159,11 @@ class BotecoNfeImportacao(models.TransientModel):
         self.ensure_one()
         if not self.lido:
             self.action_ler()
+        suspeitas = self.linha_ids.filtered("alerta_fator")
+        if suspeitas and not self.fatores_conferidos:
+            itens = "\n".join("• %s: %s" % (l.descricao, l.alerta_fator) for l in suspeitas)
+            raise UserError(_("O custo destes itens mudou muito; um fator errado distorce o CMV por meses:\n%s\n\n"
+                              "Corrija o fator ou marque \"Conferi os fatores\".", itens))
         sem_produto = self.linha_ids.filtered(lambda l: not l.product_id)
         if sem_produto and not self.criar_produtos:
             raise UserError(_("Escolha o insumo dos itens: %s", ", ".join(sem_produto.mapped("descricao"))))
@@ -210,4 +222,20 @@ class BotecoNfeImportacaoLinha(models.TransientModel):
     quantidade = fields.Float("Qtd. da nota")
     valor_total = fields.Float("Valor")
     product_id = fields.Many2one("product.product", string="Insumo")
-    fator = fields.Float("Fator", default=1.0, help="Unidades do estoque por unidade da nota.")
+    fator = fields.Float("Fator", default=1.0, digits=(12, 4), help="Unidades do estoque por unidade da nota.")
+    custo_unitario = fields.Float("Custo por unidade do estoque", compute="_compute_conferencia", digits="Product Price")
+    alerta_fator = fields.Char("Confira", compute="_compute_conferencia")
+
+    @api.depends("valor_total", "quantidade", "fator", "product_id")
+    def _compute_conferencia(self):
+        """Fator errado (12 em vez de 240) multiplica o custo: compara com o custo atual do insumo."""
+        for linha in self:
+            quantidade = (linha.quantidade or 0.0) * (linha.fator or 1.0)
+            linha.custo_unitario = linha.valor_total / quantidade if quantidade else 0.0
+            anterior = linha.product_id.standard_price
+            linha.alerta_fator = False
+            if linha.product_id and anterior > 0 and linha.custo_unitario > 0:
+                razao = linha.custo_unitario / anterior
+                if razao > 1.5 or razao < 1 / 1.5:
+                    linha.alerta_fator = _("R$ %(n).4f por %(u)s (antes R$ %(a).4f). Confira o fator.",
+                                           n=linha.custo_unitario, u=linha.product_id.uom_id.name, a=anterior)

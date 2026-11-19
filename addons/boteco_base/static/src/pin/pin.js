@@ -46,6 +46,13 @@
     function voltar() {
         pessoaId = null;
         pin = "";
+        // Sai do modo "gerente desbloqueia", se estava nele
+        if (modoGerente) {
+            modoGerente = false;
+            tituloNome.textContent = nomeOriginal;
+        }
+        mostrarDesbloquear(false);
+        erro.textContent = "";
         teclado.hidden = true;
         pessoas.hidden = false;
     }
@@ -64,9 +71,64 @@
         desenharPontos();
     }
 
+    // Modo "gerente desbloqueia": o mesmo teclado recebe o PIN do gerente
+    let modoGerente = false;
+    const botaoDesbloquear = document.getElementById("bt-desbloquear");
+    const tituloNome = document.getElementById("bt-nome-escolhido");
+    let nomeOriginal = "";
+
+    function mostrarDesbloquear(mostrar) {
+        if (botaoDesbloquear) {
+            botaoDesbloquear.hidden = !mostrar;
+        }
+    }
+
+    botaoDesbloquear?.addEventListener("click", () => {
+        modoGerente = true;
+        nomeOriginal = tituloNome.textContent;
+        tituloNome.textContent = "PIN do gerente";
+        erro.textContent = "O gerente digita o PIN dele para liberar " + nomeOriginal + ".";
+        mostrarDesbloquear(false);
+        pin = "";
+        desenharPontos();
+    });
+
+    async function desbloquear() {
+        enviando = true;
+        try {
+            const resposta = await fetch("/boteco/pin/desbloquear", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "same-origin",
+                body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: { user_id: pessoaId, pin_gerente: pin } }),
+            });
+            const resultado = (await resposta.json()).result || {};
+            if (resultado.ok) {
+                modoGerente = false;
+                tituloNome.textContent = nomeOriginal;
+                pin = "";
+                desenharPontos();
+                erro.textContent = resultado.mensagem;
+                return;
+            }
+            tremer(resultado.erro || "Não deu certo.");
+        } catch (e) {
+            tremer("Sem conexão com o servidor. Confira o Wi-Fi e tente de novo.");
+        } finally {
+            enviando = false;
+        }
+    }
+
     async function entrar() {
         if (enviando) {
             return;
+        }
+        if (modoGerente) {
+            if (pin.length < MIN) {
+                tremer("O PIN tem de 4 a 6 números.");
+                return;
+            }
+            return desbloquear();
         }
         if (pin.length < MIN) {
             tremer("O PIN tem de 4 a 6 números.");
@@ -91,7 +153,9 @@
                 window.location.assign(resultado.url || "/boteco/inicio");
                 return;
             }
-            tremer(resultado.erro || (dados.error && dados.error.data && dados.error.data.message) || "Não deu certo. Tente de novo.");
+            const mensagem = resultado.erro || (dados.error && dados.error.data && dados.error.data.message) || "Não deu certo. Tente de novo.";
+            tremer(mensagem);
+            mostrarDesbloquear(/bloquead/i.test(mensagem));
         } catch (e) {
             tremer("Sem conexão com o servidor. Confira o Wi-Fi e tente de novo.");
         } finally {

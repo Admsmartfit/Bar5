@@ -32,6 +32,7 @@
         if (navigator.vibrate) {
             navigator.vibrate(ok ? 80 : [200, 80, 200]);
         }
+        bipe(ok);
     }
 
     function desenhar(dados) {
@@ -54,6 +55,26 @@
         }
     }
 
+    let audio = null;
+    function bipe(ok) {
+        // Ok = bipe curto e agudo; problema = dois bipes graves (dá para ouvir sem olhar a tela)
+        try {
+            audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+            const tons = ok ? [[880, 0]] : [[220, 0], [220, 0.18]];
+            for (const [freq, atraso] of tons) {
+                const osc = audio.createOscillator();
+                const vol = audio.createGain();
+                osc.frequency.value = freq;
+                vol.gain.value = 0.15;
+                osc.connect(vol).connect(audio.destination);
+                osc.start(audio.currentTime + atraso);
+                osc.stop(audio.currentTime + atraso + 0.12);
+            }
+        } catch {
+            // sem áudio: fica a vibração e a cor
+        }
+    }
+
     async function ler(codigo) {
         codigo = (codigo || "").trim();
         if (!codigo) {
@@ -68,10 +89,17 @@
         }
     }
 
+    let ultimaLeitura = { codigo: "", em: 0 };
     campo.addEventListener("keydown", (ev) => {
         if (ev.key === "Enter") {
-            ler(campo.value);
+            const codigo = (campo.value || "").trim();
             campo.value = "";
+            // Leitor que dispara duas vezes: a mesma etiqueta em menos de 0,8 s conta uma vez só
+            if (codigo === ultimaLeitura.codigo && Date.now() - ultimaLeitura.em < 800) {
+                return;
+            }
+            ultimaLeitura = { codigo, em: Date.now() };
+            ler(codigo);
         }
     });
 

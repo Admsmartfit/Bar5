@@ -52,8 +52,22 @@
                                     <t t-if="t === 'apagar'">⌫</t><t t-else="" t-esc="t"/>
                                 </button>
                             </div>
-                            <button class="prod__btn prod__btn--finalizar" t-att-disabled="state.enviando" t-on-click="() => this.finalizar()">
-                                Finalizar e imprimir etiqueta
+                            <div t-if="state.faltas" class="prod__faltas" role="alert">
+                                <b>Falta insumo no estoque:</b>
+                                <ul class="mb-1">
+                                    <li t-foreach="state.faltas" t-as="f" t-key="f_index">
+                                        <t t-esc="f.nome"/>: precisa <t t-esc="f.precisa"/>, tem <t t-esc="f.tem"/> <t t-esc="f.unidade"/>
+                                    </li>
+                                </ul>
+                                <div>Dê entrada da nota antes, ou o gerente libera com o PIN (fica registrado).</div>
+                                <div t-if="state.erroPin" class="text-danger fw-bold" t-esc="state.erroPin"/>
+                                <input type="password" inputmode="numeric" maxlength="6" class="form-control form-control-lg mt-1"
+                                       placeholder="PIN do gerente" t-model="state.pinGerente"/>
+                            </div>
+                            <button class="prod__btn prod__btn--finalizar" t-att-disabled="state.enviando or (state.faltas and !state.pinGerente)"
+                                    t-on-click="() => this.finalizar()">
+                                <t t-if="state.faltas">Liberar com PIN e finalizar</t>
+                                <t t-else="">Finalizar e imprimir etiqueta</t>
                             </button>
                         </t>
                     </section>

@@ -71,12 +71,25 @@ class BotecoEscalaRelatorio(models.TransientModel):
             ("semana_id.company_id", "=", company.id)], order="inicio")
         Presenca = self.env["hr.attendance"].sudo()
         local = lambda dt: pytz.utc.localize(dt).astimezone(tz) if dt else None  # noqa: E731
+        # Dobra (almoço e noite no mesmo dia): cada batida vale para UM turno só, o de início mais próximo.
+        # Sem isso, uma entrada atrasada no almoço caía também na janela da noite e as horas contavam duas vezes.
+        dono_da_batida = {}
+        for user in turnos.user_id:
+            funcionario = self.env["hr.employee"].sudo().search([("user_id", "=", user.id)], limit=1)
+            dele = turnos.filtered(lambda t, u=user: t.user_id == u)
+            if not funcionario or not dele:
+                continue
+            batidas = Presenca.search([("employee_id", "=", funcionario.id),
+                                       ("check_in", ">=", min(dele.mapped("inicio")) - timedelta(hours=4)),
+                                       ("check_in", "<=", max(dele.mapped("fim")))])
+            for batida in batidas:
+                candidatos = dele.filtered(lambda t, b=batida: t.inicio - timedelta(hours=4) <= b.check_in <= t.fim)
+                if candidatos:
+                    perto = min(candidatos, key=lambda t, b=batida: abs((b.check_in - t.inicio).total_seconds()))
+                    dono_da_batida[batida.id] = perto.id
         linhas = [fields.Command.clear()]
         for t in turnos:
-            funcionario = self.env["hr.employee"].sudo().search([("user_id", "=", t.user_id.id)], limit=1)
-            presencas = Presenca.search([("employee_id", "=", funcionario.id),
-                                         ("check_in", ">=", t.inicio - timedelta(hours=4)),
-                                         ("check_in", "<=", t.fim)], order="check_in") if funcionario else Presenca
+            presencas = Presenca.browse([b for b, turno in dono_da_batida.items() if turno == t.id]).sorted("check_in")
             entrada = presencas[:1].check_in
             saida = presencas[-1:].check_out if presencas else False
             trabalhadas = sum(((p.check_out or p.check_in) - p.check_in).total_seconds() for p in presencas) / 3600.0

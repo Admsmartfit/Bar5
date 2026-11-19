@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from odoo import api, fields, models
 from odoo.tools import float_compare
 
@@ -59,12 +61,26 @@ class PosOrderLine(models.Model):
 class PosOrder(models.Model):
     _inherit = "pos.order"
 
+    def _boteco_happy_na_tolerancia(self, line, preco_carrinho):
+        """O happy hour acabou há menos de N minutos e o carrinho mostrava o preço de happy hour?"""
+        produto = line.product_id
+        company = self.company_id or self.env.company
+        minutos = company.boteco_happy_tolerancia_min or 0
+        if not minutos or not produto.boteco_preco_happy:
+            return False
+        digitos = self.env["decimal.precision"].precision_get("Product Price")
+        if float_compare(preco_carrinho, produto.boteco_preco_happy, precision_digits=digitos) != 0:
+            return False
+        antes = fields.Datetime.now() - timedelta(minutes=minutos)
+        return self.env["boteco.happy.hour"].sudo()._ativo_em(antes, company)
+
     def _compute_line_price(self, line):
         """Autoatendimento (tablet/QR): o servidor recalcula o preço de cada linha a cada envio.
 
         * Linha já gravada mantém o preço do momento em que foi pedida (boteco_preco_fixado).
         * Linha nova recebe o preço promocional vigente (oferta relâmpago ou happy hour).
         """
+        preco_no_carrinho = line.price_unit  # o que a tela do cliente mostrou
         super()._compute_line_price(line)
         extra = sum(line.attribute_value_ids.mapped("price_extra"))
         if line.boteco_preco_fixado:
@@ -81,6 +97,10 @@ class PosOrder(models.Model):
                 line.boteco_preco_origem = origem
                 if oferta:
                     line.boteco_oferta_id = oferta
+            elif self._boteco_happy_na_tolerancia(line, preco_no_carrinho - extra):
+                # Pôs no carrinho no happy hour e enviou logo depois do fim: vale o preço que viu
+                preco = line.product_id.boteco_preco_happy + extra
+                line.boteco_preco_origem = "happy"
             else:
                 preco = line.price_unit
             line.boteco_preco_fixado = preco

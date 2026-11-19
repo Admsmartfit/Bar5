@@ -63,6 +63,39 @@ class TestCozinhaCentral(BotecoCase):
         resultado = producao.with_user(self.cozinheiro).boteco_finalizar(peso)
         return producao, resultado
 
+    def test_insumo_sem_saldo_so_fecha_com_pin_do_gerente(self):
+        """Auditoria: produzir sem matéria-prima no estoque deixaria o saldo negativo."""
+        producao = self._producao(qtd=200.0)  # precisa de 80 kg de bacalhau; o estoque tem 50
+        producao.with_user(self.cozinheiro).boteco_iniciar()
+        r = producao.with_user(self.cozinheiro).boteco_finalizar(190)
+        self.assertTrue(r["precisa_pin"])
+        self.assertEqual(r["faltas"][0]["nome"], "Bacalhau dessalgado")
+        self.assertNotEqual(producao.state, "done")
+        r = producao.with_user(self.cozinheiro).boteco_finalizar(190, "0000")
+        self.assertEqual(r["erro"], "PIN não confere.")
+        self.assertNotEqual(producao.state, "done")
+        producao.with_user(self.cozinheiro).boteco_finalizar(190, "7314")  # gerente libera
+        self.assertEqual(producao.state, "done")
+        self.assertTrue(self.env["boteco.auditoria"].search([("acao", "=", "ajuste_estoque"),
+                                                             ("descricao", "ilike", producao.name)]))
+
+    def test_mesma_etiqueta_lida_duas_vezes_conta_uma(self):
+        producao, _r = self._produzir(9.6)
+        lote = producao.lot_producing_id
+        picking = self.env["stock.picking"].create({
+            "picking_type_id": self.cc.int_type_id.id, "location_id": self.cc.lot_stock_id.id,
+            "location_dest_id": self.bar.lot_stock_id.id,
+            "move_ids": [fields.Command.create({"name": "Massa", "product_id": self.bolinho.id, "product_uom_qty": 5.0,
+                                                "product_uom": self.bolinho.uom_id.id,
+                                                "location_id": self.cc.lot_stock_id.id,
+                                                "location_dest_id": self.bar.lot_stock_id.id})],
+        })
+        picking.action_confirm()
+        picking.boteco_ler_lote(lote.name)
+        with self.assertRaisesRegex(UserError, "já foi lido"):
+            picking.boteco_ler_lote(lote.name)
+        self.assertAlmostEqual(sum(picking.move_ids.move_line_ids.filtered("picked").mapped("quantity")), 5.0)
+
     def test_finalizar_gera_lote_baixa_insumos_e_imprime_etiqueta_em_3s(self):
         """Critérios: etiqueta em até 3 s; cozinheiro só digita o peso."""
         inicio = time.time()

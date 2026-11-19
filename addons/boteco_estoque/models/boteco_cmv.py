@@ -65,7 +65,9 @@ class BotecoCmv(models.Model):
                     UNION ALL
                     SELECT
                         s.id * 2 + 1 AS id,
-                        ((s.date_done AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') - INTERVAL '6 hours')::date AS dia,
+                        -- Dia de operação da empresa (mesma regra do PDV: fuso + hora em que o dia vira)
+                        ((s.date_done AT TIME ZONE 'UTC' AT TIME ZONE COALESCE(cp.tz, 'America/Sao_Paulo'))
+                          - make_interval(mins => (COALESCE(c.boteco_hora_virada, 6.0) * 60)::int))::date AS dia,
                         'perda' AS tipo,
                         s.product_id,
                         pt.categ_id,
@@ -75,12 +77,14 @@ class BotecoCmv(models.Model):
                         COALESCE(SUM(svl.value), 0.0) AS margem,
                         s.company_id
                     FROM stock_scrap s
+                    JOIN res_company c ON c.id = s.company_id
+                    JOIN res_partner cp ON cp.id = c.partner_id
                     JOIN product_product pp ON pp.id = s.product_id
                     JOIN product_template pt ON pt.id = pp.product_tmpl_id
                     LEFT JOIN stock_move m ON m.scrap_id = s.id
                     LEFT JOIN stock_valuation_layer svl ON svl.stock_move_id = m.id
                     WHERE s.state = 'done'
-                    GROUP BY s.id, pt.categ_id
+                    GROUP BY s.id, pt.categ_id, c.boteco_hora_virada, cp.tz
                 ) x
             )
             """

@@ -19,7 +19,7 @@ class BotecoOfertaRelampago(models.Model):
         "product.product", string="Produto", required=True,
         domain="[('available_in_pos', '=', True)]",
     )
-    preco = fields.Float("Preço da oferta", digits="Product Price", required=True)
+    preco = fields.Float("Preço da oferta", digits=(16, 2), required=True)
     preco_normal = fields.Float(related="product_id.lst_price", string="Preço normal")
     limite = fields.Float("Quantidade limite", required=True, default=20)
     duracao_min = fields.Integer("Duração (min)", default=60, help="Usada pelo botão 'Lançar agora'.")

@@ -3,7 +3,8 @@ from datetime import timedelta
 
 from odoo import SUPERUSER_ID, api, fields, models
 
-MAX_TENTATIVAS = 5
+MAX_TENTATIVAS = 5  # por pessoa, no mesmo aparelho
+LIMITE_GERAL = 15  # por pessoa, somando todos os aparelhos (força bruta)
 JANELA_BLOQUEIO_MIN = 15
 
 
@@ -44,14 +45,16 @@ class BotecoPinTentativa(models.Model):
             env[self._name].create(vals)
 
     @api.model
-    def _falhas_recentes(self, user_id, tipo):
-        """Falhas seguidas desde o último acerto, dentro da janela de bloqueio."""
+    def _falhas_recentes(self, user_id, tipo, ip=None):
+        """Falhas seguidas desde o último acerto, dentro da janela de bloqueio.
+
+        Com ``ip``: só as daquele aparelho (o desbloqueio do gerente vale para todos).
+        """
         limite = fields.Datetime.now() - timedelta(minutes=JANELA_BLOQUEIO_MIN)
-        tentativas = self.sudo().search(
-            [("user_id", "=", user_id), ("tipo", "=", tipo), ("data", ">=", limite)],
-            order="id desc",
-            limit=MAX_TENTATIVAS,
-        )
+        dominio = [("user_id", "=", user_id), ("tipo", "=", tipo), ("data", ">=", limite)]
+        if ip:
+            dominio.append(("ip", "in", [ip, "desbloqueio"]))
+        tentativas = self.sudo().search(dominio, order="id desc", limit=MAX_TENTATIVAS if ip else LIMITE_GERAL)
         falhas = 0
         for t in tentativas:
             if t.sucesso:
@@ -60,8 +63,13 @@ class BotecoPinTentativa(models.Model):
         return falhas
 
     @api.model
-    def _bloqueado(self, user_id, tipo):
-        return self._falhas_recentes(user_id, tipo) >= MAX_TENTATIVAS
+    def _bloqueado(self, user_id, tipo, ip=None):
+        """Sem ``ip``: regra antiga (5 erros seguidos). Com ``ip`` (entrada por PIN): 5 erros naquele aparelho,
+        ou 15 somando todos. Assim um colega errando o PIN da Ana num tablet não a tira dos outros."""
+        if not ip:
+            return self._falhas_recentes(user_id, tipo) >= MAX_TENTATIVAS
+        return (self._falhas_recentes(user_id, tipo, ip) >= MAX_TENTATIVAS
+                or self._falhas_recentes(user_id, tipo) >= LIMITE_GERAL)
 
     @api.model
     def _limpar_antigas(self):

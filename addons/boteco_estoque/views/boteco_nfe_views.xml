@@ -24,7 +24,7 @@
                     </group>
                 </group>
                 <field name="linha_ids" invisible="not lido">
-                    <list editable="bottom" decoration-warning="not product_id">
+                    <list editable="bottom" decoration-warning="not product_id" decoration-danger="alerta_fator">
                         <field name="codigo"/>
                         <field name="descricao"/>
                         <field name="quantidade"/>
@@ -32,8 +32,16 @@
                         <field name="valor_total"/>
                         <field name="product_id" placeholder="Novo insumo será criado"/>
                         <field name="fator"/>
+                        <field name="custo_unitario"/>
+                        <field name="alerta_fator"/>
                     </list>
                 </field>
+                <div class="alert alert-danger mt-2" role="alert" invisible="not tem_alerta_fator">
+                    O custo de algum item ficou muito diferente do atual (linhas em vermelho). Confira o <b>Fator</b>
+                    (ex.: 1 caixa de 12 garrafas = 12; 1 caixa de 12 L em doses de 50 ml = 240).
+                    <div class="mt-1"><field name="fatores_conferidos"/> <label for="fatores_conferidos"/></div>
+                </div>
+                <field name="tem_alerta_fator" invisible="1"/>
                 <footer>
                     <button name="action_ler" type="object" string="Ler a nota" class="btn-secondary" invisible="lido"/>
                     <button name="action_criar_entrada" type="object" string="Dar entrada no estoque" class="btn-primary"/>

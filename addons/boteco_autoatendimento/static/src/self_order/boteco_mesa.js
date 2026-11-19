@@ -26,6 +26,10 @@ export class BotecoMesa extends Component {
             }
         };
         let timer = null;
+        this.relogio = useState({ agora: Date.now() });
+        let timerRelogio = null;
+        onMounted(() => (timerRelogio = setInterval(() => (this.relogio.agora = Date.now()), 30000)));
+        onWillUnmount(() => clearInterval(timerRelogio));
         onMounted(() => {
             ["pointerdown", "keydown", "scroll"].forEach((ev) => window.addEventListener(ev, tocar, { passive: true }));
             timer = setInterval(() => this.conferirDescanso(), 5000);
@@ -51,6 +55,23 @@ export class BotecoMesa extends Component {
 
     get ativo() {
         return Boolean(this.selfOrder.botecoIdentificador) && this.selfOrder.config.self_ordering_mode === "mobile";
+    }
+
+    /** Últimos 15 minutos do happy hour: avisa até quando o preço vale (com a tolerância). */
+    get avisoHappy() {
+        const c = this.selfOrder.botecoCardapio;
+        if (!c?.happyAtivo || !c.proximaTroca) {
+            return null;
+        }
+        const faltam = Math.ceil((c.proximaTroca - this.relogio.agora) / 60000);
+        if (faltam > 15 || faltam < 0) {
+            return null;
+        }
+        const hora = (ms) => new Date(ms).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+        const limite = c.proximaTroca + (c.toleranciaMin || 0) * 60000;
+        return _t("Happy hour acaba às %(fim)s (faltam %(min)s min). Envie até %(limite)s para manter o preço.", {
+            fim: hora(c.proximaTroca), min: Math.max(faltam, 0), limite: hora(limite),
+        });
     }
 
     get ofertas() {

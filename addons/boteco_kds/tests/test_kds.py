@@ -3,6 +3,7 @@ import time
 from datetime import timedelta
 
 from odoo import fields
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from odoo.addons.boteco_base.tests.test_escpos import ImpressoraFalsa
@@ -128,6 +129,22 @@ class TestKds(BotecoPosCase):
         self.assertEqual(set(status.values()), {"entregue"})
         tempos = self.env["boteco.kds.tempo"].search_read([("product_id", "=", self.porcao.id)], ["minutos_preparo", "hora"])
         self.assertEqual(len(tempos), 1)
+
+    def test_prioridade_passa_na_frente(self):
+        """Auditoria: caixa/gerente passa um pedido na frente; garçom não; fica na auditoria."""
+        self._sincronizar(self._pedido([self._linha(self.porcao, 1)], mesa=self.mesa1))
+        self._sincronizar(self._pedido([self._linha(self.porcao, 1)], mesa=self.mesa2))
+        primeiro = self.Ticket.search([("order_id.table_id", "=", self.mesa1.id)])
+        segundo = self.Ticket.search([("order_id.table_id", "=", self.mesa2.id)])
+        self.assertEqual(self.Ticket.search([("id", "in", (primeiro | segundo).ids)])[0], primeiro)
+        with self.assertRaises(UserError):
+            segundo.with_user(self.garcom).kds_priorizar("cliente VIP")
+        dados = segundo.with_user(self.caixa).kds_priorizar("cliente esperando há 40 min")
+        self.assertTrue(dados[0]["prioridade"])
+        self.assertEqual(self.Ticket.search([("id", "in", (primeiro | segundo).ids)])[0], segundo)
+        self.assertTrue(self.env["boteco.auditoria"].search([("descricao", "ilike", "passou na frente")]))
+        segundo.with_user(self.caixa).kds_priorizar()  # toca de novo: volta à ordem normal
+        self.assertFalse(segundo.prioridade)
 
     def test_cancelamento_vira_ticket_de_cancelamento(self):
         linha = self._linha(self.porcao, 2)

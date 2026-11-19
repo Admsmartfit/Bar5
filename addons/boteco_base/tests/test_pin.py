@@ -72,3 +72,22 @@ class TestPin(BotecoCase):
             self.env["res.users"].with_user(self.garcom)._check_credentials(
                 {"type": "password", "login": self.garcom.login, "password": "errada"}, {"interactive": True}
             )
+
+    def test_bloqueio_e_por_aparelho(self):
+        """Auditoria: errar o PIN da pessoa num tablet não a tira dos outros (5 por aparelho, 15 no total)."""
+        Users = type(self.env["res.users"])
+        ip = {"atual": "10.0.0.11"}
+        self.patch(Users, "_boteco_ip", lambda self_: ip["atual"])
+        for _i in range(5):
+            try:
+                self._login(self.caixa, "1111")
+            except AccessDenied:
+                pass
+        with self.assertRaises(AccessDenied):
+            self._login(self.caixa, "3691")  # bloqueado neste tablet
+        ip["atual"] = "10.0.0.12"
+        self.assertEqual(self._login(self.caixa, "3691")["uid"], self.caixa.id)  # no outro, entra
+
+    def test_mensagem_mostra_quantas_tentativas_restam(self):
+        with self.assertRaisesRegex(AccessDenied, "Restam 4 tentativas"):
+            self._login(self.garcom, "0000")

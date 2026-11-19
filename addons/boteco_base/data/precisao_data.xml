@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Auditoria (risco 2): 2 casas arredondam o custo da dose (R$ 0,4166 -> 0,42) e 36 g viram 0,04 kg.
+     Preço/custo com 4 casas e quantidade com 3 casas; os totais em R$ continuam com 2 (moeda). -->
+<odoo>
+    <record id="product.decimal_price" model="decimal.precision">
+        <field name="digits">4</field>
+    </record>
+    <record id="product.decimal_product_uom" model="decimal.precision">
+        <field name="digits">3</field>
+    </record>
+</odoo>

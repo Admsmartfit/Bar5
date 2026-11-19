@@ -20,3 +20,9 @@
         .btn { min-width: 44px; min-height: 44px; }
     }
 }
+
+// Botão "Pendências" (auditoria, risco 3): pulsa quando algo espera há mais de 30 s
+.o_boteco_btn_pendencias { min-height: 48px; font-weight: 700; }
+.o_boteco_pulsar { animation: o_boteco_pulsar 1.4s ease-in-out infinite; }
+@keyframes o_boteco_pulsar { 0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, .6); } 50% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); } }
+@media (prefers-reduced-motion: reduce) { .o_boteco_pulsar { animation: none; } }

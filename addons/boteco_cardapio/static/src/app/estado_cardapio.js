@@ -76,6 +76,9 @@ export class SincronizadorCardapio {
             (estado.ofertas || []).map((oferta) => [oferta.product_id, oferta])
         );
         estadoCardapio.esgotados = new Set(estado.esgotados || []);
+        // Hora da próxima troca no relógio deste aparelho (aviso "happy hour acaba em X min")
+        estadoCardapio.toleranciaMin = estado.happy_tolerancia_min || 0;
+        estadoCardapio.proximaTroca = estado.proxima_troca ? estado.proxima_troca - estadoCardapio.diferencaRelogio : null;
         this.agendarTroca(estado.proxima_troca);
         this.publicar(estado.ofertas || []);
     }
@@ -100,6 +103,8 @@ export class SincronizadorCardapio {
         // Mexer no objeto reativo faz as telas redesenharem os preços
         const reativo = this.store.botecoCardapio;
         reativo.happyAtivo = estadoCardapio.happyAtivo;
+        reativo.proximaTroca = estadoCardapio.proximaTroca || null;
+        reativo.toleranciaMin = estadoCardapio.toleranciaMin || 0;
         reativo.ofertas = ofertas;
         reativo.versao = (reativo.versao || 0) + 1;
     }

@@ -109,20 +109,53 @@ class TestEscala(HttpCase, BotecoPosCase):
 
     # ------------------------------------------------------------------ ponto
     def test_ponto_fora_da_rede_recusado(self):
-        self.company.write({"boteco_rede_clientes": "10.99.0.0/24", "boteco_rede_sistema": "10.98.0.0/24"})
         Ponto = self.env["boteco.ponto"]
         with self.assertRaises(UserError):
             Ponto.bater(self.ana, "3817", na_rede=False)
+        # Fora da rede da equipe a página nem abre (não lista os nomes)
+        self.company.write({"boteco_rede_clientes": "10.99.0.0/24", "boteco_rede_sistema": "10.98.0.0/24"})
         self.env.flush_all()
         pagina = self.url_open("/boteco/ponto")
+        self.assertIn("rede do bar", pagina.text)
+        self.assertNotIn("Ana Garçom", pagina.text)
+        # Na rede da equipe: toca no nome, digita o PIN
+        self.company.boteco_rede_sistema = "127.0.0.0/8"
+        self.env.flush_all()
+        pagina = self.url_open("/boteco/ponto")
+        self.assertIn("Ana Garçom", pagina.text)
         csrf = re.search(r'name="csrf_token" value="([^"]+)"', pagina.text).group(1)
         resposta = self.url_open("/boteco/ponto", data={"csrf_token": csrf, "user_id": self.ana.id, "pin": "3817"})
-        self.assertIn("rede do bar", resposta.text)
+        self.assertIn("entrada às", resposta.text)
         self.company.boteco_ponto_so_na_rede = False
-        self.assertEqual(Ponto.bater(self.ana, "3817", na_rede=False)["tipo"], "entrada")
         self.assertEqual(Ponto.bater(self.ana, "3817", na_rede=False)["tipo"], "saida")
         with self.assertRaises(UserError):
             Ponto.bater(self.ana, "0000")
+
+    def test_dobra_no_mesmo_dia_nao_conta_horas_duas_vezes(self):
+        """Auditoria: almoço e noite no mesmo dia; entrada atrasada no almoço não cai também na noite."""
+        ontem = fields.Date.today() - timedelta(days=1)
+        segunda = ontem - timedelta(days=ontem.weekday())
+        almoco = self.env.ref("boteco_escala.turno_almoco")
+        semana = self.env["boteco.escala.semana"].create({"inicio": segunda})
+        semana.turno_ids = [fields.Command.create({"user_id": self.ana.id, "dia": ontem, "turno_id": almoco.id}),
+                            fields.Command.create({"user_id": self.ana.id, "dia": ontem, "turno_id": self.noite.id})]
+        semana.with_context(boteco_confirmado=True).action_publicar()
+        t_almoco = semana.turno_ids.filtered(lambda t: t.turno_id == almoco)
+        t_noite = semana.turno_ids.filtered(lambda t: t.turno_id == self.noite)
+        funcionario = self.env["boteco.ponto"]._funcionario(self.ana)
+        Presenca = self.env["hr.attendance"]
+        # Almoço: chegou 2h30 atrasada (13h30) e saiu às 16h; noite: 17h às 1h
+        Presenca.create({"employee_id": funcionario.id, "check_in": t_almoco.inicio + timedelta(hours=2, minutes=30),
+                         "check_out": t_almoco.fim})
+        Presenca.create({"employee_id": funcionario.id, "check_in": t_noite.inicio, "check_out": t_noite.fim})
+        relatorio = self.env["boteco.escala.relatorio"].create({"data_de": ontem, "data_ate": ontem})
+        relatorio.action_gerar()
+        linha_almoco = relatorio.linha_ids.filtered(lambda l: l.turno == almoco.name)
+        linha_noite = relatorio.linha_ids.filtered(lambda l: l.turno == self.noite.name)
+        self.assertAlmostEqual(linha_almoco.horas_trabalhadas, 2.5, places=2)
+        self.assertEqual(linha_almoco.atraso_min, 150)
+        self.assertAlmostEqual(linha_noite.horas_trabalhadas, 8.0, places=2)
+        self.assertEqual(linha_noite.horas_extras, 0.0)
 
     def test_escalado_x_trabalhado_mostra_atraso_e_horas_extras(self):
         ontem = fields.Date.today() - timedelta(days=1)

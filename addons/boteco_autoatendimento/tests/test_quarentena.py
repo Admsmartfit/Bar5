@@ -157,3 +157,23 @@ class TestQuarentenaTablet(HttpCase, BotecoPosCase):
     def test_item_sem_classificacao_nao_entra_na_regra(self):
         pedido = self._pedir(self.porcao, 10)
         self.assertFalse(pedido.boteco_status_aprovacao)
+
+    def test_cliente_fica_sabendo_da_decisao(self):
+        """Auditoria: aprovado/recusado chega ao celular/tablet da mesa (BOTECO_MESA)."""
+        avisos = []
+        Config = type(self.env["pos.config"])
+        original = Config._notify
+
+        def capturar(config, *args, **kwargs):
+            avisos.append(args)
+            return original(config, *args, **kwargs)
+
+        self.patch(Config, "_notify", capturar)
+        pedido = self._pedir(self.batata, 10)
+        pedido.with_user(self.garcom).action_boteco_rejeitar_pedido()
+        eventos = [a[1].get("evento") for a in avisos if a and a[0] == "BOTECO_MESA"]
+        self.assertIn("pedido_recusado", eventos)
+        avisos.clear()
+        outro = self._pedir(self.batata, 10)
+        outro.with_user(self.garcom).action_boteco_aprovar_pedido()
+        self.assertIn("pedido_aprovado", [a[1].get("evento") for a in avisos if a and a[0] == "BOTECO_MESA"])

@@ -41,6 +41,7 @@ class PosConfig(models.Model):
             "agora": epoch_ms(agora),
             "happy_ativo": HappyHour._ativo_em(agora, company),
             "proxima_troca": epoch_ms(HappyHour._proxima_troca(agora, company)),
+            "happy_tolerancia_min": company.boteco_happy_tolerancia_min or 0,
             "ofertas": [
                 {
                     "id": o.id,

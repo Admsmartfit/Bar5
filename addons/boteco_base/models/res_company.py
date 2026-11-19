@@ -144,6 +144,11 @@ class ResCompany(models.Model):
     )
 
     # Etapas 26 e 33 (PRD de recursos avançados)
+    boteco_happy_tolerancia_min = fields.Integer(
+        "Tolerância do happy hour (min)", default=5,
+        help="Item que entrou no carrinho do QR/tablet com preço de happy hour mantém esse preço se o pedido "
+        "chegar até esses minutos depois do fim. 0 = vale o preço da hora do envio.",
+    )
     boteco_flag_mensagens = fields.Boolean(
         string="Mensagens e notas internas nas telas (Enviar mensagem, Notas internas, histórico)", default=False,
         help="Desligado, a coluna de conversa do lado dos cadastros some (os registros continuam guardados).",
@@ -201,8 +206,8 @@ class ResCompany(models.Model):
             return False
         return bool(company.sudo()[campo])
 
-    @api.model
     def action_boteco_central_recursos(self):
+        # Sem @api.model: é chamado pelo menu (sem registro) e pelo botão do cadastro da empresa (com o registro)
         """Abre a Central de Recursos da empresa atual."""
         return {
             "type": "ir.actions.act_window",

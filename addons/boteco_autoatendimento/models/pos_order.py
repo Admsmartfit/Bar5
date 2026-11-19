@@ -248,6 +248,9 @@ class PosOrder(models.Model):
             pedido._boteco_seguir_para_producao()
         pedido._boteco_avisar_quarentena("BOTECO_ANOMALIA_RESOLVIDA",
                                          {"status": status, "resolvido_por": self.env.user.name})
+        # Auditoria: o cliente (celular/tablet da mesa) fica sabendo da decisão
+        if pedido.table_id:
+            pedido.table_id._boteco_avisar("pedido_aprovado" if status == "aprovado" else "pedido_recusado")
         return True
 
     def action_boteco_ajustar_clientes_e_aprovar(self, nova_qtd_clientes):

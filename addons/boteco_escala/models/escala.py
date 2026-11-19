@@ -228,7 +228,7 @@ class BotecoEscalaPrevisao(models.Model):
     dia_semana = fields.Char(compute="_compute_dia_semana")
     turno_id = fields.Many2one("boteco.turno", required=True)
     clientes = fields.Integer("Clientes previstos")
-    faturamento = fields.Float("Faturamento previsto", digits="Product Price")
+    faturamento = fields.Float("Faturamento previsto", digits=(16, 2))
     sugestao = fields.Char("Sugestão de equipe")
     sugestao_json = fields.Char()
     escalados = fields.Char("Escalados", compute="_compute_escalados")
@@ -268,7 +268,7 @@ class BotecoEscalaTurno(models.Model):
     inicio = fields.Datetime(compute="_compute_horario", store=True, readonly=False)
     fim = fields.Datetime(compute="_compute_horario", store=True, readonly=False)
     horas = fields.Float(compute="_compute_horas", store=True)
-    custo = fields.Float(compute="_compute_horas", store=True, digits="Product Price")
+    custo = fields.Float(compute="_compute_horas", store=True, digits=(16, 2))
     estado_semana = fields.Selection(related="semana_id.estado", store=True)
 
     @api.depends("user_id")

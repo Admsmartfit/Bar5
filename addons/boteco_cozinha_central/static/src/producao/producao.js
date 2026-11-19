@@ -15,7 +15,8 @@ export class TelaProducao extends Component {
     setup() {
         this.orm = useService("orm");
         this.notification = useService("notification");
-        this.state = useState({ producoes: [], aberta: null, peso: "", resultado: null, enviando: false });
+        this.state = useState({ producoes: [], aberta: null, peso: "", resultado: null, enviando: false,
+                                faltas: null, erroPin: "", pinGerente: "" });
         this.teclas = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "apagar"];
         onWillStart(() => this.carregar());
     }
@@ -67,10 +68,21 @@ export class TelaProducao extends Component {
         }
         this.state.enviando = true;
         try {
-            this.state.resultado = await this.orm.call("mrp.production", "boteco_finalizar", [
+            const r = await this.orm.call("mrp.production", "boteco_finalizar", [
                 [this.state.aberta.id],
                 this.pesoNumero,
+                this.state.pinGerente || null,
             ]);
+            if (r && r.precisa_pin) {
+                // Insumo sem saldo: mostra o que falta e pede o PIN do gerente (fica na auditoria)
+                this.state.faltas = r.faltas;
+                this.state.erroPin = r.erro || "";
+                this.state.pinGerente = "";
+                return;
+            }
+            this.state.faltas = null;
+            this.state.pinGerente = "";
+            this.state.resultado = r;
         } catch (erro) {
             this.notification.add(erro?.data?.message || _t("Não deu para finalizar."), { type: "danger", sticky: true });
         } finally {

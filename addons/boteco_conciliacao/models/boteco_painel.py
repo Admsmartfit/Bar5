@@ -17,9 +17,11 @@ class BotecoPainel(models.AbstractModel):
         base = [("company_id", "=", company.id)]
         a_receber = Recebivel.search(base + [("estado", "in", ("previsto", "conferido", "divergente", "atrasado")),
                                              ("data_prevista", "<=", hoje + timedelta(days=30))])
+        # Mesmo calendário da DRE: dia de operação (venda das 2h do dia 1º é do mês anterior)
+        hoje_operacao = company.boteco_dia_operacao()
         semana = Recebivel.search(base + [("estado", "in", ("divergente", "atrasado", "estornado")),
-                                          ("data_venda", ">=", hoje - timedelta(days=7))])
-        mes = Recebivel.search(base + [("data_venda", ">=", hoje.replace(day=1)), ("estado", "!=", "estornado")])
+                                          ("dia_operacao", ">=", hoje_operacao - timedelta(days=7))])
+        mes = Recebivel.search(base + [("dia_operacao", ">=", hoje_operacao.replace(day=1)), ("estado", "!=", "estornado")])
         taxas = {}
         for r in mes:
             nome = r.adquirente_id.name or r.metodo_id.name or "—"

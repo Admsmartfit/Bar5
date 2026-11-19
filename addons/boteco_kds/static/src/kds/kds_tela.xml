@@ -44,6 +44,7 @@
             <main class="o_boteco_kds__grade">
                 <t t-foreach="ticketsVisiveis" t-as="ticket" t-key="ticket.id">
                     <article class="o_boteco_kds__cartao" t-att-data-tempo="corTempo(ticket)" t-att-data-estado="ticket.estado"
+                             t-att-data-prioridade="ticket.prioridade ? '1' : null" t-att-title="ticket.prioridade_motivo or null"
                              t-on-click="() => this.tocarCartao(ticket)"
                              t-on-pointerdown="() => this.inicioToque(ticket)"
                              t-on-pointerup="() => this.fimToque()" t-on-pointerleave="() => this.fimToque()">
@@ -74,6 +75,9 @@
 
                         <div t-if="state.menu === ticket.id" class="cartao__menu" t-on-click.stop="() => {}">
                             <button class="btn btn-light btn-lg" t-on-click.stop="() => this.reimprimir(ticket.id)">🖨 Reimprimir</button>
+                            <button t-if="ticket.estado !== 'pronto'" class="btn btn-warning btn-lg" t-on-click.stop="() => this.priorizar(ticket)">
+                                <t t-if="ticket.prioridade">Tirar prioridade</t><t t-else="">⚡ Prioridade</t>
+                            </button>
                             <button t-if="ticket.estado !== 'aguardando'" class="btn btn-light btn-lg" t-on-click.stop="() => this.voltarEstado(ticket.id)">↩ Voltar etapa</button>
                             <button class="btn btn-secondary btn-lg" t-on-click.stop="() => this.state.menu = null">Fechar</button>
                         </div>

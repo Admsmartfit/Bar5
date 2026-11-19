@@ -94,7 +94,7 @@ class BotecoReguaCrmLinha(models.TransientModel):
     dias = fields.Integer("Dias sem vir")
     aniversario = fields.Date("Aniversário")
     visitas = fields.Integer("Visitas")
-    total_gasto = fields.Float("Total gasto", digits="Product Price")
+    total_gasto = fields.Float("Total gasto", digits=(16, 2))
     mensagem = fields.Text("Mensagem")
     link_whatsapp = fields.Char("WhatsApp")
 

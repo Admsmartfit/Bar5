@@ -87,7 +87,10 @@ class BotecoRecebivel(models.Model):
     adquirente_id = fields.Many2one("boteco.adquirente", string="Maquininha / banco", index=True)
     modalidade = fields.Selection(MODALIDADES)
     parcelas = fields.Integer(default=1)
-    data_venda = fields.Date("Venda", required=True, index=True)
+    data_venda = fields.Date("Venda", required=True, index=True,
+                             help="Data do calendário: é a que a maquininha usa no extrato.")
+    dia_operacao = fields.Date("Dia de operação", index=True,
+                               help="Dia do bar (vira na hora configurada): é o usado no Painel e na DRE.")
     data_prevista = fields.Date("Cai na conta em", index=True)
     valor_bruto = fields.Monetary("Venda", currency_field="currency_id")
     taxa_esperada_pct = fields.Float("Taxa contratada (%)", digits=(5, 2))
@@ -124,6 +127,7 @@ class BotecoRecebivel(models.Model):
                 "payment_id": pag.id, "session_id": pag.session_id.id, "metodo_id": metodo.id,
                 "adquirente_id": metodo.boteco_adquirente_id.id, "modalidade": modalidade,
                 "data_venda": dia, "data_prevista": dia_util(dia, prazo) if prazo else dia,
+                "dia_operacao": company.boteco_dia_operacao(pag.payment_date),
                 "valor_bruto": pag.amount, "taxa_esperada_pct": taxa,
                 "liquido_esperado": round(pag.amount * (1 - taxa / 100.0), 2),
                 "nsu": pag.transaction_id or pag.payment_ref_no or False, "company_id": company.id,

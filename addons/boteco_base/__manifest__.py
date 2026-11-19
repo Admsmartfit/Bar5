@@ -57,6 +57,7 @@ Fundação do Sistema Boteco Raiz (Etapa 0 do PRD).
         "views/boteco_wifi_views.xml",
         "data/boteco_ajuda_artigos.xml",
         "data/boteco_implantacao_data.xml",
+        "data/precisao_data.xml",
     ],
     "assets": {
         "web.assets_backend": [

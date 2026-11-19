@@ -15,6 +15,11 @@ class BotecoPontoTela(http.Controller):
     @http.route("/boteco/ponto", type="http", auth="public", methods=["GET", "POST"], sitemap=False)
     def ponto(self, user_id=None, pin=None, **kw):
         company = request.env.company.sudo()
+        # Como a tela de PIN: só na rede da equipe (a lista de nomes não pode ficar aberta na internet)
+        if not ip_na_rede(request.httprequest.remote_addr, company.boteco_rede_sistema):
+            return request.render("boteco_escala.tela_ponto", {
+                "titulo": _("Ponto"), "tema": "claro", "empresa": company, "ligado": False, "pessoas": [],
+                "mensagem": None, "erro": _("O ponto só abre nos aparelhos da rede do bar.")})
         valores = {"titulo": _("Ponto – %s", company.name), "tema": "claro", "empresa": company,
                    "ligado": company.boteco_recurso_ativo("ponto_pin"),
                    "pessoas": request.env["res.users"].sudo().boteco_usuarios_pin(), "mensagem": None, "erro": None}

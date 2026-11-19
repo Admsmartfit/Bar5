@@ -23,7 +23,7 @@
             </t>
             <main class="pt">
                 <h1>Ponto · <t t-esc="empresa.name"/></h1>
-                <p t-if="not ligado" class="erro">O ponto pelo PIN está desligado.</p>
+                <p t-if="not ligado and not erro" class="erro">O ponto pelo PIN está desligado.</p>
                 <p t-if="mensagem" class="ok" t-esc="mensagem"/>
                 <p t-if="erro" class="erro" t-esc="erro"/>
                 <form t-if="ligado and not mensagem" method="post" action="/boteco/ponto">

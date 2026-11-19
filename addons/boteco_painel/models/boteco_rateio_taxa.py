@@ -12,7 +12,7 @@ class BotecoRateioTaxa(models.TransientModel):
 
     data_inicio = fields.Date("De", default=lambda s: s.env.company.boteco_dia_operacao().replace(day=1), required=True)
     data_fim = fields.Date("Até", default=lambda s: s.env.company.boteco_dia_operacao(), required=True)
-    total_taxa = fields.Float("Taxa arrecadada", digits="Product Price", readonly=True)
+    total_taxa = fields.Float("Taxa arrecadada", digits=(16, 2), readonly=True)
     linha_ids = fields.One2many("boteco.rateio.taxa.linha", "rateio_id", string="Rateio")
 
     def action_calcular(self):
@@ -55,5 +55,5 @@ class BotecoRateioTaxaLinha(models.TransientModel):
     beneficiario = fields.Char("Para quem")
     papel = fields.Selection([("garcom", "Garçom"), ("producao", "Cozinha/bar"), ("casa", "Casa")])
     user_id = fields.Many2one("res.users", string="Pessoa")
-    base = fields.Float("Taxa gerada", digits="Product Price")
-    valor = fields.Float("Recebe", digits="Product Price")
+    base = fields.Float("Taxa gerada", digits=(16, 2))
+    valor = fields.Float("Recebe", digits=(16, 2))

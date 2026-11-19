@@ -44,6 +44,29 @@ class BotecoPinController(http.Controller):
             return {"erro": mensagem}
         return {"ok": True, "url": "/boteco/inicio"}
 
+    @http.route("/boteco/pin/desbloquear", type="json", auth="public", website=False, csrf=False)
+    def desbloquear(self, user_id, pin_gerente, **kw):
+        """Pessoa bloqueada por erros de PIN: o gerente digita o PIN dele ali mesmo e libera."""
+        if not self._rede_liberada():
+            return {"erro": _("Só pela rede do bar.")}
+        Tentativa = request.env["boteco.pin.tentativa"].sudo()
+        publico = request.env.ref("base.public_user")
+        ip = request.httprequest.remote_addr
+        if Tentativa._bloqueado(publico.id, "autorizacao", ip):
+            return {"erro": _("Muitos PINs de gerente errados. Espere 15 minutos.")}
+        gerentes = request.env.ref("boteco_base.group_gerente").sudo().users.filtered(
+            lambda u: u.active and not u.share)
+        gerente = next((g for g in gerentes if g._boteco_pin_confere(pin_gerente)), None)
+        Tentativa._registrar_isolado(publico.id, "autorizacao", bool(gerente), ip)
+        if not gerente:
+            return {"erro": _("PIN do gerente não confere.")}
+        pessoa = request.env["res.users"].sudo().browse(int(user_id)).exists()
+        if not pessoa:
+            return {"erro": _("Pessoa não encontrada.")}
+        pessoa.with_user(gerente).sudo().action_boteco_desbloquear_pin()
+        return {"ok": True, "mensagem": _("%(g)s desbloqueou. %(p)s, digite o seu PIN.",
+                                          g=gerente.name.split(" ")[0], p=pessoa.name.split(" ")[0])}
+
     @http.route("/boteco/inicio", type="http", auth="user", website=False, sitemap=False)
     def inicio(self, **kw):
         """Cada perfil cai direto na tela do seu trabalho."""

@@ -58,7 +58,7 @@ class BotecoAuditoria(models.Model):
     referencia = fields.Char("Referência", readonly=True, index=True)
     valor_antigo = fields.Char("Antes", readonly=True)
     valor_novo = fields.Char("Depois", readonly=True)
-    valor = fields.Float("Valor (R$)", readonly=True, digits="Product Price")
+    valor = fields.Float("Valor (R$)", readonly=True, digits=(16, 2))
     motivo = fields.Text("Motivo", readonly=True)
     detalhe = fields.Text("Detalhes (JSON)", readonly=True)
     ip = fields.Char("IP", readonly=True)

@@ -1,6 +1,7 @@
 import json
 import time
 import uuid
+from unittest.mock import patch
 
 from odoo.tests import HttpCase, tagged
 
@@ -156,3 +157,36 @@ class TestQrMesa(HttpCase, BotecoPosCase):
         self.assertAlmostEqual(status["conta"]["consumo"], 14.0)
         self.assertAlmostEqual(status["conta"]["taxa"], 1.4)
         self.assertEqual(status["pedir_de_novo"][0]["product_id"], self.refri.id)
+
+    # ------------------------------------------------------------------ happy hour na virada (auditoria, risco 1)
+    def _happy_acabou_ha_pouco(self):
+        """Simula: happy hour ativo alguns minutos atrás e já encerrado agora."""
+        from odoo.addons.boteco_cardapio.models.boteco_happy_hour import BotecoHappyHour
+        return patch.object(BotecoHappyHour, "_ativo_em", lambda self, momento=None, company=None: momento is not None)
+
+    def _preco_cobrado(self, resultado):
+        pedidos = self.env["pos.order"].browse([p["id"] for p in resultado["pos.order"]])
+        linha = pedidos.lines.sorted("id")[-1:]  # a linha recém-enviada
+        return linha.price_unit, linha.boteco_preco_origem
+
+    def test_happy_hour_na_tolerancia_vale_o_preco_do_carrinho(self):
+        self._liberar_celular()
+        self.mesa.with_user(self.garcom).boteco_confirmar_maior18()
+        self.env.company.boteco_happy_tolerancia_min = 5
+        with self._happy_acabou_ha_pouco():
+            # Carrinho mostrava R$ 7 (happy) e o envio chegou 1 min depois do fim
+            self.assertEqual(self._preco_cobrado(self._pedir(self.chope, 1, preco=7.0)), (7.0, "happy"))
+            # Carrinho já estava no preço cheio: continua cheio
+            self.assertEqual(self._preco_cobrado(self._pedir(self.chope, 1, preco=10.0))[0], 10.0)
+
+    def test_happy_hour_sem_tolerancia_cobra_o_preco_da_hora(self):
+        self._liberar_celular()
+        self.mesa.with_user(self.garcom).boteco_confirmar_maior18()
+        self.env.company.boteco_happy_tolerancia_min = 0
+        self.env.flush_all()
+        with self._happy_acabou_ha_pouco():
+            self.assertEqual(self._preco_cobrado(self._pedir(self.chope, 1, preco=7.0))[0], 10.0)
+
+    def test_estado_do_cardapio_informa_a_tolerancia(self):
+        self.env.company.boteco_happy_tolerancia_min = 7
+        self.assertEqual(self.config.boteco_estado_cardapio()["happy_tolerancia_min"], 7)

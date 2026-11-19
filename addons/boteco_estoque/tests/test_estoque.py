@@ -98,6 +98,34 @@ class TestEstoque(BotecoPosCase):
         de_para = self.env["boteco.nfe.produto"].search([("codigo", "=", "CERV-LN-355")])
         self.assertEqual(de_para.fator, 24)
 
+    def test_fator_suspeito_na_nota_precisa_de_conferencia(self):
+        """Auditoria (risco 2): fator errado multiplica o custo; a entrada só passa conferida."""
+        caminho = os.path.join(os.path.dirname(__file__), "dados", "nfe_fornecedor.xml")
+        with file_open(caminho, "rb") as arq:
+            conteudo = arq.read()
+        assistente = self.env["boteco.nfe.importacao"].create({"arquivo": base64.b64encode(conteudo)})
+        assistente.action_ler()
+        linha = assistente.linha_ids.filtered(lambda l: l.codigo == "CERV-LN-355")
+        self.refri.standard_price = 4.0  # o insumo já cadastrado custava R$ 4 a unidade
+        linha.product_id = self.refri
+        linha.fator = 2  # errou: é caixa com 24
+        self.assertTrue(linha.alerta_fator)
+        self.assertAlmostEqual(linha.custo_unitario, 48.0)
+        self.assertTrue(assistente.tem_alerta_fator)
+        with self.assertRaisesRegex(UserError, "Conferi os fatores"):
+            assistente.action_criar_entrada()
+        linha.fator = 24
+        self.assertFalse(linha.alerta_fator)
+
+    def test_precisao_custo_4_casas_venda_2(self):
+        """Custo da dose não pode arredondar para 2 casas; preço de venda continua com 2."""
+        Precisao = self.env["decimal.precision"]
+        self.assertEqual(Precisao.precision_get("Product Price"), 4)
+        self.assertEqual(Precisao.precision_get("Product Unit of Measure"), 3)
+        self.molho.standard_price = 100 / 240  # caixa de 12 L em doses de 50 ml
+        self.assertAlmostEqual(self.molho.standard_price, 0.4167, places=4)
+        self.assertEqual(self.env["product.template"]._fields["list_price"].get_digits(self.env), (16, 2))
+
     def test_lista_de_compras_por_whatsapp(self):
         fornecedor = self.env["res.partner"].create({"name": "Hortifruti do Zé", "mobile": "(11) 98888-7777"})
         self.molho.seller_ids = [fields.Command.create({"partner_id": fornecedor.id, "product_code": "MOL-1"})]
@@ -124,6 +152,17 @@ class TestEstoque(BotecoPosCase):
         self.bolinho_cru.invalidate_recordset()
         self.assertEqual(self.bolinho_cru.with_context(location=self.estoque.id).qty_available, 480)
         self.assertTrue(self.env["boteco.auditoria"].search([("acao", "=", "ajuste_estoque"), ("res_id", "=", contagem.id)]))
+
+    def test_perda_no_cmv_segue_a_virada_do_dia_da_empresa(self):
+        """Auditoria: o CMV das perdas usava fuso e virada (6h) fixos; agora segue a empresa."""
+        for virada in (0.0, 23.5):
+            self.env.company.boteco_hora_virada = virada
+            scrap = self.env["stock.scrap"].create({
+                "product_id": self.molho.id, "scrap_qty": 0.5, "location_id": self.estoque.id,
+                "scrap_reason_tag_ids": [fields.Command.link(self.env.ref("boteco_estoque.motivo_perda_vencido").id)]})
+            scrap.do_scrap()
+            linha = self.env["boteco.cmv"].search([("id", "=", scrap.id * 2 + 1)])
+            self.assertEqual(linha.dia, self.env.company.boteco_dia_operacao(scrap.date_done))
 
     def test_perda_exige_motivo_e_entra_no_cmv(self):
         scrap = self.env["stock.scrap"].create({"product_id": self.molho.id, "scrap_qty": 1.5, "location_id": self.estoque.id})

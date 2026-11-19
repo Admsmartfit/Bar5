@@ -164,14 +164,14 @@ class ResUsers(models.Model):
         ip = self._boteco_ip()
         if not user.boteco_perfil_id or not user.boteco_perfil_id.permite_login_pin:
             raise AccessDenied(_("Esta pessoa entra com senha, não com PIN."))
-        if Tentativa._bloqueado(user.id, "login"):
+        if Tentativa._bloqueado(user.id, "login", ip):
             raise AccessDenied(
                 _("PIN bloqueado por %s minutos depois de %s erros. Chame o gerente.")
                 % (JANELA_BLOQUEIO_MIN, MAX_TENTATIVAS)
             )
         if not user._boteco_pin_confere(credential.get("pin")):
             # Conta antes de gravar: a gravação é num cursor separado, que esta transação não enxerga
-            restantes = MAX_TENTATIVAS - Tentativa._falhas_recentes(user.id, "login") - 1
+            restantes = MAX_TENTATIVAS - Tentativa._falhas_recentes(user.id, "login", ip) - 1
             Tentativa._registrar_isolado(user.id, "login", False, ip)
             if restantes <= 0:
                 raise AccessDenied(_("PIN bloqueado por %s minutos. Chame o gerente.") % JANELA_BLOQUEIO_MIN)

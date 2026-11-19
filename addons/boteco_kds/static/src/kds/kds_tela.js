@@ -226,7 +226,11 @@ export class KdsTela extends Component {
         const estados = this.modo === "expedicao" ? ["pronto"] : ["aguardando", "preparando", "pronto"];
         return this.state.tickets
             .filter((t) => t.tipo === "novo" && estados.includes(t.estado) && this.pertenceAoSetor(t))
-            .sort((a, b) => (this.criadoLocal.get(a.id) || 0) - (this.criadoLocal.get(b.id) || 0));
+            .sort(
+                (a, b) =>
+                    (b.prioridade ? 1 : 0) - (a.prioridade ? 1 : 0) ||
+                    (this.criadoLocal.get(a.id) || 0) - (this.criadoLocal.get(b.id) || 0)
+            );
     }
 
     get contadores() {
@@ -340,6 +344,17 @@ export class KdsTela extends Component {
             this.notification.add(_t("Ticket enviado para a impressora."), { type: "success" });
         } catch (erro) {
             this.notification.add(erro?.data?.message || _t("Não deu para reimprimir."), { type: "danger" });
+        }
+    }
+
+    async priorizar(ticket) {
+        this.state.menu = null;
+        const motivo = ticket.prioridade ? "" : window.prompt(_t("Por que este pedido passa na frente? (ex.: cliente esperando há muito)")) || "";
+        try {
+            const dados = await this.orm.call("boteco.kds.pedido", "kds_priorizar", [[ticket.id], motivo]);
+            this.aplicarLista(dados);
+        } catch (erro) {
+            this.notification.add(erro?.data?.message || _t("Não deu."), { type: "danger" });
         }
     }
 

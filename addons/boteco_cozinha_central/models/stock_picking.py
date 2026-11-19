@@ -37,6 +37,11 @@ class StockPicking(models.Model):
         if lote.boteco_vencido():
             raise UserError(_("Lote %s VENCIDO: não pode sair. Separe outro e registre a perda deste.", lote.name))
         move = self.move_ids.filtered(lambda m: m.product_id == lote.product_id and m.state not in ("done", "cancel"))[:1]
+        if move:
+            # Leitor que dispara duas vezes (ou dois aparelhos): a 2a leitura espera a 1a terminar e vê o lote já lido
+            self.env.cr.execute("SELECT id FROM stock_move WHERE id = %s FOR UPDATE", [move.id])
+            move.invalidate_recordset(["move_line_ids"])
+            move.move_line_ids.invalidate_recordset()
         ja_lido = move.move_line_ids.filtered(lambda ml: ml.lot_id == lote and ml.picked)
         if ja_lido:
             raise UserError(_("O lote %s já foi lido.", lote.name))
@@ -44,13 +49,14 @@ class StockPicking(models.Model):
         falta = move.product_uom_qty - separado
         if float_compare(falta, 0, precision_rounding=move.product_uom.rounding) <= 0:
             raise UserError(_("%s já está completo.", move.product_id.display_name))
+        # Reservas automáticas (não lidas) deste item dão lugar às linhas lidas pelo QR. Antes de olhar o saldo:
+        # senão a reserva do próprio item era descontada (lote de 9,6 kg com 5 kg pedidos separava só 4,6 kg).
+        move.move_line_ids.filtered(lambda ml: not ml.picked).unlink()
         quant = self.env["stock.quant"].search([
             ("lot_id", "=", lote.id), ("location_id", "child_of", self.location_id.id), ("quantity", ">", 0)], limit=1)
         if not quant:
             raise UserError(_("Não há saldo do lote %s no estoque de origem.", lote.name))
         quantidade = min(falta, quant.quantity - quant.reserved_quantity) or min(falta, quant.quantity)
-        # Reservas automáticas (não lidas) dão lugar às linhas lidas pelo QR
-        move.move_line_ids.filtered(lambda ml: not ml.picked).unlink()
         self.env["stock.move.line"].create({
             "move_id": move.id, "picking_id": self.id, "product_id": move.product_id.id, "lot_id": lote.id,
             "quantity": quantidade, "product_uom_id": move.product_uom.id, "picked": True,

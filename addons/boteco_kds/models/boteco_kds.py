@@ -29,7 +29,7 @@ class BotecoKdsPedido(models.Model):
 
     _name = "boteco.kds.pedido"
     _description = "Ticket de produção (KDS)"
-    _order = "criado_em asc, id asc"
+    _order = "prioridade desc, criado_em asc, id asc"
     _rec_name = "titulo"
 
     titulo = fields.Char(compute="_compute_titulo", store=True)
@@ -58,6 +58,10 @@ class BotecoKdsPedido(models.Model):
     segundo_tempo_liberado = fields.Boolean("2º tempo liberado", copy=False)
     # Etapa 21 (pacing): prato rápido espera para sair junto com o demorado da mesma mesa
     iniciar_apos = fields.Datetime("Começar a partir de")
+    # Auditoria (KDS "Fire"): caixa/gerente passa um pedido na frente da fila, com motivo registrado
+    prioridade = fields.Boolean("Prioridade", copy=False, index=True)
+    prioridade_motivo = fields.Char("Por que passou na frente", copy=False)
+    prioridade_por_id = fields.Many2one("res.users", string="Priorizado por", copy=False)
 
     @api.depends("mesa", "setor_id", "order_id")
     def _compute_titulo(self):
@@ -320,6 +324,8 @@ class BotecoKdsPedido(models.Model):
                 "pronto_em": fields.Datetime.to_string(t.pronto_em) if t.pronto_em else False,
                 "avisos": (t.avisos or "").splitlines(),
                 "segundo_tempo": t.segundo_tempo and not t.segundo_tempo_liberado,
+                "prioridade": t.prioridade,
+                "prioridade_motivo": t.prioridade_motivo or "",
                 "iniciar_em_segundos": max(int((t.iniciar_apos - agora).total_seconds()), 0) if t.iniciar_apos else 0,
                 "itens": [
                     {"id": i.id, "nome": i.nome, "quantidade": i.quantidade, "nota": i.nota or "",
@@ -388,6 +394,22 @@ class BotecoKdsPedido(models.Model):
         for ticket in self:
             if ticket.estado in PROXIMO:
                 ticket._mudar_estado(PROXIMO[ticket.estado])
+        return self._dados_tela()
+
+    def kds_priorizar(self, motivo=None):
+        """Passa o ticket na frente da fila (todas as telas do setor). Só caixa e gerente; fica na auditoria."""
+        user = self.env.user
+        if not (user.has_group("boteco_base.group_gerente") or user.has_group("boteco_base.group_caixa")):
+            raise UserError(_("Só o caixa ou o gerente passa um pedido na frente."))
+        motivo = (motivo or "").strip() or _("Sem motivo")
+        for ticket in self.filtered(lambda t: t.estado in ("aguardando", "preparando")):
+            ticket.sudo().write({"prioridade": not ticket.prioridade, "prioridade_motivo": motivo,
+                                 "prioridade_por_id": user.id})
+            self.env["boteco.auditoria"].registrar(
+                "outro", registro=ticket.order_id,
+                descricao=_("KDS: %(m)s %(acao)s (%(mot)s)", m=ticket.mesa,
+                            acao=_("passou na frente") if ticket.prioridade else _("voltou à ordem normal"), mot=motivo))
+        self._avisar_telas("prioridade")
         return self._dados_tela()
 
     def kds_voltar(self):

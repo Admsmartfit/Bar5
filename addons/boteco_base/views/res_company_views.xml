@@ -12,6 +12,7 @@
                             <field name="boteco_tipo_unidade"/>
                             <field name="boteco_hora_virada" widget="float_time"/>
                             <field name="boteco_registro_sanitario"/>
+                            <field name="boteco_happy_tolerancia_min"/>
                         </group>
                         <group string="Redes">
                             <field name="boteco_rede_sistema" placeholder="192.168.10.0/24"/>

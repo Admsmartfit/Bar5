@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_autoatendimento.Navbar" t-inherit="point_of_sale.Navbar" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('status-buttons')]" position="inside">
+            <button t-if="botecoQtdPendencias" class="btn btn-lg position-relative o_boteco_btn_pendencias"
+                    t-att-class="botecoPendenciaAntiga ? 'btn-danger o_boteco_pulsar' : 'btn-warning'"
+                    t-on-click="() => this.botecoAbrirPendencias()" title="Pendências do salão">
+                <i class="fa fa-exclamation-circle me-1"/>Pendências
+                <span class="badge rounded-pill text-bg-dark ms-1" t-esc="botecoQtdPendencias"/>
+            </button>
+        </xpath>
+    </t>
+
+    <t t-name="boteco_autoatendimento.PendenciasDialog">
+        <Dialog title="'Pendências do salão'" size="'md'">
+            <div t-if="!itens.length" class="text-muted p-3">Nada esperando. 👍</div>
+            <div t-foreach="itens" t-as="item" t-key="item.chave"
+                 class="d-flex align-items-center gap-3 p-2 border-bottom o_boteco_pendencia">
+                <div class="fs-3 fw-bold" style="min-width:64px">Mesa <t t-esc="item.mesa"/></div>
+                <div class="flex-grow-1">
+                    <div class="fw-bold" t-esc="pos.botecoRotulo(item)"/>
+                    <div class="text-muted small" t-esc="espera(item)"/>
+                </div>
+                <button class="btn btn-primary btn-lg" style="min-height:52px" t-on-click="() => this.resolver(item)">Resolver</button>
+            </div>
+            <t t-set-slot="footer">
+                <button class="btn btn-secondary btn-lg" t-on-click="props.close">Voltar ao pedido</button>
+            </t>
+        </Dialog>
+    </t>
+</templates>

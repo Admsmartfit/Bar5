@@ -50,6 +50,8 @@ class TestConciliacao(BotecoPosCase):
         self.assertEqual(r.liquido_esperado, 97.0)
         self.assertEqual(r.data_prevista, dia_util(r.data_venda, 30))
         self.assertEqual(r.estado, "previsto")
+        # Dois calendários: civil (casa com a maquininha) e dia de operação (Painel/DRE)
+        self.assertEqual(r.dia_operacao, self.env.company.boteco_dia_operacao(r.payment_id.payment_date))
         self.assertFalse(self._recebivel(self._vender(20.0, self.pm_dinheiro)))  # dinheiro não vira recebível
 
     def test_flag_desligada_nao_gera_recebivel_e_some_do_painel(self):

@@ -2,6 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import float_compare
 
 from ..tools import etiqueta
 
@@ -68,8 +69,25 @@ class MrpProduction(models.Model):
             producao.boteco_iniciado_em = producao.boteco_iniciado_em or fields.Datetime.now()
         return [p._boteco_dados() for p in self]
 
-    def boteco_finalizar(self, peso):
-        """Fecha a produção com o peso real: lote, validade, baixa dos insumos, etiqueta."""
+    def _boteco_insumos_sem_saldo(self):
+        """Insumos que ficariam negativos no estoque de origem com esta produção."""
+        faltas = []
+        for move in self.move_raw_ids.filtered(lambda m: m.state not in ("done", "cancel")):
+            produto = move.product_id
+            if not produto.is_storable:
+                continue
+            saldo = produto.with_context(location=move.location_id.id).qty_available
+            precisa = move.product_uom._compute_quantity(move.product_uom_qty, produto.uom_id)
+            if float_compare(saldo, precisa, precision_rounding=produto.uom_id.rounding) < 0:
+                faltas.append({"nome": produto.display_name, "precisa": round(precisa, 3), "tem": round(saldo, 3),
+                               "unidade": produto.uom_id.name})
+        return faltas
+
+    def boteco_finalizar(self, peso, pin=None):
+        """Fecha a produção com o peso real: lote, validade, baixa dos insumos, etiqueta.
+
+        Auditoria: insumo sem saldo (estoque ficaria negativo) só fecha com o PIN de quem pode ajustar estoque.
+        """
         self.ensure_one()
         try:
             peso = float(peso)
@@ -77,6 +95,19 @@ class MrpProduction(models.Model):
             raise UserError(_("Digite o peso que saiu na balança.")) from None
         if peso <= 0:
             raise UserError(_("Digite o peso que saiu na balança."))
+        if self.state == "draft":
+            self.action_confirm()
+        faltas = self._boteco_insumos_sem_saldo()
+        if faltas:
+            autorizou = self.env["res.users"]
+            if pin:
+                autorizou = self.env["boteco.autorizacao"].sudo()._gerente_pelo_pin(pin, "pode_ajustar_estoque")
+            if not autorizou:
+                return {"precisa_pin": True, "faltas": faltas, "erro": _("PIN não confere.") if pin else ""}
+            self.env["boteco.auditoria"].registrar(
+                "ajuste_estoque", registro=self,
+                descricao=_("Produção %(p)s fechada com insumo sem saldo (liberado por %(u)s)", p=self.name, u=autorizou.name),
+                detalhe={"faltas": faltas, "autorizado_por": autorizou.name})
         if self.state == "draft":
             self.action_confirm()
         if not self.boteco_iniciado_em:

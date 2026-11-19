@@ -29,6 +29,7 @@
             </div>
 
             <div t-if="aviso" class="bt-aviso" t-att-data-tipo="aviso.tipo" t-esc="aviso.texto"/>
+            <div t-if="avisoHappy and !state.descanso" class="bt-aviso bt-aviso--happy" data-tipo="info" role="status" t-esc="avisoHappy"/>
 
             <!-- Barra fixa -->
             <nav class="bt-barra" aria-label="Atendimento da mesa">
@@ -120,6 +121,7 @@
                     </div>
                     <button class="bt-bebidas__cardapio" t-on-click="() => this.verCardapio()">Cardápio completo</button>
                 </header>
+                <div t-if="avisoHappy" class="bt-aviso bt-aviso--happy" data-tipo="info" role="status" t-esc="avisoHappy"/>
                 <div t-if="mesa.estado === 'fora_da_rede'" class="bt-aviso" data-tipo="erro">
                     Conecte-se ao Wi-Fi do bar para pedir.
                 </div>

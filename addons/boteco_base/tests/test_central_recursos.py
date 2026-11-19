@@ -21,5 +21,7 @@ class TestCentralRecursos(TransactionCase):
 
     def test_acao_abre_empresa_atual(self):
         acao = self.env["res.company"].action_boteco_central_recursos()
+        # O botão do cadastro da empresa chama com o registro
+        self.assertEqual(self.env.company.action_boteco_central_recursos()["res_id"], acao["res_id"])
         self.assertEqual(acao["res_id"], self.env.company.id)
         self.assertEqual(acao["res_model"], "res.company")

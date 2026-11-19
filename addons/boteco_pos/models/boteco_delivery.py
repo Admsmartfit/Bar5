@@ -116,7 +116,7 @@ class BotecoDeliveryAcertoLinha(models.TransientModel):
     acerto_id = fields.Many2one("boteco.delivery.acerto", required=True, ondelete="cascade")
     motoboy_id = fields.Many2one("res.partner", string="Motoboy")
     entregas = fields.Integer("Entregas")
-    total_taxas = fields.Float("Taxas a repassar", digits="Product Price")
+    total_taxas = fields.Float("Taxas a repassar", digits=(16, 2))
 
 
 class ResPartner(models.Model):

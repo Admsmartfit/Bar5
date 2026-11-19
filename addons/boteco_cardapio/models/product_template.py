@@ -82,8 +82,10 @@ class ProductTemplate(models.Model):
     boteco_esgotado = fields.Boolean("Acabou", copy=False, tracking=True,
                                      help="Some do tablet e do QR na hora, sem apagar o produto.")
     boteco_esgotado_em = fields.Datetime("Acabou em", copy=False, readonly=True)
+    # Preço de venda fica com 2 casas (R$ 9,90); custo e preço de compra usam 4 (precisao_data.xml)
+    list_price = fields.Float(digits=(16, 2))
     boteco_preco_happy = fields.Float(
-        "Preço happy hour", digits="Product Price",
+        "Preço happy hour", digits=(16, 2),
         help="Preço durante o happy hour. Vazio ou zero = o produto não entra no happy hour.",
     )
     boteco_destaque = fields.Boolean("Destaque no tablet", help="Aparece na tela inicial do tablet.")
