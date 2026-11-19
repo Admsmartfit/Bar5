@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boteco_reserva_garcom,boteco.reserva garcom,model_boteco_reserva,boteco_base.group_garcom,1,1,1,0
+access_boteco_reserva_caixa,boteco.reserva caixa,model_boteco_reserva,boteco_base.group_caixa,1,1,1,0
+access_boteco_reserva_gerente,boteco.reserva gerente,model_boteco_reserva,boteco_base.group_gerente,1,1,1,1
+access_boteco_reserva_espera_garcom,boteco.reserva.espera garcom,model_boteco_reserva_espera,boteco_base.group_garcom,1,1,1,0
+access_boteco_reserva_espera_caixa,boteco.reserva.espera caixa,model_boteco_reserva_espera,boteco_base.group_caixa,1,1,1,0
+access_boteco_reserva_espera_gerente,boteco.reserva.espera gerente,model_boteco_reserva_espera,boteco_base.group_gerente,1,1,1,1

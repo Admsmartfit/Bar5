@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Central de Recursos: aba Reservas (Etapa 27) -->
+    <record id="res_company_view_form_central_reservas" model="ir.ui.view">
+        <field name="name">res.company.form.boteco.central.reservas</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="boteco_base.res_company_view_form_central_recursos"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Reservas" name="g_reservas">
+                    <div class="o_bt_recursos">
+                        <div class="o_bt_recurso">
+                            <field name="boteco_flag_reservas_mesas" widget="boolean_toggle" nolabel="1"/>
+                            <div class="o_bt_recurso__texto">
+                                <label for="boteco_flag_reservas_mesas" class="o_bt_recurso__nome"/>
+                                <div class="o_bt_recurso__ajuda">Página pública <b>/reservar</b> (link para Instagram e WhatsApp), reserva no mapa do salão, lembrete na véspera e 3 h antes, lista de espera e no-show automático.</div>
+                                <div invisible="not boteco_flag_reservas_mesas" class="mt-2">
+                                    <div class="d-flex align-items-center gap-2"><span class="text-muted">Horários:</span><field name="boteco_reserva_faixas" class="flex-grow-1"/></div>
+                                    <div class="d-flex align-items-center gap-2 mt-1"><span class="text-muted">Tempo médio na mesa (min):</span><field name="boteco_reserva_permanencia_min" style="max-width:80px"/>
+                                        <span class="text-muted">Tolerância (min):</span><field name="boteco_reserva_tolerancia_min" style="max-width:80px"/></div>
+                                    <div class="d-flex align-items-center gap-2 mt-1"><span class="text-muted">Máximo de pessoas pela página:</span><field name="boteco_reserva_max_pessoas" style="max-width:80px"/></div>
+                                    <div class="mt-1"><span class="text-muted">Política mostrada ao cliente:</span><field name="boteco_reserva_politica"/></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="o_bt_recurso">
+                            <field name="boteco_flag_reserva_sinal" widget="boolean_toggle" nolabel="1"/>
+                            <div class="o_bt_recurso__texto">
+                                <label for="boteco_flag_reserva_sinal" class="o_bt_recurso__nome"/>
+                                <div class="o_bt_recurso__ajuda">Grupos grandes pagam um sinal pelo Pix (QR com valor e código da reserva). Sem sinal em 24 h, a reserva é cancelada. O sinal é avisado ao caixa quando o grupo chega.</div>
+                                <div invisible="not boteco_flag_reserva_sinal" class="mt-2">
+                                    <div class="d-flex align-items-center gap-2"><span class="text-muted">A partir de (pessoas):</span><field name="boteco_reserva_sinal_min_pessoas" style="max-width:80px"/>
+                                        <span class="text-muted">R$ por pessoa:</span><field name="boteco_reserva_sinal_por_pessoa" style="max-width:100px"/></div>
+                                    <div class="d-flex align-items-center gap-2 mt-1"><span class="text-muted">Chave Pix:</span><field name="boteco_reserva_pix_chave" class="flex-grow-1"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

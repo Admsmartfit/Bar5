@@ -222,6 +222,18 @@ if cozinha:
         })
     log("Cozinha central: capacidade 60 kg/dia, freezer 400 L, reserva do bar 8 kg de massa de bolinho")
 
+    # Etapa 34: o mesmo congelado vendido de dois jeitos
+    #  - "para levar" (congelado): sem setor -> a venda só baixa o estoque
+    #  - porção frita: setor Chapa + ficha técnica (kit) -> baixa o congelado e manda ticket para a chapa
+    massa.write({"available_in_pos": True, "sale_ok": True, "boteco_setor_id": False})
+    porcao = Produto.search([("name", "=", "Bolinho de bacalhau (12 un)")], limit=1)
+    if porcao and not env["mrp.bom"].search([("product_tmpl_id", "=", porcao.id), ("type", "=", "phantom")], limit=1):
+        env["mrp.bom"].create({
+            "product_tmpl_id": porcao.id, "type": "phantom", "product_qty": 1,
+            "bom_line_ids": [Command.create({"product_id": massa.id, "product_qty": 0.36})],
+        })
+    log("Bolinho: 'Massa congelada' para levar (só estoque) e 'Bolinho (12 un)' frito (kit + chapa)")
+
     # ------------------------------------------------------------ radar de preços com uma oferta ativa (Etapa 18)
     import datetime as _dt
 

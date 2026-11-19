@@ -16,6 +16,7 @@ PERMISSOES = [
     ("pode_alterar_preco", "Alterar preço"),
     ("pode_ver_financeiro", "Ver relatórios financeiros"),
     ("pode_sair_quiosque", "Tirar o tablet da mesa do modo quiosque"),
+    ("pode_botoes_avancados_pdv", "Ver botões avançados do PDV (lista de preços, reembolso, posição fiscal)"),
 ]
 PERMISSOES_DICT = dict(PERMISSOES)
 
@@ -26,6 +27,7 @@ CODIGOS_PERFIL = [
     ("gerente", "Gerente"),
     ("cozinheiro", "Cozinheiro (cozinha central)"),
     ("comercial", "Comercial B2B"),
+    ("contador", "Contador (só Finanças)"),
     ("dono", "Dono / administrador"),
 ]
 
@@ -74,6 +76,18 @@ class BotecoPerfil(models.Model):
     pode_alterar_preco = fields.Boolean(PERMISSOES_DICT["pode_alterar_preco"])
     pode_ver_financeiro = fields.Boolean(PERMISSOES_DICT["pode_ver_financeiro"])
     pode_sair_quiosque = fields.Boolean(PERMISSOES_DICT["pode_sair_quiosque"])
+    pode_botoes_avancados_pdv = fields.Boolean(PERMISSOES_DICT["pode_botoes_avancados_pdv"])
+
+    @api.model
+    def _boteco_padrao_botoes_avancados(self):
+        """Etapa 34: na primeira vez, só o gerente vê os botões avançados do PDV (o dono vê tudo)."""
+        ICP = self.env["ir.config_parameter"].sudo()
+        if ICP.get_param("boteco.botoes_avancados_inicializado"):
+            return
+        gerente = self.env.ref("boteco_base.perfil_gerente", raise_if_not_found=False)
+        if gerente:
+            gerente.sudo().pode_botoes_avancados_pdv = True
+        ICP.set_param("boteco.botoes_avancados_inicializado", "1")
 
     _sql_constraints = [
         ("codigo_unico", "unique(codigo)", "Já existe um perfil com este código."),

@@ -115,6 +115,17 @@
                                     </div>
                                 </div>
                                 <div class="o_bt_recurso">
+                                    <field name="boteco_flag_qr_bebidas" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_qr_bebidas" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Segundo QR em cada mesa só de bebidas: o cliente repete com 1 toque e vai direto para o bar, sem liberação do garçom (só na rede do bar e com a mesa aberta). Fechadas sem teto; preparadas com teto:</div>
+                                        <div class="d-flex align-items-center gap-2 mt-1" invisible="not boteco_flag_qr_bebidas">
+                                            <field name="boteco_teto_bebidas_preparadas" class="o_bt_teto" style="max-width: 80px"/>
+                                            <span class="text-muted">preparadas por envio (0 = automático pelo nº de pessoas)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
                                     <field name="boteco_flag_quarentena_pedidos_anomalos" widget="boolean_toggle" nolabel="1"/>
                                     <div class="o_bt_recurso__texto">
                                         <label for="boteco_flag_quarentena_pedidos_anomalos" class="o_bt_recurso__nome"/>
@@ -207,7 +218,7 @@
                                     <field name="boteco_flag_monitor_instagram_fornecedores" widget="boolean_toggle" nolabel="1"/>
                                     <div class="o_bt_recurso__texto">
                                         <label for="boteco_flag_monitor_instagram_fornecedores" class="o_bt_recurso__nome"/>
-                                        <div class="o_bt_recurso__ajuda">Lê as ofertas postadas no Instagram dos fornecedores às 8h e às 14h.</div>
+                                        <div class="o_bt_recurso__ajuda">Lê as ofertas postadas no Instagram dos fornecedores 1 vez por dia (8h; o horário muda em Compras › WhatsApp e coletor).</div>
                                     </div>
                                 </div>
                                 <div class="o_bt_recurso">
@@ -221,6 +232,27 @@
                         </page>
                         <page string="Opcionais" name="g5">
                             <div class="o_bt_recursos">
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_ajuda_rapida" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_ajuda_rapida" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Botão ?, F1 e Ctrl+K abrem a busca de “como faço” com passo a passo, caminho no menu e a tela.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_assistente_implantacao" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_assistente_implantacao" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Lista de primeiros passos para o dono até abrir a casa; cada passo se marca sozinho.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_vendas_b2b" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_vendas_b2b" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Venda de congelados e assessoria para outros bares. Desligado, os menus e as metas somem e os dados ficam guardados.</div>
+                                    </div>
+                                </div>
                                 <div class="o_bt_recurso">
                                     <field name="boteco_flag_portaria_validador_saida" widget="boolean_toggle" nolabel="1"/>
                                     <div class="o_bt_recurso__texto">
@@ -247,6 +279,17 @@
                                     <div class="o_bt_recurso__texto">
                                         <label for="boteco_flag_delivery_roteirizacao_motoboy" class="o_bt_recurso__nome"/>
                                         <div class="o_bt_recurso__ajuda">Taxa de entrega por bairro, controle das entregas e acerto dos motoboys.</div>
+                                    </div>
+                                </div>
+                                <div class="o_bt_recurso">
+                                    <field name="boteco_flag_fidelidade" widget="boolean_toggle" nolabel="1"/>
+                                    <div class="o_bt_recurso__texto">
+                                        <label for="boteco_flag_fidelidade" class="o_bt_recurso__nome"/>
+                                        <div class="o_bt_recurso__ajuda">Cartão fidelidade pelo celular do cliente (ex.: 10 chopes = 1 grátis, que entra sozinho na conta), cashback e cupom de aniversário. Os programas ficam em Vendas › Delivery e clientes › Fidelidade e cashback. Consumo de funcionário nunca soma pontos.</div>
+                                        <div class="d-flex align-items-center gap-2 mt-1" invisible="not boteco_flag_fidelidade">
+                                            <field name="boteco_flag_fidelidade_com_promocao" widget="boolean_toggle" nolabel="1"/>
+                                            <label for="boteco_flag_fidelidade_com_promocao" class="text-muted fw-normal"/>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="o_bt_recurso">

@@ -53,6 +53,7 @@
                         <group>
                             <field name="boteco_max_por_rodada_sku"/>
                             <field name="boteco_regra_utensilio"/>
+                            <field name="boteco_bebida_preparada" widget="boolean_toggle"/>
                         </group>
                     </group>
                     <group string="Dados fiscais (para a nota emitida depois)">
@@ -197,6 +198,7 @@
                             <field name="boteco_serve_pessoas"/>
                             <field name="boteco_max_por_rodada_sku"/>
                             <field name="boteco_regra_utensilio"/>
+                            <field name="boteco_bebida_preparada"/>
                         </group>
                     </group>
                 </page>

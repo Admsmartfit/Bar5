@@ -10,11 +10,19 @@ from odoo import api, fields, models
 _logger = logging.getLogger(__name__)
 
 POSTS_POR_PERFIL = 6
-# Horários da leitura (fuso da empresa). Poucas leituras por dia = menos risco de bloqueio do Instagram.
-HORARIOS_INSTAGRAM = {
-    "boteco_estoque.ir_cron_boteco_monitor_instagram": time(8, 0),
-    "boteco_estoque.ir_cron_boteco_monitor_instagram_tarde": time(14, 0),
-}
+# Instagram 1 vez por dia (decisão do dono, 18/11/2026), padrão 8:00 (horário da empresa, configurável).
+# Poucas leituras por dia = menos risco de bloqueio do Instagram.
+CRON_INSTAGRAM = "boteco_estoque.ir_cron_boteco_monitor_instagram"
+CRON_INSTAGRAM_TARDE = "boteco_estoque.ir_cron_boteco_monitor_instagram_tarde"  # desativado (era 14:00)
+PARAM_HORA_INSTAGRAM = "boteco.instagram_hora"
+
+
+def hora_texto(texto, padrao=time(8, 0)):
+    try:
+        h, m = (int(x) for x in (texto or "").strip().split(":"))
+        return time(h, m)
+    except (ValueError, TypeError):
+        return padrao
 
 
 def proxima_execucao(hora, fuso, agora_utc):
@@ -40,14 +48,17 @@ class ResPartner(models.Model):
 
     @api.model
     def _boteco_agendar_monitor_instagram(self):
-        """Põe os dois crons do Instagram para rodar às 8:00 e às 14:00 (horário da empresa)."""
+        """Instagram 1 vez por dia no horário configurado (padrão 8:00, fuso da empresa); a leitura das 14:00 sai."""
         fuso = self.env.company._boteco_tz()
-        agora = fields.Datetime.now()
-        for xmlid, hora in HORARIOS_INSTAGRAM.items():
-            cron = self.env.ref(xmlid, raise_if_not_found=False)
-            if cron:
-                cron.sudo().write({"nextcall": proxima_execucao(hora, fuso, agora),
-                                   "interval_number": 1, "interval_type": "days"})
+        hora = hora_texto(self.env["ir.config_parameter"].sudo().get_param(PARAM_HORA_INSTAGRAM, "08:00"))
+        cron = self.env.ref(CRON_INSTAGRAM, raise_if_not_found=False)
+        if cron:
+            cron.sudo().write({"nextcall": proxima_execucao(hora, fuso, fields.Datetime.now()),
+                               "interval_number": 1, "interval_type": "days",
+                               "name": "Boteco: ler ofertas no Instagram dos fornecedores (1x por dia, %s)" % hora.strftime("%H:%M")})
+        tarde = self.env.ref(CRON_INSTAGRAM_TARDE, raise_if_not_found=False)
+        if tarde and tarde.active:
+            tarde.sudo().active = False
         return True
 
     @api.model

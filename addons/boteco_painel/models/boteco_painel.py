@@ -90,6 +90,15 @@ class BotecoPainel(models.AbstractModel):
             return round((atual - antes) * 100.0 / antes, 1) if antes else None
 
         alertas = self._alertas_extras(company)
+        metas = [{"nome": "Clientes por noite", "valor": noite["clientes"], "meta": company.boteco_meta_clientes_noite,
+                  "unidade": ""}]
+        if company.boteco_recurso_ativo("vendas_b2b"):  # Etapa 34: metas de B2B só com a venda a bares ligada
+            metas += [
+                {"nome": "Kg vendidos a bares no mês", "valor": round(kg_mes, 1), "meta": company.boteco_meta_kg_b2b_mes,
+                 "unidade": "kg"},
+                {"nome": "Bares com assessoria", "valor": bares, "meta": company.boteco_meta_bares_assessoria,
+                 "unidade": ""},
+            ]
 
         return {
             "dia": hoje.strftime("%d/%m/%Y"),
@@ -104,13 +113,7 @@ class BotecoPainel(models.AbstractModel):
             "pedidos_atrasados": atrasados,
             "cancelamentos": {"quantidade": len(cancel), "valor": round(sum(cancel.mapped("valor")), 2)},
             "descontos_cortesias": round(sum((auditoria - cancel).mapped("valor")), 2),
-            "metas": [
-                {"nome": "Clientes por noite", "valor": noite["clientes"], "meta": company.boteco_meta_clientes_noite,
-                 "unidade": ""},
-                {"nome": "Kg vendidos a bares no mês", "valor": round(kg_mes, 1), "meta": company.boteco_meta_kg_b2b_mes,
-                 "unidade": "kg"},
-                {"nome": "Bares com assessoria", "valor": bares, "meta": company.boteco_meta_bares_assessoria, "unidade": ""},
-            ],
+            "metas": metas,
             "receber_vencido": {"quantidade": len(receber), "valor": round(sum(receber.mapped("amount_residual")), 2)},
             "pagar_vencido": {"quantidade": len(pagar), "valor": round(sum(pagar.mapped("amount_residual")), 2)},
             "alertas": alertas,

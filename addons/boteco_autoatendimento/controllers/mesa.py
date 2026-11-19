@@ -14,6 +14,7 @@ _logger = logging.getLogger(__name__)
 
 COOKIE = "boteco_disp"
 COOKIE_IDADE = 60 * 60 * 12  # 12 horas: uma noite
+COOKIE_MODO = "boteco_modo"
 # Botões de chamada qualificada do tablet (lista fechada: o tablet não manda texto livre)
 MOTIVOS_CHAMADA = {
     "copos_gelo": "trazer copos / gelo",
@@ -48,6 +49,12 @@ def _na_rede_do_bar(config, dispositivo=None):
     empresa = config.company_id
     ip = request.httprequest.remote_addr
     return ip_na_rede(ip, empresa.boteco_rede_clientes) or ip_na_rede(ip, empresa.boteco_rede_sistema, vazio_libera=False)
+
+
+def _modo_bebidas(config):
+    """QR expresso de bebidas (Etapa 36): o 2º QR da mesa marca o modo num cookie (o pedido não leva campos extras)."""
+    return (request.httprequest.cookies.get(COOKIE_MODO) == "bebidas"
+            and config.company_id.boteco_recurso_ativo("qr_bebidas"))
 
 
 def _resposta(dados, token=None):
@@ -96,6 +103,7 @@ class BotecoMesaController(http.Controller):
             "maior18_confirmado": mesa.boteco_maior18_confirmado,
             "limite_qr": config.boteco_limite_qr,
             "descanso_segundos": config.boteco_descanso_segundos or 120,
+            "qr_bebidas_ativo": config.company_id.boteco_recurso_ativo("qr_bebidas"),
             # Central de Recursos: só o que o tablet precisa saber
             "recursos": {
                 codigo: config.company_id.boteco_recurso_ativo(codigo)
@@ -128,10 +136,13 @@ class BotecoMesaController(http.Controller):
             return {"estado": "sem_mesa"}
         dispositivo = _dispositivo_do_cookie(mesa)
         dados = {**(dispositivo._dados() if dispositivo else {"estado": "sem_dispositivo"}), **self._mesa(mesa, config)}
+        Pedido = request.env["pos.order"].sudo()
         if dispositivo and dispositivo._valido():
-            Pedido = request.env["pos.order"].sudo()
             dados["conta"] = Pedido._boteco_resumo_mesa(mesa)
             dados["pedir_de_novo"] = Pedido._boteco_bebidas_da_mesa(mesa)
+        if _modo_bebidas(config) and dispositivo and _na_rede_do_bar(config, dispositivo):
+            dados["bebidas_mesa"] = Pedido._boteco_bebidas_mesa_ultimas(mesa)
+            dados["mesa_aberta"] = mesa._boteco_mesa_aberta()
         return dados
 
     @http.route("/boteco/mesa/chamar", type="json", auth="public", csrf=False, website=False)
@@ -178,21 +189,31 @@ class BotecoPosSelfOrderController(PosSelfOrderController):
         """Pedido do tablet/QR: confere aparelho liberado, rede do bar e limite de valor."""
         config, mesa = _config_e_mesa(access_token, table_identifier)
         dispositivo = _dispositivo_do_cookie(mesa) if mesa else request.env["boteco.dispositivo"].sudo()
+        bebidas = bool(mesa) and _modo_bebidas(config)
         if config.self_ordering_mode == "mobile" and mesa:
             if not dispositivo or not _na_rede_do_bar(config, dispositivo):
                 raise UserError(_("Conecte-se ao Wi-Fi do bar para pedir pelo celular."))
-            if not dispositivo._valido():
+            if bebidas:
+                # QR de bebidas: sem liberação do garçom, mas só com a mesa aberta (rede já conferida acima)
+                if not mesa._boteco_mesa_aberta():
+                    raise UserError(_("A mesa ainda não foi aberta. Peça ao garçom para abrir a mesa."))
+            elif not dispositivo._valido():
                 raise UserError(_("O garçom ainda não liberou este celular. Toque em 'Enviar pedido' e aguarde."))
         anterior = request.env["pos.order"].sudo().search([("uuid", "=", order.get("uuid"))], limit=1)
         total_anterior = anterior.amount_total if anterior else 0.0
+        request.update_context(boteco_autoatendimento=True)
         resultado = super().process_order_args(order, access_token, table_identifier, device_type, **kwargs)
         if dispositivo:
             pedidos = request.env["pos.order"].sudo().browse([p["id"] for p in resultado.get("pos.order", [])])
             limite = config.boteco_limite_qr
             # O limite vale para cada envio (o que foi acrescentado agora), não para a conta inteira
             acrescimo = sum(pedidos.mapped("amount_total")) - total_anterior
-            if dispositivo.tipo == "celular" and limite and acrescimo > limite:
+            if bebidas and not all(p._boteco_so_bebidas_novas() for p in pedidos):
+                if not dispositivo._valido():
+                    raise UserError(_("Pelo QR de bebidas dá para pedir só bebidas. Para comida, use o QR do cardápio."))
+                bebidas = False  # celular já liberado pediu comida junto: valem as regras normais
+            if dispositivo.tipo == "celular" and limite and acrescimo > limite and not bebidas:
                 raise UserError(_("Pedido acima de R$ %.2f pelo celular: chame o garçom.") % limite)
-            pedidos._boteco_pos_autoatendimento(dispositivo)
+            pedidos._boteco_pos_autoatendimento(dispositivo, modo="bebidas" if bebidas else None)
             resultado = self._generate_return_values(pedidos, config)
         return resultado

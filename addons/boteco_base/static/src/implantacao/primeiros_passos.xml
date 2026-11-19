@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_base.PrimeirosPassos">
+        <div class="o_bt_pp o_action">
+            <t t-set="d" t-value="state.dados"/>
+
+            <!-- ===== Assistente das 3 telas (primeira entrada do dono) ===== -->
+            <div t-if="d and d.assistente" class="o_bt_pp__assistente">
+                <div class="o_bt_pp__barra"><div t-attf-style="width: {{ state.telaAssistente * 33.3 }}%"/></div>
+                <div class="o_bt_pp__passo_n">Passo <t t-esc="state.telaAssistente"/> de 3</div>
+
+                <t t-if="state.telaAssistente === 1">
+                    <h1>Vamos começar pela sua empresa</h1>
+                    <p class="o_bt_pp__dica">Esses dados saem no ticket, no tablet e nas notas. Dá para mudar depois.</p>
+                    <div class="o_bt_pp__form">
+                        <label>Nome do boteco<input class="form-control" t-model="state.empresa.nome" placeholder="Boteco Raiz"/></label>
+                        <label>CNPJ<input class="form-control" t-model="state.empresa.cnpj" placeholder="00.000.000/0000-00"/></label>
+                        <label>Endereço<input class="form-control" t-model="state.empresa.rua" placeholder="Rua, número"/></label>
+                        <label>Cidade<input class="form-control" t-model="state.empresa.cidade"/></label>
+                        <label>Telefone / WhatsApp<input class="form-control" t-model="state.empresa.telefone" placeholder="(11) 99999-9999"/></label>
+                    </div>
+                    <div class="o_bt_pp__acoes">
+                        <button class="btn btn-primary btn-lg" t-on-click="proximaTela">Próximo</button>
+                    </div>
+                </t>
+                <t t-elif="state.telaAssistente === 2">
+                    <h1>Como é o seu negócio?</h1>
+                    <p class="o_bt_pp__dica">Isso liga ou esconde as telas da cozinha central.</p>
+                    <div class="o_bt_pp__opcoes">
+                        <button t-attf-class="o_bt_pp__opcao {{ state.empresa.tipo_unidade === 'bar' ? 'ativo' : '' }}"
+                                t-on-click="() => this.state.empresa.tipo_unidade = 'bar'">
+                            <span class="fs-1">🍺</span><b>Só o bar</b><small>Salão, caixa, tablet e cozinha do bar</small>
+                        </button>
+                        <button t-attf-class="o_bt_pp__opcao {{ state.empresa.tipo_unidade === 'bar_e_cozinha' ? 'ativo' : '' }}"
+                                t-on-click="() => this.state.empresa.tipo_unidade = 'bar_e_cozinha'">
+                            <span class="fs-1">🍺 + 🏭</span><b>Bar e cozinha central</b><small>Também produzo congelados (para o bar e para vender)</small>
+                        </button>
+                    </div>
+                    <div class="o_bt_pp__acoes">
+                        <button class="btn btn-secondary btn-lg" t-on-click="voltarTela">Voltar</button>
+                        <button class="btn btn-primary btn-lg" t-on-click="proximaTela">Próximo</button>
+                    </div>
+                </t>
+                <t t-else="">
+                    <h1>Pronto para começar 🎉</h1>
+                    <p class="o_bt_pp__dica">Agora é só seguir a lista, no seu ritmo. Cada passo se marca sozinho quando estiver feito.</p>
+                    <ol class="o_bt_pp__resumo">
+                        <li t-foreach="d.fases" t-as="f" t-key="f.codigo"><b t-esc="f.nome"/> — <t t-esc="f.passos.length"/> passo(s)</li>
+                    </ol>
+                    <div class="o_bt_pp__acoes">
+                        <button class="btn btn-secondary btn-lg" t-on-click="voltarTela">Voltar</button>
+                        <button class="btn btn-primary btn-lg" t-att-disabled="state.ocupado" t-on-click="concluirAssistente">Ver meus primeiros passos</button>
+                    </div>
+                </t>
+            </div>
+
+            <!-- ===== Lista persistente ===== -->
+            <div t-elif="d" class="o_bt_pp__lista">
+                <header class="o_bt_pp__topo">
+                    <div>
+                        <h1>Primeiros passos</h1>
+                        <p t-if="d.concluida" class="text-success fw-bold mb-0">✅ Implantação concluída. A casa está aberta!</p>
+                        <p t-elif="d.faltam" class="mb-0">Faltam <b t-esc="d.faltam"/> passo(s) para abrir a casa.</p>
+                        <p t-else="" class="mb-0">Tudo pronto para abrir a casa! 🎉</p>
+                    </div>
+                    <div class="o_bt_pp__progresso">
+                        <div class="o_bt_pp__barra"><div t-attf-style="width: {{ progresso }}%"/></div>
+                        <small><t t-esc="d.feitos"/> de <t t-esc="d.total"/> obrigatórios</small>
+                    </div>
+                </header>
+
+                <section t-foreach="d.fases" t-as="fase" t-key="fase.codigo" class="o_bt_pp__fase">
+                    <h2 t-esc="fase.nome"/>
+                    <div t-foreach="fase.passos" t-as="p" t-key="p.codigo" t-attf-class="o_bt_pp__item {{ p.situacao }}">
+                        <i t-attf-class="fa fa-lg {{ icone(p) }}"/>
+                        <div class="o_bt_pp__texto">
+                            <div class="o_bt_pp__titulo">
+                                <t t-esc="p.titulo"/>
+                                <span t-if="p.obrigatorio and p.situacao !== 'feito'" class="badge text-bg-warning ms-1">obrigatório</span>
+                            </div>
+                            <div class="o_bt_pp__explicacao" t-esc="p.explicacao"/>
+                        </div>
+                        <div class="o_bt_pp__botoes">
+                            <button t-if="p.tem_acao and p.situacao !== 'feito'" class="btn btn-primary" t-on-click="() => this.fazer(p)">Fazer agora</button>
+                            <button t-elif="p.tem_acao" class="btn btn-light" t-on-click="() => this.fazer(p)">Abrir</button>
+                            <button t-if="p.tipo === 'manual' and p.situacao !== 'feito'" class="btn btn-success" t-on-click="() => this.marcar(p, 'feito')">Já fiz</button>
+                            <button t-if="p.artigo" class="btn btn-link" t-on-click="() => this.verAjuda(p)">Ver ajuda</button>
+                            <button t-if="!p.obrigatorio and p.situacao === 'pendente'" class="btn btn-link text-muted" t-on-click="() => this.marcar(p, 'pulado')">Pular por enquanto</button>
+                        </div>
+                    </div>
+                    <div t-if="fase.codigo === 'abrir' and !d.concluida" class="o_bt_pp__abrir">
+                        <button class="btn btn-success btn-lg" t-on-click="abrirCasa">🎉 Abrir a casa</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </t>
+</templates>

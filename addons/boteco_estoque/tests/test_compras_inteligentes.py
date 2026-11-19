@@ -138,13 +138,17 @@ class TestRadarPrecos(BotecoCase):
         agora = datetime(2026, 11, 17, 13, 0)
         self.assertEqual(proxima_execucao(datetime.min.time().replace(hour=8), sp, agora), datetime(2026, 11, 18, 11, 0))
         self.assertEqual(proxima_execucao(datetime.min.time().replace(hour=14), sp, agora), datetime(2026, 11, 17, 17, 0))
+        # Instagram 1 vez por dia (decisão do dono): 8:00 por padrão, horário configurável; a das 14:00 sai
         self.env["res.partner"]._boteco_agendar_monitor_instagram()
-        for xmlid, hora in (("boteco_estoque.ir_cron_boteco_monitor_instagram", 8),
-                            ("boteco_estoque.ir_cron_boteco_monitor_instagram_tarde", 14)):
-            cron = self.env.ref(xmlid)
-            local = pytz.utc.localize(cron.nextcall).astimezone(self.env.company._boteco_tz())
-            self.assertEqual((local.hour, local.minute), (hora, 0))
-            self.assertEqual((cron.interval_number, cron.interval_type), (1, "days"))
+        cron = self.env.ref("boteco_estoque.ir_cron_boteco_monitor_instagram")
+        local = pytz.utc.localize(cron.nextcall).astimezone(self.env.company._boteco_tz())
+        self.assertEqual((local.hour, local.minute), (8, 0))
+        self.assertEqual((cron.interval_number, cron.interval_type), (1, "days"))
+        self.assertFalse(self.env.ref("boteco_estoque.ir_cron_boteco_monitor_instagram_tarde").active)
+        self.env["ir.config_parameter"].sudo().set_param("boteco.instagram_hora", "07:30")
+        self.env["res.partner"]._boteco_agendar_monitor_instagram()
+        local = pytz.utc.localize(cron.nextcall).astimezone(self.env.company._boteco_tz())
+        self.assertEqual((local.hour, local.minute), (7, 30))
 
     def test_instagram_ligado_registra_precos(self):
         self.env.company.boteco_flag_monitor_instagram_fornecedores = True

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_base.AjudaPainel">
+        <t t-if="estado.aberto">
+            <div class="o_bt_ajuda_fundo" t-on-click="() => this.ajuda.fechar()"/>
+            <aside class="o_bt_ajuda" role="dialog" aria-label="Ajuda rápida" t-on-keydown="aoTeclar">
+                <header class="o_bt_ajuda__topo">
+                    <i class="fa fa-search"/>
+                    <input t-ref="busca" class="o_bt_ajuda__busca" type="search" autocomplete="off"
+                           placeholder="O que você quer fazer? Ex.: cadastrar whatsapp"
+                           t-att-value="state.consulta" t-on-input="aoDigitar"/>
+                    <button class="btn btn-link o_bt_ajuda__fechar" title="Fechar (Esc)" t-on-click="() => this.ajuda.fechar()">
+                        <i class="fa fa-times"/>
+                    </button>
+                </header>
+
+                <div class="o_bt_ajuda__corpo">
+                    <div t-if="estado.carregando" class="text-muted p-3">Carregando a ajuda…</div>
+
+                    <!-- Artigo aberto -->
+                    <t t-elif="artigo">
+                        <button class="btn btn-link px-0 mb-2" t-on-click="voltar"><i class="fa fa-arrow-left"/> Voltar</button>
+                        <h3 class="o_bt_ajuda__titulo" t-esc="artigo.titulo"/>
+                        <p t-if="artigo.resumo" class="o_bt_ajuda__resumo" t-esc="artigo.resumo"/>
+                        <div t-if="artigo.caminho" class="o_bt_ajuda__caminho">
+                            <span class="o_bt_ajuda__rotulo">Onde fica:</span> <t t-esc="artigo.caminho"/>
+                        </div>
+                        <div t-elif="artigo.sem_acesso" class="alert alert-warning py-2" role="status">
+                            Esta tela não aparece para o seu perfil. Peça ao gerente.
+                        </div>
+                        <div class="o_bt_ajuda__passos" t-out="passosHtml(artigo)"/>
+                        <img t-if="artigo.foto" class="o_bt_ajuda__foto" t-att-src="artigo.foto" alt="Foto da tela"/>
+                        <button t-if="artigo.acao" class="btn btn-primary btn-lg w-100 my-2"
+                                t-on-click="() => this.ajuda.abrirTela(artigo.acao, artigo.destacar)">
+                            <i class="fa fa-external-link"/> Abrir esta tela
+                        </button>
+                        <div t-if="relacionados.length" class="mt-3">
+                            <div class="o_bt_ajuda__grupo">Relacionados</div>
+                            <button t-foreach="relacionados" t-as="r" t-key="r.id" class="o_bt_ajuda__item"
+                                    t-on-click="() => this.abrirArtigo(r)" t-esc="r.titulo"/>
+                        </div>
+                        <div class="o_bt_ajuda__avaliacao">
+                            <t t-if="state.avaliado[artigo.id]">Obrigado! Sua resposta ajuda a melhorar a ajuda.</t>
+                            <t t-else="">
+                                Isso ajudou?
+                                <button class="btn btn-light" t-on-click="() => this.avaliar(true)">👍 Sim</button>
+                                <button class="btn btn-light" t-on-click="() => this.avaliar(false)">👎 Não</button>
+                            </t>
+                        </div>
+                    </t>
+
+                    <!-- Sem busca: ajuda desta tela e mais procurados -->
+                    <t t-elif="!state.consulta.trim()">
+                        <t t-if="daTela.length">
+                            <div class="o_bt_ajuda__grupo">Ajuda desta tela</div>
+                            <button t-foreach="daTela" t-as="a" t-key="a.id" class="o_bt_ajuda__item" t-on-click="() => this.abrirArtigo(a)">
+                                <i class="fa fa-question-circle"/> <t t-esc="a.titulo"/>
+                            </button>
+                        </t>
+                        <div class="o_bt_ajuda__grupo">Mais procurados</div>
+                        <button t-foreach="maisProcurados" t-as="a" t-key="a.id" class="o_bt_ajuda__item" t-on-click="() => this.abrirArtigo(a)">
+                            <i class="fa fa-lightbulb-o"/> <t t-esc="a.titulo"/>
+                        </button>
+                        <p class="text-muted small mt-3">Dica: aperte <kbd>F1</kbd> ou <kbd>Ctrl</kbd>+<kbd>K</kbd> em qualquer tela.</p>
+                    </t>
+
+                    <!-- Resultados -->
+                    <t t-else="">
+                        <t t-set="r" t-value="resultados"/>
+                        <t t-if="r.artigos.length">
+                            <div class="o_bt_ajuda__grupo">Como fazer</div>
+                            <button t-foreach="r.artigos" t-as="a" t-key="a.id" class="o_bt_ajuda__item" t-on-click="() => this.abrirArtigo(a)">
+                                <strong t-esc="a.titulo"/>
+                                <small t-if="a.caminho" class="d-block text-muted" t-esc="a.caminho"/>
+                            </button>
+                        </t>
+                        <t t-if="r.telas.length">
+                            <div class="o_bt_ajuda__grupo">Telas</div>
+                            <button t-foreach="r.telas" t-as="t" t-key="t.id" class="o_bt_ajuda__item" t-on-click="() => this.ajuda.abrirTela(t.acao)">
+                                <i class="fa fa-arrow-right"/> <t t-esc="t.nome"/>
+                                <small class="d-block text-muted" t-esc="t.caminho"/>
+                            </button>
+                        </t>
+                        <t t-if="r.chaves.length">
+                            <div class="o_bt_ajuda__grupo">Configurações (liga / desliga)</div>
+                            <button t-foreach="r.chaves" t-as="c" t-key="c.campo" class="o_bt_ajuda__item"
+                                    t-on-click="() => this.ajuda.abrirTela('boteco_base.action_boteco_central_recursos', c.campo)">
+                                <i t-attf-class="fa {{ c.ligado ? 'fa-toggle-on text-success' : 'fa-toggle-off' }}"/> <t t-esc="c.nome"/>
+                            </button>
+                        </t>
+                        <div t-if="!r.artigos.length and !r.telas.length and !r.chaves.length" class="o_bt_ajuda__vazio">
+                            <p><strong>Não achei nada para “<t t-esc="state.consulta"/>”.</strong></p>
+                            <p class="text-muted">Tente outras palavras (ex.: “fornecedor”, “mesa”, “impressora”). A sua busca foi anotada para criarmos essa ajuda.</p>
+                            <button class="btn btn-secondary" t-on-click="pedirAjuda"><i class="fa fa-whatsapp"/> Pedir ajuda no WhatsApp</button>
+                        </div>
+                    </t>
+                </div>
+            </aside>
+        </t>
+    </t>
+</templates>

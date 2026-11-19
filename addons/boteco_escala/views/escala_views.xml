@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Semana -->
+    <record id="boteco_escala_semana_view_list" model="ir.ui.view">
+        <field name="name">boteco.escala.semana.list</field>
+        <field name="model">boteco.escala.semana</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="faturamento_previsto"/>
+                <field name="custo_previsto"/>
+                <field name="custo_pct"/>
+                <field name="estado" widget="badge" decoration-success="estado == 'publicada'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_escala_semana_view_form" model="ir.ui.view">
+        <field name="name">boteco.escala.semana.form</field>
+        <field name="model">boteco.escala.semana</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_calcular" type="object" string="Calcular previsão e sugestão" class="btn-secondary"
+                            invisible="estado != 'rascunho'"/>
+                    <button name="action_publicar" type="object" string="Publicar escala" class="btn-primary"
+                            invisible="estado != 'rascunho'"/>
+                    <button name="action_reabrir" type="object" string="Reabrir para ajustar" invisible="estado != 'publicada'"/>
+                    <field name="estado" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group><field name="inicio" readonly="estado != 'rascunho'"/></group>
+                        <group>
+                            <field name="faturamento_previsto"/>
+                            <field name="custo_previsto"/>
+                            <field name="custo_pct" string="Custo de pessoal (% do faturamento)"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="alert" invisible="not alertas">
+                        <b>Antes de publicar:</b>
+                        <field name="alertas" nolabel="1"/>
+                    </div>
+                    <notebook>
+                        <page string="Escala" name="escala">
+                            <field name="turno_ids" readonly="estado != 'rascunho'">
+                                <list editable="bottom" default_group_by="dia">
+                                    <field name="dia"/>
+                                    <field name="turno_id"/>
+                                    <field name="user_id" options="{'no_create': True}"/>
+                                    <field name="perfil"/>
+                                    <field name="inicio" optional="hide"/>
+                                    <field name="fim" optional="hide"/>
+                                    <field name="horas" sum="Horas"/>
+                                    <field name="custo" sum="Custo"/>
+                                    <button name="action_whatsapp" type="object" icon="fa-whatsapp" title="Mandar a escala da pessoa"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Previsão e sugestão" name="previsao">
+                            <field name="previsao_ids" readonly="1">
+                                <list>
+                                    <field name="dia"/>
+                                    <field name="dia_semana"/>
+                                    <field name="turno_id"/>
+                                    <field name="clientes"/>
+                                    <field name="faturamento"/>
+                                    <field name="sugestao"/>
+                                    <field name="escalados"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Feriado, jogo, show" name="ajustes">
+                            <p class="text-muted">Ajuste o movimento esperado de um dia (+30% num jogo, -50% num feriado fraco) e calcule de novo.</p>
+                            <field name="ajuste_ids">
+                                <list editable="bottom">
+                                    <field name="dia"/>
+                                    <field name="ajuste_pct"/>
+                                    <field name="motivo"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_escala_semanas" model="ir.actions.act_window">
+        <field name="name">Escala de turnos</field>
+        <field name="res_model">boteco.escala.semana</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Monte a escala da semana</p>
+            <p>Toque em Novo, depois em "Calcular previsão e sugestão": o sistema diz quantas pessoas de cada perfil
+               por turno, pelo movimento das últimas 4 semanas.</p>
+        </field>
+    </record>
+
+    <!-- Turnos escalados (calendário: arrastar e soltar) -->
+    <record id="boteco_escala_turno_view_calendar" model="ir.ui.view">
+        <field name="name">boteco.escala.turno.calendar</field>
+        <field name="model">boteco.escala.turno</field>
+        <field name="arch" type="xml">
+            <calendar date_start="inicio" date_stop="fim" color="user_id" mode="week" quick_create="0" event_open_popup="1">
+                <field name="user_id" filters="1"/>
+                <field name="perfil"/>
+                <field name="turno_id"/>
+            </calendar>
+        </field>
+    </record>
+    <record id="boteco_escala_turno_view_list" model="ir.ui.view">
+        <field name="name">boteco.escala.turno.list</field>
+        <field name="model">boteco.escala.turno</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="dia"/>
+                <field name="turno_id"/>
+                <field name="user_id"/>
+                <field name="inicio"/>
+                <field name="fim"/>
+                <field name="horas" sum="Horas"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_escala_turno_view_form" model="ir.ui.view">
+        <field name="name">boteco.escala.turno.form</field>
+        <field name="model">boteco.escala.turno</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="semana_id"/>
+                    <field name="user_id" options="{'no_create': True}"/>
+                    <field name="dia"/>
+                    <field name="turno_id"/>
+                    <field name="inicio"/>
+                    <field name="fim"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_escala_calendario" model="ir.actions.act_window">
+        <field name="name">Escala no calendário</field>
+        <field name="res_model">boteco.escala.turno</field>
+        <field name="view_mode">calendar,list,form</field>
+    </record>
+    <record id="action_boteco_minha_escala" model="ir.actions.act_window">
+        <field name="name">Minha escala</field>
+        <field name="res_model">boteco.escala.turno</field>
+        <field name="view_mode">list,calendar</field>
+        <field name="domain">[('user_id', '=', uid), ('estado_semana', '=', 'publicada')]</field>
+        <field name="help" type="html"><p>Sua escala aparece aqui quando o gerente publicar.</p></field>
+    </record>
+
+    <!-- Trocas -->
+    <record id="boteco_escala_troca_view_list" model="ir.ui.view">
+        <field name="name">boteco.escala.troca.list</field>
+        <field name="model">boteco.escala.troca</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="estado == 'pedida'" decoration-muted="estado == 'recusada'">
+                <field name="create_date" string="Pedida em"/>
+                <field name="pedido_por_id"/>
+                <field name="turno_id"/>
+                <field name="para_user_id"/>
+                <field name="motivo"/>
+                <field name="estado" widget="badge"/>
+                <button name="action_aprovar" type="object" string="Aprovar" class="btn-primary" invisible="estado != 'pedida'"
+                        groups="boteco_base.group_gerente"/>
+                <button name="action_recusar" type="object" string="Recusar" invisible="estado != 'pedida'"
+                        groups="boteco_base.group_gerente"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_escala_troca_view_form" model="ir.ui.view">
+        <field name="name">boteco.escala.troca.form</field>
+        <field name="model">boteco.escala.troca</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_aprovar" type="object" string="Aprovar" class="btn-primary" invisible="estado != 'pedida'"
+                            groups="boteco_base.group_gerente"/>
+                    <field name="estado" widget="statusbar"/>
+                </header>
+                <group>
+                    <field name="turno_id" options="{'no_create': True}" readonly="estado != 'pedida'"/>
+                    <field name="para_user_id" options="{'no_create': True}" readonly="estado != 'pedida'"/>
+                    <field name="motivo"/>
+                    <field name="pedido_por_id"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_escala_trocas" model="ir.actions.act_window">
+        <field name="name">Trocas de turno</field>
+        <field name="res_model">boteco.escala.troca</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Confirmar publicação -->
+    <record id="boteco_escala_confirmar_view_form" model="ir.ui.view">
+        <field name="name">boteco.escala.confirmar.form</field>
+        <field name="model">boteco.escala.confirmar</field>
+        <field name="arch" type="xml">
+            <form>
+                <p>A escala tem alertas. Publicar mesmo assim?</p>
+                <field name="alertas"/>
+                <footer>
+                    <button name="action_confirmar" type="object" string="Publicar mesmo assim" class="btn-primary"/>
+                    <button special="cancel" string="Voltar e ajustar" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Escalado x trabalhado -->
+    <record id="boteco_escala_relatorio_view_form" model="ir.ui.view">
+        <field name="name">boteco.escala.relatorio.form</field>
+        <field name="model">boteco.escala.relatorio</field>
+        <field name="arch" type="xml">
+            <form string="Escalado x trabalhado">
+                <group><group><field name="data_de"/></group><group><field name="data_ate"/></group></group>
+                <field name="linha_ids" readonly="1">
+                    <list decoration-danger="faltou or atraso_min &gt; 0" decoration-warning="horas_extras &gt; 0">
+                        <field name="dia"/>
+                        <field name="user_id"/>
+                        <field name="turno"/>
+                        <field name="escalado"/>
+                        <field name="entrada"/>
+                        <field name="saida"/>
+                        <field name="atraso_min"/>
+                        <field name="horas_escaladas" sum="Total"/>
+                        <field name="horas_trabalhadas" sum="Total"/>
+                        <field name="horas_extras" sum="Total"/>
+                        <field name="faltou"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_gerar" type="object" string="Gerar" class="btn-primary"/>
+                    <button name="action_csv" type="object" string="Baixar CSV (folha / contador)"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_escala_relatorio" model="ir.actions.act_window">
+        <field name="name">Escalado x trabalhado</field>
+        <field name="res_model">boteco.escala.relatorio</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Regras e turnos -->
+    <record id="boteco_escala_regra_view_list" model="ir.ui.view">
+        <field name="name">boteco.escala.regra.list</field>
+        <field name="model">boteco.escala.regra</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="perfil"/>
+                <field name="clientes_por_pessoa"/>
+                <field name="minimo"/>
+                <field name="custo_hora"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_boteco_escala_regras" model="ir.actions.act_window">
+        <field name="name">Regras de cobertura</field>
+        <field name="res_model">boteco.escala.regra</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="boteco_turno_view_list" model="ir.ui.view">
+        <field name="name">boteco.turno.list</field>
+        <field name="model">boteco.turno</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="hora_inicio" widget="float_time"/>
+                <field name="hora_fim" widget="float_time"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_boteco_turnos" model="ir.actions.act_window">
+        <field name="name">Turnos</field>
+        <field name="res_model">boteco.turno</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="action_boteco_ponto_tela" model="ir.actions.act_url">
+        <field name="name">Bater ponto</field>
+        <field name="url">/boteco/ponto</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- Central de Recursos -->
+    <record id="res_company_view_form_central_escala" model="ir.ui.view">
+        <field name="name">res.company.form.boteco.central.escala</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="boteco_base.res_company_view_form_central_recursos"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='g5']/div[hasclass('o_bt_recursos')]" position="inside">
+                <div class="o_bt_recurso">
+                    <field name="boteco_flag_escala_turnos" widget="boolean_toggle" nolabel="1"/>
+                    <div class="o_bt_recurso__texto">
+                        <label for="boteco_flag_escala_turnos" class="o_bt_recurso__nome"/>
+                        <div class="o_bt_recurso__ajuda">Sugere quantas pessoas por turno pelo movimento das últimas 4 semanas, mostra o custo de pessoal sobre o faturamento e avisa antes de publicar (sem folga, horas demais, turno descoberto).</div>
+                        <div class="d-flex align-items-center gap-2 mt-1" invisible="not boteco_flag_escala_turnos">
+                            <span class="text-muted">Meta de custo de pessoal (%):</span><field name="boteco_meta_custo_pessoal_pct" style="max-width:80px"/>
+                            <span class="text-muted">Limite de horas/semana:</span><field name="boteco_limite_horas_semana" style="max-width:80px"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_bt_recurso">
+                    <field name="boteco_flag_ponto_pin" widget="boolean_toggle" nolabel="1"/>
+                    <div class="o_bt_recurso__texto">
+                        <label for="boteco_flag_ponto_pin" class="o_bt_recurso__nome"/>
+                        <div class="o_bt_recurso__ajuda">Entrada e saída com o PIN no tablet da entrada (endereço /boteco/ponto). Relatório escalado x trabalhado e arquivo para a folha.</div>
+                        <div class="d-flex align-items-center gap-2 mt-1" invisible="not boteco_flag_ponto_pin">
+                            <field name="boteco_ponto_so_na_rede" widget="boolean_toggle" nolabel="1"/>
+                            <label for="boteco_ponto_so_na_rede" class="text-muted fw-normal"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="menu_boteco_minha_escala" name="Minha escala" parent="boteco_base.menu_boteco_operacao"
+              action="action_boteco_minha_escala" sequence="16"/>
+    <menuitem id="menu_boteco_ponto_tela" name="Bater ponto" parent="boteco_base.menu_boteco_operacao"
+              action="action_boteco_ponto_tela" sequence="17"/>
+    <menuitem id="menu_boteco_minhas_trocas" name="Trocar turno" parent="boteco_base.menu_boteco_operacao"
+              action="action_boteco_escala_trocas" sequence="18"/>
+    <menuitem id="menu_boteco_sec_escala" name="Escala e ponto" parent="boteco_base.menu_boteco_config" sequence="25"
+              groups="boteco_base.group_gerente"/>
+    <menuitem id="menu_boteco_escala_semanas" name="Escala de turnos" parent="menu_boteco_sec_escala"
+              action="action_boteco_escala_semanas" sequence="10"/>
+    <menuitem id="menu_boteco_escala_calendario" name="Escala no calendário" parent="menu_boteco_sec_escala"
+              action="action_boteco_escala_calendario" sequence="20"/>
+    <menuitem id="menu_boteco_escala_trocas" name="Trocas de turno" parent="menu_boteco_sec_escala"
+              action="action_boteco_escala_trocas" sequence="30"/>
+    <menuitem id="menu_boteco_escala_relatorio" name="Escalado x trabalhado" parent="menu_boteco_sec_escala"
+              action="action_boteco_escala_relatorio" sequence="40"/>
+    <menuitem id="menu_boteco_escala_regras" name="Regras de cobertura" parent="menu_boteco_sec_escala"
+              action="action_boteco_escala_regras" sequence="50"/>
+    <menuitem id="menu_boteco_turnos" name="Turnos" parent="menu_boteco_sec_escala"
+              action="action_boteco_turnos" sequence="60"/>
+</odoo>

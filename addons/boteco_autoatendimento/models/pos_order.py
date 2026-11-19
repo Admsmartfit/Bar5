@@ -38,14 +38,17 @@ class PosOrder(models.Model):
         self.ensure_one()
         return any(l.product_id.boteco_maior_18 and l.qty > 0 for l in self.lines)
 
-    def _boteco_pos_autoatendimento(self, dispositivo):
+    def _boteco_pos_autoatendimento(self, dispositivo, modo=None):
         """Depois que o pedido do tablet/QR é gravado: origem, quarentena, +18 e envio à produção."""
         for pedido in self.sudo():
             mesa = pedido.table_id
-            pedido.write({"boteco_origem": "tablet" if dispositivo.tipo == "tablet" else "qr",
-                          "boteco_dispositivo_ref": dispositivo.id})
+            origem = "qr_bebidas" if modo == "bebidas" else ("tablet" if dispositivo.tipo == "tablet" else "qr")
+            pedido.write({"boteco_origem": origem, "boteco_dispositivo_ref": dispositivo.id})
             if mesa:
                 mesa._boteco_garantir_sessao()
+            if modo == "bebidas":
+                pedido._boteco_enviar_bebidas()
+                continue
             motivos = pedido._boteco_avaliar_quarentena()
             if motivos:
                 pedido._boteco_reter(motivos)
@@ -54,6 +57,52 @@ class PosOrder(models.Model):
                 continue  # já retido num envio anterior: espera a liberação
             pedido._boteco_seguir_para_producao()
         return True
+
+    # ------------------------------------------------------------------
+    # QR expresso de bebidas (Etapa 36)
+    # ------------------------------------------------------------------
+    def _boteco_so_bebidas_novas(self):
+        """True se tudo o que este envio acrescenta é bebida."""
+        self.ensure_one()
+        novas = self.lines.filtered(lambda l: l.qty > (l.boteco_qtd_enviada or 0.0))
+        return bool(novas) and all(l.product_id.boteco_e_bebida for l in novas)
+
+    def _boteco_teto_preparadas(self):
+        self.ensure_one()
+        teto = self.company_id.boteco_teto_bebidas_preparadas
+        if teto:
+            return teto
+        pessoas = self.table_id.boteco_n_clientes() if self.table_id else 1
+        return quarentena.limite_bebida_giro(pessoas)
+
+    def _boteco_enviar_bebidas(self):
+        """Sem quarentena N+X. Fechadas saem na hora (sem teto); preparadas acima do teto esperam o garçom.
+
+        A confirmação de idade (+18) na primeira bebida alcoólica da mesa continua valendo (obrigação legal).
+        """
+        self.ensure_one()
+        mesa = self.table_id
+        if self.boteco_status_aprovacao == "aguardando":
+            # Preparadas de um envio anterior esperam o garçom; as fechadas novas não ficam presas junto
+            fechadas = self.lines.filtered(lambda l: l.qty > (l.boteco_qtd_enviada or 0.0)
+                                           and not l.product_id.boteco_bebida_preparada)
+            if fechadas:
+                self.with_context(boteco_forcar_envio=True).boteco_marcar_enviado(linhas=fechadas)
+            return
+        if mesa and self._boteco_tem_alcool() and not mesa.boteco_maior18_confirmado:
+            self._boteco_seguir_para_producao()  # espera só a confirmação de idade
+            return
+        novas = self.lines.filtered(lambda l: l.qty > (l.boteco_qtd_enviada or 0.0))
+        preparadas = novas.filtered(lambda l: l.product_id.boteco_bebida_preparada)
+        qtd_preparadas = sum(l.qty - (l.boteco_qtd_enviada or 0.0) for l in preparadas)
+        teto = self._boteco_teto_preparadas()
+        if preparadas and qtd_preparadas > teto:
+            fechadas = novas - preparadas
+            if fechadas:
+                self.boteco_marcar_enviado(linhas=fechadas)
+            self._boteco_reter([_("Bebidas preparadas neste envio: %(q)g (teto %(t)s por envio)", q=qtd_preparadas, t=teto)])
+            return
+        self.boteco_marcar_enviado()
 
     def _boteco_seguir_para_producao(self):
         """Fluxo normal depois da conferência: +18 (se for o caso) ou direto para a produção."""
@@ -170,6 +219,8 @@ class PosOrder(models.Model):
 
     def _boteco_processar_envio(self):
         # Pedido em quarentena nunca vai para a produção, mesmo que algum PDV tente mandar
+        if self.env.context.get("boteco_forcar_envio"):
+            return super()._boteco_processar_envio()  # envio parcial decidido pelo servidor (QR de bebidas)
         return super(PosOrder, self.filtered(lambda p: p.boteco_status_aprovacao != "aguardando"))._boteco_processar_envio()
 
     # ------------------------------------------------------------------
@@ -324,6 +375,19 @@ class PosOrder(models.Model):
         }
 
     @api.model
+    def _boteco_bebidas_mesa_ultimas(self, mesa):
+        """QR de bebidas: cada bebida já pedida na mesa (sessão atual), uma linha por bebida, com a última quantidade."""
+        pedidos = self.sudo().search([("table_id", "in", mesa._boteco_grupo().ids), ("state", "=", "draft")])
+        vistos, resultado = set(), []
+        for linha in pedidos.lines.sorted("id", reverse=True):
+            produto = linha.product_id
+            if linha.qty <= 0 or produto.id in vistos or not produto.boteco_e_bebida or not produto.self_order_available:
+                continue
+            vistos.add(produto.id)
+            resultado.append({"product_id": produto.id, "nome": produto.name, "ultima_qtd": linha.qty,
+                              "preparada": produto.boteco_bebida_preparada})
+        return resultado
+
     def _boteco_bebidas_da_mesa(self, mesa):
         """'Pedir de novo': bebidas (setor bar) já pedidas na mesa, sem repetir."""
         pedidos = self.sudo().search([("table_id", "=", mesa.id), ("state", "=", "draft")])

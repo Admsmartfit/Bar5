@@ -1,0 +1,54 @@
+// Ajuda rápida: painel lateral à direita, por cima da tela atual (a pessoa continua vendo onde estava)
+.o_bt_ajuda_fundo {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, .25); z-index: 1060;
+}
+.o_bt_ajuda {
+    position: fixed; top: 0; right: 0; bottom: 0; width: #{"min(460px, 100vw)"}; z-index: 1061;
+    background: #fff; color: #111827; box-shadow: -8px 0 24px rgba(0, 0, 0, .18);
+    display: flex; flex-direction: column;
+
+    .o_bt_ajuda__topo {
+        display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid #e5e7eb;
+        .fa-search { color: #6b7280; font-size: 1.1rem; }
+    }
+    .o_bt_ajuda__busca {
+        flex: 1; border: 0; outline: 0; font-size: 1.1rem; padding: 8px 0; background: transparent; color: inherit;
+    }
+    .o_bt_ajuda__fechar { font-size: 1.2rem; color: #6b7280; }
+    .o_bt_ajuda__corpo { flex: 1; overflow-y: auto; padding: 12px 16px 24px; }
+    .o_bt_ajuda__grupo {
+        font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+        color: #6b7280; margin: 14px 0 6px;
+    }
+    .o_bt_ajuda__item {
+        display: block; width: 100%; text-align: left; background: transparent; border: 0; border-radius: 8px;
+        padding: 9px 10px; color: inherit;
+        &:hover, &:focus { background: #f3f4f6; }
+    }
+    .o_bt_ajuda__titulo { font-size: 1.25rem; font-weight: 700; margin: 0 0 6px; }
+    .o_bt_ajuda__resumo { color: #4b5563; }
+    .o_bt_ajuda__caminho {
+        background: #f3f4f6; border-radius: 8px; padding: 8px 10px; margin: 8px 0 12px; font-weight: 600;
+        .o_bt_ajuda__rotulo { font-weight: 400; color: #6b7280; }
+    }
+    .o_bt_ajuda__passos {
+        ol, ul { padding-left: 1.3rem; }
+        li { margin-bottom: 6px; line-height: 1.45; }
+    }
+    .o_bt_ajuda__foto { width: 100%; border: 1px solid #e5e7eb; border-radius: 8px; margin: 10px 0; }
+    .o_bt_ajuda__avaliacao {
+        margin-top: 18px; padding-top: 12px; border-top: 1px solid #e5e7eb; color: #4b5563;
+        .btn { margin-left: 6px; }
+    }
+    .o_bt_ajuda__vazio { padding: 10px 4px; }
+}
+
+// Campo destacado ao "Abrir esta tela"
+@keyframes o_bt_pulso {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, .0); }
+    50% { box-shadow: 0 0 0 6px rgba(234, 88, 12, .45); }
+}
+.o_bt_destaque {
+    outline: 3px solid #ea580c !important; outline-offset: 2px; border-radius: 4px;
+    animation: o_bt_pulso 1s ease-in-out 4;
+}

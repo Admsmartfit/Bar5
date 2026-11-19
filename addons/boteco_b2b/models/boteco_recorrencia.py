@@ -59,6 +59,8 @@ class BotecoB2bRecorrencia(models.Model):
 
     @api.model
     def _cron_gerar_pedidos(self):
+        if not self.env.company.boteco_recurso_ativo("vendas_b2b"):
+            return True  # Etapa 34: venda a bares desligada na Central de Recursos
         hoje = fields.Date.context_today(self)
         for r in self.search([]):
             entrega = r.proxima_entrega

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WhatsApp (conectar): só o dono -->
+    <record id="action_boteco_whatsapp_conectar" model="ir.actions.client">
+        <field name="name">WhatsApp (conectar)</field>
+        <field name="tag">boteco_whatsapp_conectar</field>
+    </record>
+    <menuitem id="menu_boteco_whatsapp_conectar" name="WhatsApp (conectar)" parent="boteco_base.menu_boteco_sec_sistema"
+              action="action_boteco_whatsapp_conectar" sequence="35" groups="boteco_base.group_dono"/>
+
+    <!-- Horários do coletor e tokens -->
+    <record id="boteco_cotacoes_config_view_form" model="ir.ui.view">
+        <field name="name">boteco.cotacoes.config.form</field>
+        <field name="model">boteco.cotacoes.config</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp e coletor">
+                <group string="Coletor de ofertas (sites e Instagram)">
+                    <field name="instagram_hora" placeholder="08:00"/>
+                    <field name="sites_dias" placeholder="0,3"/>
+                    <field name="sites_hora" placeholder="08:00"/>
+                    <field name="coletor_visto_em"/>
+                </group>
+                <group string="Chaves das integrações (troque se vazar)" groups="boteco_base.group_dono">
+                    <field name="token_whatsapp" password="True"/>
+                    <button name="action_trocar_token_whatsapp" type="object" string="Trocar token do WhatsApp"
+                            confirm="Depois de trocar, conecte o WhatsApp de novo para atualizar o endereço." colspan="2"/>
+                    <field name="token_coletor" password="True"/>
+                    <button name="action_trocar_token_coletor" type="object" string="Trocar token do coletor"
+                            confirm="Depois de trocar, atualize o BOTECO_COLETOR_TOKEN no .env do servidor." colspan="2"/>
+                </group>
+                <footer>
+                    <button name="action_salvar" type="object" string="Salvar" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_cotacoes_config" model="ir.actions.act_window">
+        <field name="name">WhatsApp e coletor</field>
+        <field name="res_model">boteco.cotacoes.config</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Cotações para revisar -->
+    <record id="boteco_cotacao_revisar_view_list" model="ir.ui.view">
+        <field name="name">boteco.cotacao.revisar.list</field>
+        <field name="model">boteco.cotacao.revisar</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" create="0" decoration-muted="estado != 'revisar'">
+                <field name="create_date" string="Chegou em" readonly="1"/>
+                <field name="partner_id" readonly="1"/>
+                <field name="descricao" readonly="1"/>
+                <field name="preco" readonly="1"/>
+                <field name="unidade" readonly="1" optional="show"/>
+                <field name="origem" readonly="1" optional="hide"/>
+                <field name="product_id" options="{'no_create': True}" readonly="estado != 'revisar'"/>
+                <field name="fator" optional="hide" readonly="estado != 'revisar'"/>
+                <field name="estado" widget="badge" decoration-warning="estado == 'revisar'" decoration-success="estado == 'ligado'"/>
+                <button name="action_ligar" type="object" string="Ligar" class="btn-primary" invisible="estado != 'revisar'"/>
+                <button name="action_descartar" type="object" string="Descartar" invisible="estado != 'revisar'"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_boteco_cotacao_revisar" model="ir.actions.act_window">
+        <field name="name">Cotações para revisar</field>
+        <field name="res_model">boteco.cotacao.revisar</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('estado', '=', 'revisar')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nada para revisar</p>
+            <p>Quando um fornecedor manda um item que o sistema não reconhece, ele aparece aqui. Escolha o insumo e toque em
+               Ligar: da próxima vez entra sozinho.</p>
+        </field>
+    </record>
+
+    <!-- Ofertas encontradas (WhatsApp, sites, Instagram) -->
+    <record id="action_boteco_ofertas_encontradas" model="ir.actions.act_window">
+        <field name="name">Ofertas encontradas</field>
+        <field name="res_model">boteco.historico.preco</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('origem', 'in', ('whatsapp', 'site', 'instagram'))]</field>
+        <field name="context">{'search_default_preco_interessante': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nenhuma oferta ainda</p>
+            <p>Preços que chegaram pelo WhatsApp dos fornecedores e pelo coletor (sites e Instagram).</p>
+        </field>
+    </record>
+
+    <!-- Registro das integrações -->
+    <record id="boteco_cotacao_log_view_list" model="ir.ui.view">
+        <field name="name">boteco.cotacao.log.list</field>
+        <field name="model">boteco.cotacao.log</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" decoration-danger="resultado in ('recusado', 'erro', 'limite')">
+                <field name="create_date" string="Quando"/>
+                <field name="canal"/>
+                <field name="resultado"/>
+                <field name="partner_id"/>
+                <field name="itens"/>
+                <field name="ip"/>
+                <field name="detalhe"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_boteco_cotacao_log" model="ir.actions.act_window">
+        <field name="name">Registro do WhatsApp e coletor</field>
+        <field name="res_model">boteco.cotacao.log</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Fornecedor: site, palavras-chave e se aceita cotação automática -->
+    <record id="res_partner_form_boteco_cotacoes" model="ir.ui.view">
+        <field name="name">res.partner.form.boteco.cotacoes</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="boteco_estoque.res_partner_form_boteco_instagram"/>
+        <field name="arch" type="xml">
+            <field name="boteco_instagram_handle" position="after">
+                <field name="boteco_site_ofertas" widget="url" placeholder="https://fornecedor.com.br/ofertas"/>
+                <field name="boteco_palavras_chave" placeholder="cerveja 600ml, oferta"/>
+                <field name="boteco_cotacao_confiavel"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Lista de compras: melhor preço encontrado e onde -->
+    <record id="boteco_lista_compras_view_form_melhor" model="ir.ui.view">
+        <field name="name">boteco.lista.compras.form.melhor</field>
+        <field name="model">boteco.lista.compras</field>
+        <field name="inherit_id" ref="boteco_estoque.boteco_lista_compras_view_form"/>
+        <field name="arch" type="xml">
+            <field name="itens" position="after">
+                <field name="melhor_preco"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Central de Recursos -->
+    <record id="res_company_view_form_central_cotacoes" model="ir.ui.view">
+        <field name="name">res.company.form.boteco.central.cotacoes</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="boteco_base.res_company_view_form_central_recursos"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='g4']/div[hasclass('o_bt_recursos')]" position="inside">
+                <div class="o_bt_recurso">
+                    <field name="boteco_flag_cotacoes_whatsapp" widget="boolean_toggle" nolabel="1"/>
+                    <div class="o_bt_recurso__texto">
+                        <label for="boteco_flag_cotacoes_whatsapp" class="o_bt_recurso__nome"/>
+                        <div class="o_bt_recurso__ajuda">Conecte o WhatsApp do bar por QR Code (Configuração › Sistema › WhatsApp). Preços que fornecedores cadastrados mandam entram sozinhos no radar; mensagens de outras pessoas são descartadas sem gravar.</div>
+                    </div>
+                </div>
+                <div class="o_bt_recurso">
+                    <field name="boteco_flag_coletor_ofertas" widget="boolean_toggle" nolabel="1"/>
+                    <div class="o_bt_recurso__texto">
+                        <label for="boteco_flag_coletor_ofertas" class="o_bt_recurso__nome"/>
+                        <div class="o_bt_recurso__ajuda">Serviço separado lê o site e o Instagram dos fornecedores (Instagram 1 vez por dia, sites 2 vezes por semana) sem pesar no caixa. Horários em Compras › WhatsApp e coletor.</div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="menu_boteco_cotacao_revisar" name="Cotações para revisar" parent="boteco_base.menu_boteco_sec_comprar"
+              action="action_boteco_cotacao_revisar" sequence="31"/>
+    <menuitem id="menu_boteco_ofertas_encontradas" name="Ofertas encontradas" parent="boteco_base.menu_boteco_sec_comprar"
+              action="action_boteco_ofertas_encontradas" sequence="32"/>
+    <menuitem id="menu_boteco_cotacoes_config" name="WhatsApp e coletor" parent="boteco_base.menu_boteco_sec_comprar"
+              action="action_boteco_cotacoes_config" sequence="90" groups="boteco_base.group_gerente"/>
+    <menuitem id="menu_boteco_cotacao_log" name="Registro do WhatsApp e coletor" parent="boteco_base.menu_boteco_gestao"
+              action="action_boteco_cotacao_log" sequence="40" groups="boteco_base.group_dono"/>
+</odoo>

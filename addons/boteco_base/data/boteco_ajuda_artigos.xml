@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das telas deste módulo. Gerado; editar e regenerar. -->
+<odoo>
+    <record id="ajuda_ajuda_usar" model="boteco.ajuda.artigo">
+        <field name="codigo">ajuda_usar</field>
+        <field name="titulo">Como usar a ajuda rápida</field>
+        <field name="resumo">Achar o passo a passo de qualquer tarefa.</field>
+        <field name="sinonimos">ajuda, duvida, como faz, manual, f1, buscar, socorro</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Toque no &lt;b&gt;?&lt;/b&gt; da barra de cima, ou aperte &lt;b&gt;F1&lt;/b&gt; ou &lt;b&gt;Ctrl+K&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escreva o que quer fazer, do seu jeito. Ex.: &lt;i&gt;cadastrar whatsapp&lt;/i&gt;, &lt;i&gt;imprimir teste&lt;/i&gt;.&lt;/li&gt;&lt;li&gt;Toque na resposta: aparece o passo a passo, onde fica no menu e a foto da tela.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Abrir esta tela&lt;/b&gt; para ir direto: o campo certo pisca.&lt;/li&gt;&lt;li&gt;No fim, diga se ajudou (👍/👎). Isso melhora a ajuda.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">Barra de cima › botão ?</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_recursos_ligar" model="boteco.ajuda.artigo">
+        <field name="codigo">recursos_ligar</field>
+        <field name="titulo">Ligar ou desligar um recurso do sistema</field>
+        <field name="resumo">Cada recurso tem uma chave; desligar volta ao jeito padrão sem perder dados.</field>
+        <field name="sinonimos">central de recursos, liga desliga, ativar, desativar, flag, funcao, configurar recurso</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Sistema › Liga / desliga recursos&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha a aba (Pedidos e salão, Utensílios, Cozinha central, Compras, Opcionais).&lt;/li&gt;&lt;li&gt;Leia a explicação do cartão e toque na chave para ligar ou desligar.&lt;/li&gt;&lt;li&gt;Clique em &lt;b&gt;Salvar&lt;/b&gt;. Vale na hora para os próximos pedidos.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_central_recursos"/>
+        <field name="acao_xmlid">boteco_base.action_boteco_central_recursos</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_atualizar_sistema" model="boteco.ajuda.artigo">
+        <field name="codigo">atualizar_sistema</field>
+        <field name="titulo">Atualizar o sistema com a versão nova</field>
+        <field name="resumo">Instalar as melhorias enviadas para o GitHub.</field>
+        <field name="sinonimos">atualizacao, versao nova, update, upgrade, github</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Feche os caixas (com caixa aberto o sistema não deixa atualizar).&lt;/li&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Sistema › Atualizar sistema&lt;/b&gt; e veja o que vem na versão nova.&lt;/li&gt;&lt;li&gt;Marque &lt;b&gt;Entendi: o sistema fica fora do ar&lt;/b&gt; e toque em &lt;b&gt;Atualizar agora&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Espere uns 5 minutos e abra a tela de novo para ver o resultado. Se der erro, o sistema volta sozinho como estava.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_atualizacao"/>
+        <field name="acao_xmlid">boteco_base.action_boteco_atualizacao</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_cadastrar_pessoa_pin" model="boteco.ajuda.artigo">
+        <field name="codigo">cadastrar_pessoa_pin</field>
+        <field name="titulo">Cadastrar uma pessoa da equipe e o PIN</field>
+        <field name="resumo">Cada pessoa entra com um PIN de 4 a 6 números e vê só as telas do seu perfil.</field>
+        <field name="sinonimos">funcionario, garcom novo, usuario, equipe, senha, pin, login, colaborador</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Equipe › Pessoas&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Preencha o nome e escolha o &lt;b&gt;Perfil do boteco&lt;/b&gt; (garçom, caixa, chapeiro…).&lt;/li&gt;&lt;li&gt;No campo &lt;b&gt;PIN&lt;/b&gt;, digite 4 a 6 números (não vale 1234 nem 1111).&lt;/li&gt;&lt;li&gt;Salve. A pessoa já entra pela tela de PIN.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_pessoas"/>
+        <field name="acao_xmlid">boteco_base.action_boteco_pessoas</field>
+        <field name="destacar_campo">boteco_pin</field>
+        <field name="perfis">dono</field>
+        <field name="telas">res.users</field>
+        <field name="sequencia">40</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_permissoes_perfil" model="boteco.ajuda.artigo">
+        <field name="codigo">permissoes_perfil</field>
+        <field name="titulo">Mudar o que cada perfil pode fazer</field>
+        <field name="resumo">Ex.: deixar o caixa dar desconto sem chamar o gerente.</field>
+        <field name="sinonimos">permissao, acesso, perfil, liberar, bloquear, desconto, cancelar</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Equipe › Permissões por perfil&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Abra o perfil (ex.: Caixa).&lt;/li&gt;&lt;li&gt;Ligue ou desligue cada permissão e os menus que o perfil vê.&lt;/li&gt;&lt;li&gt;Salve. Vale no próximo login da pessoa.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_perfis"/>
+        <field name="acao_xmlid">boteco_base.action_boteco_perfil</field>
+        <field name="perfis">dono</field>
+        <field name="telas">boteco.perfil</field>
+        <field name="sequencia">50</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_impressora_cadastrar" model="boteco.ajuda.artigo">
+        <field name="codigo">impressora_cadastrar</field>
+        <field name="titulo">Cadastrar impressora e imprimir teste</field>
+        <field name="resumo">Impressora de rede (80 mm) do bar ou da chapa.</field>
+        <field name="sinonimos">impressora, imprimir, ticket, comanda, cupom, teste de impressao, ip</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Salão e produção › Impressoras&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Dê um nome (ex.: Impressora do bar) e digite o &lt;b&gt;IP&lt;/b&gt; que aparece no papel de teste da própria impressora.&lt;/li&gt;&lt;li&gt;Salve e toque em &lt;b&gt;Imprimir teste&lt;/b&gt;. Se sair o papel, está pronta.&lt;/li&gt;&lt;li&gt;Ligue a impressora ao setor em &lt;b&gt;Setores de produção&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_impressoras"/>
+        <field name="acao_xmlid">boteco_base.action_boteco_impressora</field>
+        <field name="destacar_campo">ip</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="telas">boteco.impressora</field>
+        <field name="sequencia">60</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_setores_producao" model="boteco.ajuda.artigo">
+        <field name="codigo">setores_producao</field>
+        <field name="titulo">Mandar cada item para o bar ou para a chapa</field>
+        <field name="resumo">O setor decide em qual impressora e tela de produção o pedido sai.</field>
+        <field name="sinonimos">setor, bar, chapa, cozinha, para onde vai, impressora do setor</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Salão e produção › Setores de produção&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Abra o setor (Bar ou Chapa) e escolha a &lt;b&gt;impressora&lt;/b&gt; dele.&lt;/li&gt;&lt;li&gt;No cadastro de cada item do cardápio, escolha &lt;b&gt;Vai para&lt;/b&gt; = o setor.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_setores"/>
+        <field name="acao_xmlid">boteco_base.action_boteco_setor</field>
+        <field name="perfis">dono</field>
+        <field name="telas">boteco.setor</field>
+        <field name="sequencia">70</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_trocar_pessoa" model="boteco.ajuda.artigo">
+        <field name="codigo">trocar_pessoa</field>
+        <field name="titulo">Trocar de pessoa no mesmo aparelho</field>
+        <field name="resumo">Sair e entrar com outro PIN sem fechar nada.</field>
+        <field name="sinonimos">sair, trocar usuario, outro garcom, logout, pin</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Toque no ícone ⇄ na barra de cima (ou &lt;b&gt;Início › Trocar de pessoa (PIN)&lt;/b&gt;).&lt;/li&gt;&lt;li&gt;A próxima pessoa digita o PIN dela.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_trocar_pessoa"/>
+        <field name="sequencia">80</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_tema_escuro" model="boteco.ajuda.artigo">
+        <field name="codigo">tema_escuro</field>
+        <field name="titulo">Tema escuro, alto contraste e letra grande</field>
+        <field name="resumo">Deixar a tela mais fácil de ler. Cada pessoa escolhe o seu.</field>
+        <field name="sinonimos">tema escuro, modo noturno, letra grande, fonte, contraste, cor, nao consigo ler, aparencia</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Toque no botão ☀️/🌙 na barra de cima.&lt;/li&gt;&lt;li&gt;Escolha &lt;b&gt;Claro&lt;/b&gt;, &lt;b&gt;Escuro&lt;/b&gt; ou &lt;b&gt;Automático&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Ligue o &lt;b&gt;Alto contraste&lt;/b&gt; e escolha o tamanho da letra (A, A+, A++) e a cor de destaque.&lt;/li&gt;&lt;li&gt;Muda na hora e fica salvo só para você.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">Barra de cima › botão ☀️/🌙</field>
+        <field name="sequencia">90</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_saude_sistema" model="boteco.ajuda.artigo">
+        <field name="codigo">saude_sistema</field>
+        <field name="titulo">Ver se está tudo funcionando (saúde do sistema)</field>
+        <field name="resumo">Banco, impressoras, disco e último backup numa tela só.</field>
+        <field name="sinonimos">saude, backup, disco, impressora parada, sistema lento, erro</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Acompanhamento › Saúde do sistema&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Verde = tudo certo. Vermelho mostra o que está parado e o que fazer.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_saude"/>
+        <field name="acao_xmlid">boteco_base.action_boteco_saude_url</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">100</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_auditoria" model="boteco.ajuda.artigo">
+        <field name="codigo">auditoria</field>
+        <field name="titulo">Ver quem cancelou, deu desconto ou mexeu no caixa</field>
+        <field name="resumo">Registro de tudo o que é sensível, que ninguém consegue apagar.</field>
+        <field name="sinonimos">auditoria, quem cancelou, quem deu desconto, historico, log, fraude</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Acompanhamento › Auditoria (quem fez o quê)&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Filtre por ação (cancelamento, desconto, sangria…) ou por pessoa.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_auditoria"/>
+        <field name="acao_xmlid">boteco_base.action_boteco_auditoria</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="telas">boteco.auditoria</field>
+        <field name="sequencia">110</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_artigo_proprio" model="boteco.ajuda.artigo">
+        <field name="codigo">artigo_proprio</field>
+        <field name="titulo">Criar uma ajuda própria (ex.: senha do Wi-Fi)</field>
+        <field name="resumo">Escrever orientações do seu boteco para a equipe achar na busca.</field>
+        <field name="sinonimos">criar ajuda, escrever ajuda, manual proprio, senha wifi, procedimento</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Sistema › Artigos da ajuda&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escreva o título como a equipe falaria e os passos numerados.&lt;/li&gt;&lt;li&gt;Em &lt;b&gt;Outras palavras&lt;/b&gt;, coloque como as pessoas podem procurar (ex.: wifi, internet, senha).&lt;/li&gt;&lt;li&gt;Salve. Já aparece na busca.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_base.menu_boteco_ajuda_artigos"/>
+        <field name="acao_xmlid">boteco_base.action_boteco_ajuda_artigo</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">120</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_cadastrar_pessoa_pin" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_permissoes_perfil')])]"/>
+    </record>
+    <record id="ajuda_impressora_cadastrar" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_setores_producao')])]"/>
+    </record>
+    <record id="ajuda_setores_producao" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_impressora_cadastrar')])]"/>
+    </record>
+</odoo>

@@ -45,7 +45,7 @@
     <menuitem id="menu_boteco_sec_comprar" name="Comprar" parent="menu_boteco_top_compras" sequence="10"/>
 
     <menuitem id="menu_boteco_top_financas" name="Finanças" parent="menu_boteco_root" sequence="60"
-              groups="group_gerente"/>
+              groups="group_gerente,group_contador"/>
     <menuitem id="menu_boteco_sec_contas" name="Contas" parent="menu_boteco_top_financas" sequence="20"
               groups="group_dono"/>
 
@@ -57,6 +57,8 @@
               sequence="10" action="action_boteco_central_recursos"/>
     <menuitem id="menu_boteco_atualizacao" name="Atualizar sistema" parent="menu_boteco_sec_sistema"
               sequence="20" action="action_boteco_atualizacao"/>
+    <menuitem id="menu_boteco_ajuda_artigos" name="Artigos da ajuda" parent="menu_boteco_sec_sistema" sequence="40"
+              action="action_boteco_ajuda_artigo"/>
     <menuitem id="menu_boteco_termos" name="Termos de boteco" parent="menu_boteco_sec_sistema" sequence="90"
               action="action_boteco_termo"/>
 
@@ -78,4 +80,6 @@
               action="action_boteco_saude_url"/>
     <menuitem id="menu_boteco_auditoria" name="Auditoria (quem fez o quê)" parent="menu_boteco_gestao" sequence="20"
               action="action_boteco_auditoria"/>
+    <menuitem id="menu_boteco_ajuda_buscas" name="Ajuda: o que estão procurando" parent="menu_boteco_gestao" sequence="30"
+              action="action_boteco_ajuda_busca" groups="group_dono"/>
 </odoo>

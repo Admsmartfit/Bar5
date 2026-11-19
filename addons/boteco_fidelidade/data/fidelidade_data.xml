@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Programas modelo (desligados): o dono liga em Vendas › Delivery e clientes › Fidelidade -->
+    <function model="loyalty.program" name="_boteco_criar_modelos"/>
+</odoo>

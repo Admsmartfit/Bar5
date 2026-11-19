@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- "Minha conta" do tablet/QR: saldo de fidelidade do cliente da mesa (Etapa 31) -->
+    <t t-name="boteco_fidelidade.BotecoMesa" t-inherit="boteco_autoatendimento.BotecoMesa" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('bt-totais')]" position="after">
+            <div t-if="mesa.conta and mesa.conta.fidelidade and mesa.conta.fidelidade.length" class="bt-fidelidade">
+                <h3>⭐ Fidelidade</h3>
+                <div t-foreach="mesa.conta.fidelidade" t-as="f" t-key="f_index" class="bt-fidelidade__item">
+                    <div class="bt-fidelidade__programa"><t t-esc="f.cliente"/> · <t t-esc="f.programa"/></div>
+                    <div class="bt-fidelidade__saldo">
+                        <b t-esc="f.pontos"/> <t t-esc="f.unidade"/>
+                        <span t-if="f.faltam > 0" class="bt-fidelidade__faltam"> · faltam <t t-esc="f.faltam"/> para o prêmio</span>
+                        <span t-else="" class="bt-fidelidade__faltam"> · prêmio liberado! 🎉</span>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </t>
+</templates>

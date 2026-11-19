@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Modelos -->
+    <record id="boteco_checklist_modelo_view_list" model="ir.ui.view">
+        <field name="name">boteco.checklist.modelo.list</field>
+        <field name="model">boteco.checklist.modelo</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="frequencia"/>
+                <field name="hora_limite" widget="float_time"/>
+                <field name="grupo_id"/>
+                <field name="setor"/>
+                <field name="active" column_invisible="True"/>
+                <button name="action_usar" type="object" string="Usar este modelo" class="btn-primary" invisible="active"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_checklist_modelo_view_form" model="ir.ui.view">
+        <field name="name">boteco.checklist.modelo.form</field>
+        <field name="model">boteco.checklist.modelo</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_usar" type="object" string="Usar este modelo" class="btn-primary" invisible="active"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Guardado" bg_color="text-bg-secondary" invisible="active"/>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="frequencia"/>
+                            <field name="dia_semana" invisible="frequencia != 'semanal'"/>
+                            <field name="hora_limite" widget="float_time"/>
+                        </group>
+                        <group>
+                            <field name="grupo_id" options="{'no_create': True}"/>
+                            <field name="setor"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="item_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="tipo"/>
+                            <field name="minimo" invisible="tipo != 'numero'"/>
+                            <field name="maximo" invisible="tipo != 'numero'"/>
+                            <field name="unidade" invisible="tipo != 'numero'"/>
+                            <field name="critico"/>
+                            <field name="foto_obrigatoria"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_checklist_modelos" model="ir.actions.act_window">
+        <field name="name">Modelos de checklist</field>
+        <field name="res_model">boteco.checklist.modelo</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Crie um checklist</p>
+            <p>Há modelos prontos (abertura, fechamento, recebimento, chopeira, pragas): toque em "Usar este modelo".</p>
+        </field>
+    </record>
+
+    <!-- Registros -->
+    <record id="boteco_checklist_execucao_view_list" model="ir.ui.view">
+        <field name="name">boteco.checklist.execucao.list</field>
+        <field name="model">boteco.checklist.execucao</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-danger="atrasado" decoration-success="estado == 'feito' and not n_nao_conformes"
+                  decoration-warning="n_nao_conformes">
+                <field name="data"/>
+                <field name="name"/>
+                <field name="hora_limite"/>
+                <field name="grupo_id" optional="show"/>
+                <field name="assinado_por_id"/>
+                <field name="assinado_em" optional="show"/>
+                <field name="n_nao_conformes"/>
+                <field name="atrasado" column_invisible="True"/>
+                <field name="estado" widget="badge" decoration-success="estado == 'feito'" decoration-warning="estado == 'pendente'"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_checklist_execucao_view_form" model="ir.ui.view">
+        <field name="name">boteco.checklist.execucao.form</field>
+        <field name="model">boteco.checklist.execucao</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group><field name="data"/><field name="hora_limite"/><field name="estado"/></group>
+                        <group><field name="assinado_por_id"/><field name="assinado_em"/><field name="n_nao_conformes"/></group>
+                    </group>
+                    <field name="resposta_ids">
+                        <list decoration-danger="not conforme">
+                            <field name="name"/>
+                            <field name="tipo" column_invisible="True"/>
+                            <field name="valor_bool" invisible="tipo != 'simnao'"/>
+                            <field name="valor_num" invisible="tipo != 'numero'"/>
+                            <field name="valor_texto"/>
+                            <field name="foto" widget="image" options="{'size': [64, 64]}"/>
+                            <field name="critico"/>
+                            <field name="conforme"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="boteco_checklist_execucao_view_search" model="ir.ui.view">
+        <field name="name">boteco.checklist.execucao.search</field>
+        <field name="model">boteco.checklist.execucao</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="hoje" string="Hoje" domain="[('data', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="atrasados" string="Atrasados" domain="[('atrasado', '=', True)]"/>
+                <filter name="com_nc" string="Fora do padrão" domain="[('n_nao_conformes', '&gt;', 0)]"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_boteco_checklist_execucoes" model="ir.actions.act_window">
+        <field name="name">Checklists feitos</field>
+        <field name="res_model">boteco.checklist.execucao</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_hoje': 1}</field>
+    </record>
+
+    <!-- Não conformidades -->
+    <record id="boteco_nao_conformidade_view_list" model="ir.ui.view">
+        <field name="name">boteco.nao.conformidade.list</field>
+        <field name="model">boteco.nao.conformidade</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="estado == 'aberta' and critica" decoration-muted="estado == 'resolvida'">
+                <field name="prazo"/>
+                <field name="name"/>
+                <field name="critica"/>
+                <field name="responsavel_id"/>
+                <field name="estado" widget="badge" decoration-danger="estado == 'aberta'" decoration-success="estado == 'resolvida'"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_nao_conformidade_view_form" model="ir.ui.view">
+        <field name="name">boteco.nao.conformidade.form</field>
+        <field name="model">boteco.nao.conformidade</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_resolver" type="object" string="Resolvida" class="btn-primary" invisible="estado != 'aberta'"/>
+                    <field name="estado" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="descricao"/></h1></div>
+                    <group>
+                        <group><field name="execucao_id" readonly="1"/><field name="critica"/></group>
+                        <group><field name="responsavel_id"/><field name="prazo"/><field name="resolvida_em"/></group>
+                    </group>
+                    <field name="acao" placeholder="O que foi feito para resolver"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_nao_conformidades" model="ir.actions.act_window">
+        <field name="name">Não conformidades</field>
+        <field name="res_model">boteco.nao.conformidade</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('estado', '=', 'aberta')]</field>
+    </record>
+
+    <!-- Tela do celular -->
+    <record id="action_boteco_checklist_tela" model="ir.actions.act_url">
+        <field name="name">Checklists do dia</field>
+        <field name="url">/boteco/checklist</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- Manutenção: custo -->
+    <record id="maintenance_request_form_boteco" model="ir.ui.view">
+        <field name="name">maintenance.request.form.boteco</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='schedule_date']" position="after">
+                <field name="boteco_custo"/>
+                <field name="boteco_moeda_id" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Central de Recursos -->
+    <record id="res_company_view_form_central_checklists" model="ir.ui.view">
+        <field name="name">res.company.form.boteco.central.checklists</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="boteco_base.res_company_view_form_central_recursos"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='g5']/div[hasclass('o_bt_recursos')]" position="inside">
+                <div class="o_bt_recurso">
+                    <field name="boteco_flag_checklists_appcc" widget="boolean_toggle" nolabel="1"/>
+                    <div class="o_bt_recurso__texto">
+                        <label for="boteco_flag_checklists_appcc" class="o_bt_recurso__nome"/>
+                        <div class="o_bt_recurso__ajuda">Abertura, fechamento, recebimento, chopeira e pragas (base RDC 216) pelo celular, com foto e assinatura por PIN. Item crítico fora da faixa avisa o gerente na hora. PDF para a fiscalização.</div>
+                    </div>
+                </div>
+                <div class="o_bt_recurso">
+                    <field name="boteco_flag_manutencao_preventiva" widget="boolean_toggle" nolabel="1"/>
+                    <div class="o_bt_recurso__texto">
+                        <label for="boteco_flag_manutencao_preventiva" class="o_bt_recurso__nome"/>
+                        <div class="o_bt_recurso__ajuda">Plano da chopeira, filtros, extintores, coifa e gás. Avisa no Painel do dono 3 dias antes e quando vence; guarda o histórico com o custo.</div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="menu_boteco_checklist_tela" name="Checklists do dia" parent="boteco_base.menu_boteco_operacao"
+              action="action_boteco_checklist_tela" sequence="15"/>
+    <menuitem id="menu_boteco_sec_boas_praticas" name="Boas práticas e manutenção" parent="boteco_base.menu_boteco_top_producao"
+              sequence="80" groups="boteco_base.group_gerente"/>
+    <menuitem id="menu_boteco_checklist_execucoes" name="Checklists feitos" parent="menu_boteco_sec_boas_praticas"
+              action="action_boteco_checklist_execucoes" sequence="10"/>
+    <menuitem id="menu_boteco_nao_conformidades" name="Não conformidades" parent="menu_boteco_sec_boas_praticas"
+              action="action_boteco_nao_conformidades" sequence="20"/>
+    <menuitem id="menu_boteco_checklist_relatorio" name="Relatório para a fiscalização" parent="menu_boteco_sec_boas_praticas"
+              action="action_boteco_checklist_relatorio" sequence="30"/>
+    <menuitem id="menu_boteco_checklist_modelos" name="Modelos de checklist" parent="menu_boteco_sec_boas_praticas"
+              action="action_boteco_checklist_modelos" sequence="40"/>
+    <menuitem id="menu_boteco_manutencao" name="Manutenção preventiva" parent="menu_boteco_sec_boas_praticas"
+              action="maintenance.hr_equipment_request_action" sequence="50"/>
+    <menuitem id="menu_boteco_equipamentos" name="Equipamentos" parent="menu_boteco_sec_boas_praticas"
+              action="maintenance.hr_equipment_action" sequence="60"/>
+</odoo>

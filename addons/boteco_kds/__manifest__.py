@@ -28,6 +28,7 @@ Etapa 3 do PRD: produção no bar e na chapa.
         "views/boteco_impressao_job_views.xml",
         "views/boteco_kds_tempo_views.xml",
         "views/menus.xml",
+        "data/boteco_ajuda_artigos.xml",
     ],
     "assets": {
         "web.assets_backend": [

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boteco_cotacao_revisar_gerente,cotacao revisar gerente,model_boteco_cotacao_revisar,boteco_base.group_gerente,1,1,0,0
+access_boteco_cotacao_fila_gerente,cotacao fila gerente,model_boteco_cotacao_fila,boteco_base.group_gerente,1,0,0,0
+access_boteco_cotacao_log_dono,cotacao log dono,model_boteco_cotacao_log,boteco_base.group_dono,1,0,0,0
+access_boteco_cotacoes_config_gerente,cotacoes config gerente,model_boteco_cotacoes_config,boteco_base.group_gerente,1,1,1,0

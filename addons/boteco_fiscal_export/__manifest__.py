@@ -32,6 +32,7 @@ Etapa 9 do PRD.
         "wizard/boteco_fiscal_retorno_views.xml",
         "views/res_company_views.xml",
         "views/menus.xml",
+        "data/boteco_ajuda_artigos.xml",
     ],
     "post_init_hook": "post_init_hook",
     "installable": True,

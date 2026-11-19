@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Compras e estoque > Comprar -->
+    <menuitem id="menu_boteco_fornecedores" name="Fornecedores" parent="boteco_base.menu_boteco_sec_comprar"
+              sequence="5" action="action_boteco_fornecedores"/>
     <menuitem id="menu_boteco_lista_compras" name="Lista de compras (WhatsApp)" parent="boteco_base.menu_boteco_sec_comprar"
               sequence="10" action="action_boteco_lista_compras"/>
     <menuitem id="menu_boteco_importar_orcamento" name="Ler orçamento (PDF / foto)" parent="boteco_base.menu_boteco_sec_comprar"

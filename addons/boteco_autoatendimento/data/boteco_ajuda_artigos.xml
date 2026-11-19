@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das telas deste módulo. Gerado; editar e regenerar. -->
+<odoo>
+    <record id="ajuda_liberar_celular" model="boteco.ajuda.artigo">
+        <field name="codigo">liberar_celular</field>
+        <field name="titulo">Liberar o celular do cliente no QR Code</field>
+        <field name="resumo">No primeiro pedido de cada celular, o garçom confere se a pessoa está na mesa.</field>
+        <field name="sinonimos">liberar celular, qr code, cliente pedindo, aprovar celular, autoatendimento</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Quando aparecer &lt;b&gt;Mesa X: celular quer pedir&lt;/b&gt;, confira se a pessoa está mesmo na mesa.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Liberar&lt;/b&gt;. O pedido guardado sai sozinho.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › aviso na tela</field>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_confirmar_idade" model="boteco.ajuda.artigo">
+        <field name="codigo">confirmar_idade</field>
+        <field name="titulo">Confirmar a idade (+18) da mesa</field>
+        <field name="resumo">Na primeira bebida alcoólica da mesa, o pedido espera o garçom conferir a idade.</field>
+        <field name="sinonimos">18 anos, maior de idade, alcool, idade, menor</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Quando aparecer &lt;b&gt;Mesa X: bebida alcoólica (+18)&lt;/b&gt;, confira a idade de quem vai beber.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Todos têm 18+&lt;/b&gt;. As bebidas vão para o bar.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › aviso na tela</field>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_quarentena" model="boteco.ajuda.artigo">
+        <field name="codigo">quarentena</field>
+        <field name="titulo">Resolver um pedido do tablet em conferência</field>
+        <field name="resumo">Pedido fora do normal para a mesa (ex.: 10 pratos para 2 pessoas) espera você.</field>
+        <field name="sinonimos">quarentena, pedido retido, conferir pedido, pedido estranho, aprovar pedido tablet</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Aparece o aviso &lt;b&gt;Mesa X: confira o pedido do tablet&lt;/b&gt; com o motivo.&lt;/li&gt;&lt;li&gt;Pergunte à mesa e escolha: ajustar o número de pessoas, corrigir a quantidade do item, liberar assim mesmo ou recusar.&lt;/li&gt;&lt;li&gt;Quem resolver primeiro fecha o aviso nos outros aparelhos.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › aviso na tela</field>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_tablets_mesa" model="boteco.ajuda.artigo">
+        <field name="codigo">tablets_mesa</field>
+        <field name="titulo">Cadastrar o tablet fixo de uma mesa</field>
+        <field name="resumo">O tablet da mesa já vem liberado e fica em modo quiosque.</field>
+        <field name="sinonimos">tablet, quiosque, tablet da mesa, cadastrar tablet</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Vendas › Salão e caixa › Tablets das mesas&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha a mesa e abra no tablet o link que aparece.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_autoatendimento.menu_boteco_tablets"/>
+        <field name="acao_xmlid">boteco_autoatendimento.action_boteco_tablets</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">40</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_qr_bebidas" model="boteco.ajuda.artigo">
+        <field name="codigo">qr_bebidas</field>
+        <field name="titulo">QR de bebidas: pedir bebida sem esperar o garçom</field>
+        <field name="resumo">O 2º QR do cartão da mesa pede só bebidas, sem liberação. Cerveja, lata, refrigerante e água saem na hora; drinks, caipirinhas, doses e chope acima do teto esperam o garçom.</field>
+        <field name="sinonimos">qr bebidas, bebidas rapido, pedir cerveja, teto de bebidas, caipirinha, chope, drink, qr expresso</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Ligue em &lt;b&gt;Configuração › Central de Recursos › QR expresso de bebidas&lt;/b&gt;. No mesmo cartão fica o &lt;b&gt;teto de bebidas preparadas por envio&lt;/b&gt; (0 = automático pelo número de pessoas).&lt;/li&gt;&lt;li&gt;Marque em cada produto se é &lt;b&gt;Bebida preparada&lt;/b&gt; (drinks, caipirinhas, doses, chope). Bebida fechada não tem teto: o garçom abre na frente do cliente.&lt;/li&gt;&lt;li&gt;Reimprima o &lt;b&gt;QR Code das mesas&lt;/b&gt;: cada cartão ganha o QR &lt;b&gt;Bebidas rápido&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;O cliente precisa estar no Wi-Fi do bar e a mesa precisa estar aberta. A conferência de idade (+18) continua valendo.&lt;/li&gt;&lt;li&gt;Se passar do teto, o pedido aparece para o garçom liberar; as bebidas fechadas do mesmo envio já seguem para o bar.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">Configuração › Central de Recursos › Pedidos e salão</field>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">15</field>
+        <field name="padrao" eval="True"/>
+    </record>
+</odoo>

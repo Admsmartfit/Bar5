@@ -5,3 +5,4 @@ from . import stock_picking
 from . import boteco_recorrencia
 from . import boteco_contrato
 from . import res_users
+from . import res_company

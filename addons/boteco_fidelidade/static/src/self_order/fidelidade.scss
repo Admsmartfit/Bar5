@@ -1,0 +1,8 @@
+.bt-fidelidade {
+    margin-top: 12px; padding: 10px 12px; border-radius: 12px;
+    border: 2px solid var(--bt-destaque, #0b6e4f);
+    h3 { font-size: 1rem; font-weight: 800; margin: 0 0 6px; color: inherit; }
+    &__item + &__item { margin-top: 6px; }
+    &__programa { font-weight: 600; }
+    &__faltam { opacity: .8; }
+}

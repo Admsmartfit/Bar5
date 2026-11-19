@@ -2,7 +2,7 @@
 <odoo>
     <!-- Finanças > Fiscal -->
     <menuitem id="menu_boteco_fiscal" name="Fiscal" parent="boteco_base.menu_boteco_top_financas" sequence="30"
-              groups="boteco_base.group_dono"/>
+              groups="boteco_base.group_dono,boteco_base.group_contador"/>
     <menuitem id="menu_fiscal_registros" name="Vendas e notas" parent="menu_boteco_fiscal" sequence="10" action="action_fiscal"/>
     <menuitem id="menu_fiscal_exportar" name="Exportar para emissão" parent="menu_boteco_fiscal" sequence="20" action="action_fiscal_exportar"/>
     <menuitem id="menu_fiscal_retorno" name="Importar retorno" parent="menu_boteco_fiscal" sequence="30" action="action_fiscal_retorno"/>

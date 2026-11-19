@@ -111,6 +111,69 @@
                 </div>
             </div>
 
+            <!-- QR expresso de bebidas: pedir de novo em 1 toque, sem esperar o garçom -->
+            <div t-if="modoBebidas" class="bt-bebidas">
+                <header class="bt-bebidas__topo">
+                    <div>
+                        <div class="bt-bebidas__titulo">🍺 Bebidas rápido</div>
+                        <div class="bt-bebidas__mesa">Mesa <t t-esc="mesa.mesa"/></div>
+                    </div>
+                    <button class="bt-bebidas__cardapio" t-on-click="() => this.verCardapio()">Cardápio completo</button>
+                </header>
+                <div t-if="mesa.estado === 'fora_da_rede'" class="bt-aviso" data-tipo="erro">
+                    Conecte-se ao Wi-Fi do bar para pedir.
+                </div>
+                <div t-elif="!mesa.mesa_aberta" class="bt-aviso" data-tipo="info">
+                    A mesa ainda não foi aberta. Peça ao garçom para abrir a mesa.
+                </div>
+                <div class="bt-bebidas__corpo">
+                    <section t-if="bebidasMesa.length">
+                        <h2>Suas bebidas na mesa</h2>
+                        <div t-foreach="bebidasMesa" t-as="b" t-key="b.product_id" class="bt-bebida">
+                            <img t-attf-src="/web/image/product.product/{{b.product_id}}/image_128" alt=""/>
+                            <span class="bt-bebida__nome" t-esc="b.nome"/>
+                            <button t-if="!qtd(b.product_id)" class="bt-bebida__repetir"
+                                    t-on-click="() => this.mudar(b.product_id, b.ultima_qtd or 1)">
+                                +<t t-esc="b.ultima_qtd or 1"/>
+                            </button>
+                            <span t-else="" class="bt-bebida__qtd">
+                                <button t-on-click="() => this.mudar(b.product_id, -1)" aria-label="Menos">−</button>
+                                <b t-esc="qtd(b.product_id)"/>
+                                <button t-on-click="() => this.mudar(b.product_id, 1)" aria-label="Mais">+</button>
+                            </span>
+                        </div>
+                    </section>
+                    <section>
+                        <h2>Todas as bebidas</h2>
+                        <input class="bt-bebidas__busca" type="search" placeholder="Buscar bebida" t-model="state.busca"/>
+                        <t t-foreach="gruposBebidas" t-as="grupo" t-key="grupo.nome">
+                            <h3 t-esc="grupo.nome"/>
+                            <div t-foreach="grupo.produtos" t-as="p" t-key="p.id" class="bt-bebida">
+                                <img t-attf-src="/web/image/product.product/{{p.id}}/image_128" alt=""/>
+                                <span class="bt-bebida__nome">
+                                    <t t-esc="p.name"/>
+                                    <small t-esc="formatar(p.lst_price)"/>
+                                </span>
+                                <span class="bt-bebida__qtd">
+                                    <button t-if="qtd(p.id)" t-on-click="() => this.mudar(p.id, -1)" aria-label="Menos">−</button>
+                                    <b t-if="qtd(p.id)" t-esc="qtd(p.id)"/>
+                                    <button t-on-click="() => this.mudar(p.id, 1)" aria-label="Mais">+</button>
+                                </span>
+                            </div>
+                        </t>
+                        <div t-if="!gruposBebidas.length" class="bt-vazio">Nenhuma bebida encontrada.</div>
+                    </section>
+                </div>
+                <footer class="bt-bebidas__rodape">
+                    <button class="bt-bebidas__enviar" t-att-disabled="!totalItens or state.enviando or !mesa.mesa_aberta"
+                            t-on-click="() => this.enviarBebidas()">
+                        <t t-if="state.enviando">Enviando…</t>
+                        <t t-elif="totalItens">Enviar para o bar (<t t-esc="totalItens"/>) · <t t-esc="formatar(totalValor)"/></t>
+                        <t t-else="">Escolha as bebidas</t>
+                    </button>
+                </footer>
+            </div>
+
             <!-- Tela de descanso (tablet parado) -->
             <div t-if="state.descanso" class="bt-descanso" t-on-click="() => this.state.descanso = false">
                 <div class="bt-descanso__titulo">Toque para pedir 🍺</div>

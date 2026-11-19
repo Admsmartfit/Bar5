@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos de reservas (Etapa 27). -->
+<odoo>
+    <record id="ajuda_reservas_ligar" model="boteco.ajuda.artigo">
+        <field name="codigo">reservas_ligar</field>
+        <field name="titulo">Receber reservas pelo link (Instagram e WhatsApp)</field>
+        <field name="resumo">O cliente reserva sozinho em /reservar. Você define os horários, a tolerância e o tempo médio na mesa.</field>
+        <field name="sinonimos">reserva, reservar mesa, link de reserva, agendamento, booking, horario de reserva</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Em &lt;b&gt;Configuração › Liga / desliga recursos › Reservas&lt;/b&gt;, deixe &lt;b&gt;Reserva de mesas&lt;/b&gt; ligado e ajuste os horários, a tolerância e o tempo médio na mesa.&lt;/li&gt;&lt;li&gt;Mesa que não aceita reserva (ex.: balcão): desmarque &lt;b&gt;Aceita reserva&lt;/b&gt; no cadastro da mesa.&lt;/li&gt;&lt;li&gt;Divulgue o link &lt;b&gt;endereço-do-bar/reservar&lt;/b&gt; na bio do Instagram e no WhatsApp.&lt;/li&gt;&lt;li&gt;Reserva por telefone: &lt;b&gt;Vendas › Reservas › Novo&lt;/b&gt;. Deixe a mesa em branco que o sistema escolhe.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_reservas.menu_boteco_reservas"/>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_reservas_dia" model="boteco.ajuda.artigo">
+        <field name="codigo">reservas_dia</field>
+        <field name="titulo">Reservas do dia: chegou, lembrete e não veio</field>
+        <field name="resumo">Mesa reservada aparece em azul no mapa com horário e nome. Abriu a mesa = chegou.</field>
+        <field name="sinonimos">mesa reservada, cliente chegou, lembrete reserva, no show, nao veio, cancelar reserva</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;No mapa do salão, mesa &lt;b&gt;Reservada&lt;/b&gt; (azul) mostra horário, nome e pessoas na hora antes da reserva.&lt;/li&gt;&lt;li&gt;O grupo chegou: toque na mesa normalmente. O sistema marca &lt;b&gt;Chegou&lt;/b&gt; e já põe o número de pessoas.&lt;/li&gt;&lt;li&gt;Em &lt;b&gt;Vendas › Reservas › Lembretes para mandar&lt;/b&gt;, toque em &lt;b&gt;WhatsApp&lt;/b&gt; em cada um (véspera e 3 h antes). A mensagem leva o link para o cliente confirmar ou cancelar.&lt;/li&gt;&lt;li&gt;Passou a tolerância sem chegar: vira &lt;b&gt;Não veio&lt;/b&gt; sozinho e a mesa fica livre.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_reservas.menu_boteco_reservas_lembretes"/>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_reservas_espera" model="boteco.ajuda.artigo">
+        <field name="codigo">reservas_espera</field>
+        <field name="titulo">Lista de espera de reservas</field>
+        <field name="resumo">Lotou? O cliente entra na lista. Se alguém cancelar, o sistema avisa quem chamar.</field>
+        <field name="sinonimos">lista de espera, lotado, fila, vaga, desistencia, waitlist</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Quando um horário lota, a página oferece &lt;b&gt;Entrar na lista de espera&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Cancelou uma reserva? O caixa recebe o aviso &lt;b&gt;Vaga liberada: avise Fulano&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Em &lt;b&gt;Vendas › Reservas › Lista de espera&lt;/b&gt;, toque em &lt;b&gt;WhatsApp&lt;/b&gt; para oferecer a mesa e depois em &lt;b&gt;Virou reserva&lt;/b&gt; ou &lt;b&gt;Desistiu&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_reservas.menu_boteco_reserva_espera"/>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_reservas_sinal" model="boteco.ajuda.artigo">
+        <field name="codigo">reservas_sinal</field>
+        <field name="titulo">Cobrar sinal por Pix em reserva de grupo grande</field>
+        <field name="resumo">Grupo a partir de N pessoas recebe um Pix com valor e código da reserva. Sem pagar em 24 h, cancela.</field>
+        <field name="sinonimos">sinal, deposito, pix reserva, grupo grande, garantia reserva, adiantamento</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Em &lt;b&gt;Configuração › Liga / desliga recursos › Reservas&lt;/b&gt;, ligue &lt;b&gt;Cobrar sinal&lt;/b&gt; e informe a partir de quantas pessoas, o valor por pessoa e a &lt;b&gt;chave Pix&lt;/b&gt; do bar.&lt;/li&gt;&lt;li&gt;A reserva fica &lt;b&gt;Aguardando sinal&lt;/b&gt;; a página do cliente mostra o QR Pix.&lt;/li&gt;&lt;li&gt;Caiu o Pix? Abra a reserva e toque em &lt;b&gt;Sinal recebido&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Quando o grupo chega, o caixa recebe o aviso para descontar o sinal na conta.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">Configuração › Liga / desliga recursos › Reservas</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">40</field>
+        <field name="padrao" eval="True"/>
+    </record>
+</odoo>

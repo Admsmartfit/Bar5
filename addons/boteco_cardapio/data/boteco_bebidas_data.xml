@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Etapa 36: marca uma vez as bebidas preparadas já cadastradas (chope, caipirinha, drinks, doses, sucos) -->
+    <function model="product.template" name="_boteco_inicializar_bebidas_preparadas"/>
+</odoo>

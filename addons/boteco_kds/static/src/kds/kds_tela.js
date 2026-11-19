@@ -24,7 +24,7 @@ export const ROTULOS_ESTADO = {
     pronto: _t("Pronto"),
     entregue: _t("Entregue"),
 };
-const ROTULOS_ORIGEM = { garcom: _t("Garçom"), caixa: _t("Caixa"), tablet: _t("Tablet"), qr: _t("QR") };
+const ROTULOS_ORIGEM = { garcom: _t("Garçom"), caixa: _t("Caixa"), tablet: _t("Tablet"), qr: _t("QR"), qr_bebidas: _t("QR BEBIDAS") };
 
 export class KdsTela extends Component {
     static template = "boteco_kds.KdsTela";

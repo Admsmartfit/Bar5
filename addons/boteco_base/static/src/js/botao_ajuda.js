@@ -3,13 +3,19 @@
 
 import { Component } from "@odoo/owl";
 import { registry } from "@web/core/registry";
+import { useService } from "@web/core/utils/hooks";
 
 export class BotecoBotoesSystray extends Component {
     static template = "boteco_base.BotoesSystray";
     static props = {};
 
+    setup() {
+        this.ajuda = useService("boteco_ajuda");
+    }
+
     abrirAjuda() {
-        window.open("/boteco/ajuda", "_blank", "noopener");
+        // Ajuda rápida (Etapa 26); com o recurso desligado, abre o guia antigo do perfil
+        this.ajuda.abrir();
     }
 
     trocarPessoa() {

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das cotações automáticas (Etapa 35). -->
+<odoo>
+    <record id="ajuda_whatsapp_conectar" model="boteco.ajuda.artigo">
+        <field name="codigo">whatsapp_conectar</field>
+        <field name="titulo">Conectar o WhatsApp do bar (QR Code)</field>
+        <field name="resumo">Como no WhatsApp Web: leia o QR Code com o celular do bar e os preços dos fornecedores entram sozinhos.</field>
+        <field name="sinonimos">conectar whatsapp, qr code whatsapp, whatsapp web, dispositivo conectado, whatsapp desconectado, cotacao whatsapp</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Sistema › WhatsApp (conectar)&lt;/b&gt; e toque em &lt;b&gt;Conectar WhatsApp&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;No &lt;b&gt;celular do bar&lt;/b&gt;: WhatsApp › ⋮ › &lt;b&gt;Dispositivos conectados&lt;/b&gt; › &lt;b&gt;Conectar um dispositivo&lt;/b&gt; e aponte para o QR Code.&lt;/li&gt;&lt;li&gt;A tela mostra &lt;b&gt;Conectado&lt;/b&gt; com o número.&lt;/li&gt;&lt;li&gt;Cadastre o &lt;b&gt;celular de cada fornecedor&lt;/b&gt; no cadastro dele: só esses números são lidos.&lt;/li&gt;&lt;li&gt;Se cair, o Painel do dono avisa: volte aqui e leia o QR de novo.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cotacoes.menu_boteco_whatsapp_conectar"/>
+        <field name="perfis">dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_cotacoes_revisar" model="boteco.ajuda.artigo">
+        <field name="codigo">cotacoes_revisar</field>
+        <field name="titulo">Cotações para revisar (item que o sistema não reconheceu)</field>
+        <field name="resumo">Fornecedor mandou um item com nome diferente? Ligue ao insumo uma vez e das próximas entra sozinho.</field>
+        <field name="sinonimos">cotacao revisar, item nao reconhecido, ligar insumo, de para, preco fornecedor, tabela de precos</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Comprar › Cotações para revisar&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Em cada linha, escolha &lt;b&gt;É o insumo&lt;/b&gt; e toque em &lt;b&gt;Ligar&lt;/b&gt; (ou &lt;b&gt;Descartar&lt;/b&gt;).&lt;/li&gt;&lt;li&gt;O preço vai para o &lt;b&gt;Radar de preços&lt;/b&gt; e para a &lt;b&gt;Lista de compras&lt;/b&gt;, que mostra o melhor preço e de onde veio.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cotacoes.menu_boteco_cotacao_revisar"/>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_coletor_ofertas" model="boteco.ajuda.artigo">
+        <field name="codigo">coletor_ofertas</field>
+        <field name="titulo">Coletor de ofertas: site e Instagram dos fornecedores</field>
+        <field name="resumo">Cadastre o site e o Instagram do fornecedor; o coletor lê sozinho (Instagram 1x por dia, sites 2x por semana).</field>
+        <field name="sinonimos">coletor, site fornecedor, encarte, instagram fornecedor, ofertas encontradas, horario instagram</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;No cadastro do fornecedor, preencha &lt;b&gt;Instagram&lt;/b&gt;, &lt;b&gt;Site / encarte de ofertas&lt;/b&gt; e, se quiser, as &lt;b&gt;palavras-chave&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Em &lt;b&gt;Compras › WhatsApp e coletor&lt;/b&gt;, ajuste os horários (padrão: Instagram às 8:00; sites seg e qui às 8:00).&lt;/li&gt;&lt;li&gt;Veja o que chegou em &lt;b&gt;Compras › Ofertas encontradas&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;O coletor roda num serviço separado (o técnico liga com docs/whatsapp.md) e não pesa no caixa.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cotacoes.menu_boteco_ofertas_encontradas"/>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+</odoo>

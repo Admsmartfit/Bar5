@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modelos prontos (base RDC 216/2004 Anvisa). Vêm guardados: o gerente toca em "Usar este modelo" no que servir. -->
+<odoo noupdate="1">
+    <record id="modelo_abertura_salao" model="boteco.checklist.modelo">
+        <field name="name">Abertura do salão</field>
+        <field name="codigo_padrao">abertura_salao</field>
+        <field name="frequencia">abertura</field>
+        <field name="hora_limite">17.5</field>
+        <field name="setor">Salão</field>
+        <field name="grupo_id" ref="boteco_base.group_garcom"/>
+        <field name="active" eval="False"/>
+        <field name="item_ids" eval="[
+            Command.create({'sequence': 1, 'name': 'Mesas, cadeiras e piso limpos', 'tipo': 'simnao'}),
+            Command.create({'sequence': 2, 'name': 'Banheiros limpos, com papel, sabonete e álcool', 'tipo': 'simnao', 'critico': True}),
+            Command.create({'sequence': 3, 'name': 'Lixeiras com tampa e saco', 'tipo': 'simnao'}),
+            Command.create({'sequence': 4, 'name': 'Temperatura da geladeira de bebidas', 'tipo': 'numero', 'minimo': 0, 'maximo': 7, 'unidade': '°C'}),
+            Command.create({'sequence': 5, 'name': 'Tablets e maquininhas carregados', 'tipo': 'simnao'}),
+            Command.create({'sequence': 6, 'name': 'Extintores no lugar e desobstruídos', 'tipo': 'simnao', 'critico': True}),
+        ]"/>
+    </record>
+    <record id="modelo_fechamento_cozinha" model="boteco.checklist.modelo">
+        <field name="name">Fechamento da cozinha</field>
+        <field name="codigo_padrao">fechamento_cozinha</field>
+        <field name="frequencia">fechamento</field>
+        <field name="hora_limite">23.98</field>
+        <field name="setor">Cozinha</field>
+        <field name="grupo_id" ref="boteco_base.group_chapeiro"/>
+        <field name="active" eval="False"/>
+        <field name="item_ids" eval="[
+            Command.create({'sequence': 1, 'name': 'Sobras etiquetadas (produto, data, validade) e guardadas', 'tipo': 'simnao', 'critico': True}),
+            Command.create({'sequence': 2, 'name': 'Temperatura do freezer', 'tipo': 'numero', 'minimo': -25, 'maximo': -18, 'unidade': '°C', 'critico': True}),
+            Command.create({'sequence': 3, 'name': 'Temperatura da geladeira', 'tipo': 'numero', 'minimo': 0, 'maximo': 5, 'unidade': '°C', 'critico': True}),
+            Command.create({'sequence': 4, 'name': 'Chapa, fritadeira e bancadas higienizadas', 'tipo': 'simnao'}),
+            Command.create({'sequence': 5, 'name': 'Óleo da fritadeira em condição de uso', 'tipo': 'simnao'}),
+            Command.create({'sequence': 6, 'name': 'Gás fechado', 'tipo': 'simnao', 'critico': True}),
+            Command.create({'sequence': 7, 'name': 'Lixo retirado', 'tipo': 'simnao'}),
+            Command.create({'sequence': 8, 'name': 'Foto da cozinha limpa', 'tipo': 'foto'}),
+        ]"/>
+    </record>
+    <record id="modelo_recebimento" model="boteco.checklist.modelo">
+        <field name="name">Recebimento de mercadoria</field>
+        <field name="codigo_padrao">recebimento</field>
+        <field name="frequencia">diaria</field>
+        <field name="hora_limite">16.0</field>
+        <field name="setor">Estoque</field>
+        <field name="grupo_id" ref="boteco_base.group_gerente"/>
+        <field name="active" eval="False"/>
+        <field name="item_ids" eval="[
+            Command.create({'sequence': 1, 'name': 'Temperatura dos refrigerados na entrega', 'tipo': 'numero', 'minimo': 0, 'maximo': 7, 'unidade': '°C', 'critico': True}),
+            Command.create({'sequence': 2, 'name': 'Temperatura dos congelados na entrega', 'tipo': 'numero', 'minimo': -25, 'maximo': -12, 'unidade': '°C', 'critico': True}),
+            Command.create({'sequence': 3, 'name': 'Embalagens íntegras e com rótulo', 'tipo': 'simnao'}),
+            Command.create({'sequence': 4, 'name': 'Validade conferida', 'tipo': 'simnao', 'critico': True}),
+            Command.create({'sequence': 5, 'name': 'Veículo do fornecedor limpo e adequado', 'tipo': 'simnao'}),
+        ]"/>
+    </record>
+    <record id="modelo_chopeira" model="boteco.checklist.modelo">
+        <field name="name">Higienização da chopeira</field>
+        <field name="codigo_padrao">chopeira</field>
+        <field name="frequencia">semanal</field>
+        <field name="dia_semana">0</field>
+        <field name="hora_limite">17.0</field>
+        <field name="setor">Bar</field>
+        <field name="grupo_id" ref="boteco_base.group_gerente"/>
+        <field name="active" eval="False"/>
+        <field name="item_ids" eval="[
+            Command.create({'sequence': 1, 'name': 'Linhas limpas com produto próprio e enxaguadas', 'tipo': 'simnao', 'critico': True}),
+            Command.create({'sequence': 2, 'name': 'Torneiras desmontadas e limpas', 'tipo': 'simnao'}),
+            Command.create({'sequence': 3, 'name': 'Temperatura do chope na saída', 'tipo': 'numero', 'minimo': -2, 'maximo': 4, 'unidade': '°C'}),
+            Command.create({'sequence': 4, 'name': 'Foto das torneiras', 'tipo': 'foto'}),
+        ]"/>
+    </record>
+    <record id="modelo_pragas" model="boteco.checklist.modelo">
+        <field name="name">Controle de pragas (empresa contratada)</field>
+        <field name="codigo_padrao">pragas</field>
+        <field name="frequencia">semanal</field>
+        <field name="dia_semana">0</field>
+        <field name="hora_limite">18.0</field>
+        <field name="setor">Geral</field>
+        <field name="grupo_id" ref="boteco_base.group_gerente"/>
+        <field name="active" eval="False"/>
+        <field name="item_ids" eval="[
+            Command.create({'sequence': 1, 'name': 'Sem sinais de pragas (fezes, roeduras, insetos)', 'tipo': 'simnao', 'critico': True}),
+            Command.create({'sequence': 2, 'name': 'Iscas e armadilhas no lugar', 'tipo': 'simnao'}),
+            Command.create({'sequence': 3, 'name': 'Comprovante da última dedetização em dia (validade)', 'tipo': 'simnao', 'critico': True}),
+            Command.create({'sequence': 4, 'name': 'Empresa e data da última aplicação', 'tipo': 'texto'}),
+        ]"/>
+    </record>
+</odoo>

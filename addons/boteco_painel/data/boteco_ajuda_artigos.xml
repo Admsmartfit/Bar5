@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das telas deste módulo. Gerado; editar e regenerar. -->
+<odoo>
+    <record id="ajuda_painel_dono" model="boteco.ajuda.artigo">
+        <field name="codigo">painel_dono</field>
+        <field name="titulo">Ver o painel do dono</field>
+        <field name="resumo">A noite em tempo real: faturamento, clientes, ticket médio, CMV e oportunidades de compra.</field>
+        <field name="sinonimos">painel, dashboard, faturamento, resumo, como esta a noite, ticket medio</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Início › Painel do dono&lt;/b&gt;. Atualiza sozinho a cada 30 segundos.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_painel.menu_boteco_painel"/>
+        <field name="acao_xmlid">boteco_painel.action_painel_dono</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_fechamento_dia" model="boteco.ajuda.artigo">
+        <field name="codigo">fechamento_dia</field>
+        <field name="titulo">Tirar o fechamento do dia (redução Z)</field>
+        <field name="resumo">Resumo da noite para conferir e guardar.</field>
+        <field name="sinonimos">fechamento do dia, reducao z, resumo da noite, relatorio do dia</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Finanças › Relatórios › Fechamento do dia (redução Z)&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o dia e gere o relatório.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_painel.menu_fechamento_dia"/>
+        <field name="acao_xmlid">boteco_painel.action_fechamento_dia</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_dre" model="boteco.ajuda.artigo">
+        <field name="codigo">dre</field>
+        <field name="titulo">Ver o resultado do mês (DRE)</field>
+        <field name="resumo">Receitas, custos e lucro por frente de negócio.</field>
+        <field name="sinonimos">dre, lucro, resultado, prejuizo, mes</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Finanças › Relatórios › DRE (resultado por frente)&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_painel.menu_dre"/>
+        <field name="acao_xmlid">boteco_painel.action_dre</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_rateio_taxa" model="boteco.ajuda.artigo">
+        <field name="codigo">rateio_taxa</field>
+        <field name="titulo">Dividir a taxa de serviço (rateio)</field>
+        <field name="resumo">Quanto cada garçom, a cozinha/bar e a casa recebem.</field>
+        <field name="sinonimos">rateio, gorjeta, 10%, taxa de servico, dividir gorjeta</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Finanças › Relatórios › Rateio da taxa de serviço&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o período e toque em &lt;b&gt;Calcular&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_painel.menu_rateio_taxa"/>
+        <field name="acao_xmlid">boteco_painel.action_boteco_rateio_taxa</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">40</field>
+        <field name="padrao" eval="True"/>
+    </record>
+</odoo>

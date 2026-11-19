@@ -13,6 +13,13 @@ def epoch_ms(dt):
 class PosConfig(models.Model):
     _inherit = "pos.config"
 
+    def _boteco_qr_bebidas(self, url):
+        """2º QR da mesa (Etapa 36): mesmo link do cardápio + modo bebidas. O link do Odoo já vem codificado."""
+        self.ensure_one()
+        if not self.company_id.boteco_recurso_ativo("qr_bebidas"):
+            return False
+        return url + "%26modo%3Dbebidas"
+
     @api.model
     def _boteco_avisar_cardapio(self):
         """Avisa tablets, QR e caixas abertos que o cardápio mudou (preço, oferta, acabou)."""

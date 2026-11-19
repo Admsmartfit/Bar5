@@ -1,0 +1,19 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ck_execucao_garcom,checklist execucao garcom,model_boteco_checklist_execucao,boteco_base.group_garcom,1,0,0,0
+access_ck_modelo_garcom,checklist modelo garcom,model_boteco_checklist_modelo,boteco_base.group_garcom,1,0,0,0
+access_ck_item_garcom,checklist item garcom,model_boteco_checklist_item,boteco_base.group_garcom,1,0,0,0
+access_ck_execucao_caixa,checklist execucao caixa,model_boteco_checklist_execucao,boteco_base.group_caixa,1,0,0,0
+access_ck_modelo_caixa,checklist modelo caixa,model_boteco_checklist_modelo,boteco_base.group_caixa,1,0,0,0
+access_ck_item_caixa,checklist item caixa,model_boteco_checklist_item,boteco_base.group_caixa,1,0,0,0
+access_ck_execucao_chapeiro,checklist execucao chapeiro,model_boteco_checklist_execucao,boteco_base.group_chapeiro,1,0,0,0
+access_ck_modelo_chapeiro,checklist modelo chapeiro,model_boteco_checklist_modelo,boteco_base.group_chapeiro,1,0,0,0
+access_ck_item_chapeiro,checklist item chapeiro,model_boteco_checklist_item,boteco_base.group_chapeiro,1,0,0,0
+access_ck_execucao_cozinheiro,checklist execucao cozinheiro,model_boteco_checklist_execucao,boteco_base.group_cozinheiro,1,0,0,0
+access_ck_modelo_cozinheiro,checklist modelo cozinheiro,model_boteco_checklist_modelo,boteco_base.group_cozinheiro,1,0,0,0
+access_ck_item_cozinheiro,checklist item cozinheiro,model_boteco_checklist_item,boteco_base.group_cozinheiro,1,0,0,0
+access_ck_checklist_modelo_gerente,checklist_modelo gerente,model_boteco_checklist_modelo,boteco_base.group_gerente,1,1,1,1
+access_ck_checklist_item_gerente,checklist_item gerente,model_boteco_checklist_item,boteco_base.group_gerente,1,1,1,1
+access_ck_checklist_execucao_gerente,checklist_execucao gerente,model_boteco_checklist_execucao,boteco_base.group_gerente,1,1,1,1
+access_ck_checklist_resposta_gerente,checklist_resposta gerente,model_boteco_checklist_resposta,boteco_base.group_gerente,1,1,1,1
+access_ck_nao_conformidade_gerente,nao_conformidade gerente,model_boteco_nao_conformidade,boteco_base.group_gerente,1,1,1,1
+access_ck_checklist_relatorio_gerente,checklist_relatorio gerente,model_boteco_checklist_relatorio,boteco_base.group_gerente,1,1,1,1

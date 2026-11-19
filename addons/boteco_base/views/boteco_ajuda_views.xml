@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_ajuda_artigo_view_list" model="ir.ui.view">
+        <field name="name">boteco.ajuda.artigo.list</field>
+        <field name="model">boteco.ajuda.artigo</field>
+        <field name="arch" type="xml">
+            <list string="Artigos da ajuda">
+                <field name="sequencia" widget="handle"/>
+                <field name="titulo"/>
+                <field name="menu_id" optional="show"/>
+                <field name="perfis" optional="show"/>
+                <field name="uteis" optional="show"/>
+                <field name="nao_uteis" optional="show"/>
+                <field name="padrao" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_ajuda_artigo_view_form" model="ir.ui.view">
+        <field name="name">boteco.ajuda.artigo.form</field>
+        <field name="model">boteco.ajuda.artigo</field>
+        <field name="arch" type="xml">
+            <form string="Artigo da ajuda">
+                <sheet>
+                    <div class="alert alert-info" role="status" invisible="not padrao">
+                        Este artigo veio com o sistema e é atualizado junto com ele. Para uma ajuda própria
+                        (ex.: senha do Wi-Fi), crie um artigo novo.
+                    </div>
+                    <div class="oe_title">
+                        <label for="titulo"/>
+                        <h1><field name="titulo" placeholder="Como fazer…"/></h1>
+                        <field name="resumo" placeholder="Para que serve (1 frase)"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="codigo"/>
+                            <field name="sinonimos" placeholder="zap, celular, telefone"/>
+                            <field name="perfis" placeholder="garcom, caixa (vazio = todos)"/>
+                        </group>
+                        <group>
+                            <field name="menu_id"/>
+                            <field name="caminho_manual"/>
+                            <field name="acao_xmlid"/>
+                            <field name="destacar_campo"/>
+                            <field name="telas"/>
+                        </group>
+                    </group>
+                    <field name="passos" placeholder="1. … 2. … 3. …"/>
+                    <group>
+                        <field name="imagem" widget="image"/>
+                        <field name="relacionados_ids" widget="many2many_tags"/>
+                        <field name="padrao" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_ajuda_artigo" model="ir.actions.act_window">
+        <field name="name">Artigos da ajuda</field>
+        <field name="res_model">boteco.ajuda.artigo</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="boteco_ajuda_busca_view_list" model="ir.ui.view">
+        <field name="name">boteco.ajuda.busca.list</field>
+        <field name="model">boteco.ajuda.busca</field>
+        <field name="arch" type="xml">
+            <list string="O que estão procurando" create="false" decoration-danger="not achou or nao_ajudou">
+                <field name="create_date" string="Quando"/>
+                <field name="termo"/>
+                <field name="achou"/>
+                <field name="nao_ajudou"/>
+                <field name="artigo_id"/>
+                <field name="usuario_id"/>
+                <field name="perfil"/>
+                <field name="tela" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="boteco_ajuda_busca_view_search" model="ir.ui.view">
+        <field name="name">boteco.ajuda.busca.search</field>
+        <field name="model">boteco.ajuda.busca</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="termo"/>
+                <filter name="sem_resposta" string="Sem resposta / não ajudou" domain="['|', ('achou', '=', False), ('nao_ajudou', '=', True)]"/>
+                <filter name="por_termo" string="Busca" context="{'group_by': 'termo'}"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_boteco_ajuda_busca" model="ir.actions.act_window">
+        <field name="name">Ajuda: o que estão procurando</field>
+        <field name="res_model">boteco.ajuda.busca</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_sem_resposta': 1, 'search_default_por_termo': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Ninguém ficou sem resposta</p>
+            <p>Quando alguém busca na ajuda e não acha, ou diz que o artigo não ajudou, aparece aqui.</p>
+        </field>
+    </record>
+</odoo>

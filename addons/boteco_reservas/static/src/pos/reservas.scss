@@ -1,0 +1,6 @@
+.floor-map .table, .table[data-boteco-status] {
+    &[data-boteco-status="reservada"] { background: #0e7490 !important; color: #fff !important; }
+}
+.o_boteco_mesa_reserva { display: block; font-size: 11px; font-weight: 700; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+// A cor e o horário já dizem "reservada": o rótulo não cobre o número da mesa
+.table[data-boteco-status="reservada"] .o_boteco_mesa_status { display: none; }

@@ -1,6 +1,7 @@
 import base64
 import io
 import logging
+import re
 
 from PIL import Image
 
@@ -12,6 +13,9 @@ from .fiscal import ORIGENS, UNIDADES, formatar_ncm, pendencias_fiscais, so_digi
 _logger = logging.getLogger(__name__)
 
 TAMANHO_FOTO = 1024
+TIPOS_BEBIDA = ("bebida_giro", "garrafa", "agua")
+# Bebida feita na hora (não volta ao estoque): chope é tirado na hora (decisão do dono, 18/11/2026)
+PREPARADA_RE = re.compile(r"(?i)\b(chop+e?|caipi|drink|dose|suco|batida|gin|coquetel|mojito|negroni|spritz)")
 
 # Taxonomia semântica de consumo (Etapa 12): base do motor N+X e das regras de utensílios
 TIPOS_CONSUMO = [
@@ -102,6 +106,39 @@ class ProductTemplate(models.Model):
         REGRAS_UTENSILIO, string="Utensílios a enviar",
         help="O que o ticket de produção manda separar junto com o item.",
     )
+
+    # Etapa 36: QR expresso de bebidas
+    boteco_bebida_preparada = fields.Boolean(
+        "Bebida preparada",
+        help="Drinks, caipirinhas, doses, suco natural e chope: feitos na hora, não voltam ao estoque. "
+        "No QR de bebidas, têm teto por envio. Bebida fechada (lata, long neck, refrigerante, água) não tem teto: "
+        "o garçom abre na frente do cliente e o que sobrar volta.",
+    )
+    boteco_e_bebida = fields.Boolean(
+        "É bebida", compute="_compute_boteco_e_bebida", store=True,
+        help="Aparece no QR de bebidas. Vem do tipo de consumo (bebida de giro, garrafa, água) ou de 'Bebida preparada'.",
+    )
+
+    @api.depends("boteco_tipo_consumo", "boteco_bebida_preparada")
+    def _compute_boteco_e_bebida(self):
+        for produto in self:
+            produto.boteco_e_bebida = bool(produto.boteco_bebida_preparada) or produto.boteco_tipo_consumo in TIPOS_BEBIDA
+
+    @api.onchange("boteco_tipo_consumo", "name")
+    def _onchange_boteco_bebida_preparada(self):
+        if self.boteco_tipo_consumo == "bebida_giro" and not self.boteco_bebida_preparada and self.name:
+            self.boteco_bebida_preparada = bool(PREPARADA_RE.search(self.name))
+
+    @api.model
+    def _boteco_inicializar_bebidas_preparadas(self):
+        """Uma vez: marca como preparada chope, caipirinha, drinks, doses e sucos já cadastrados (o dono confere)."""
+        ICP = self.env["ir.config_parameter"].sudo()
+        if ICP.get_param("boteco.bebidas_preparadas_inicializado"):
+            return
+        for produto in self.sudo().search([("boteco_tipo_consumo", "=", "bebida_giro")]):
+            if PREPARADA_RE.search(produto.name or ""):
+                produto.boteco_bebida_preparada = True
+        ICP.set_param("boteco.bebidas_preparadas_inicializado", "1")
 
     @api.constrains("boteco_serve_pessoas", "boteco_max_por_rodada_sku")
     def _check_boteco_consumo(self):
@@ -246,6 +283,8 @@ class ProductProduct(models.Model):
             "boteco_serve_pessoas",
             "boteco_max_por_rodada_sku",
             "boteco_regra_utensilio",
+            "boteco_bebida_preparada",
+            "boteco_e_bebida",
         ]
 
     def _boteco_preco_promocional(self, momento=None, qtd=1.0):

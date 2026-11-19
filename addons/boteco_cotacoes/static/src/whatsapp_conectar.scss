@@ -1,0 +1,8 @@
+.o_bt_whats {
+    max-width: 900px; overflow: auto; height: 100%;
+    &__lado { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+    &__qr { width: 280px; height: 280px; display: flex; align-items: center; justify-content: center;
+        border: 2px dashed var(--bs-border-color, #ccc); border-radius: 12px; background: #fff;
+        img { width: 264px; height: 264px; } }
+    &__passos { font-size: 1.1rem; max-width: 460px; li { margin-bottom: 8px; } }
+}

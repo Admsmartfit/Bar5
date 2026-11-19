@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das telas deste módulo. Gerado; editar e regenerar. -->
+<odoo>
+    <record id="ajuda_whatsapp_fornecedor" model="boteco.ajuda.artigo">
+        <field name="codigo">whatsapp_fornecedor</field>
+        <field name="titulo">Como cadastrar o WhatsApp de um fornecedor</field>
+        <field name="resumo">Para a Lista de compras enviar o pedido direto no WhatsApp dele.</field>
+        <field name="sinonimos">whatsapp, zap, celular, telefone, contato do fornecedor, cadastrar fornecedor, numero do fornecedor</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra o fornecedor (ou clique em &lt;b&gt;Novo&lt;/b&gt;).&lt;/li&gt;&lt;li&gt;No campo &lt;b&gt;Celular&lt;/b&gt;, digite o número com DDD: (11) 98888-7777.&lt;/li&gt;&lt;li&gt;Clique em &lt;b&gt;Salvar&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_fornecedores"/>
+        <field name="acao_xmlid">boteco_estoque.action_boteco_fornecedores</field>
+        <field name="destacar_campo">mobile</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="telas">boteco_estoque.action_boteco_fornecedores,res.partner</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_instagram_fornecedor" model="boteco.ajuda.artigo">
+        <field name="codigo">instagram_fornecedor</field>
+        <field name="titulo">Cadastrar o Instagram do fornecedor</field>
+        <field name="resumo">O sistema lê as ofertas postadas e registra os preços no radar.</field>
+        <field name="sinonimos">instagram, perfil, ofertas, promocao fornecedor, rede social</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra o fornecedor em &lt;b&gt;Compras e estoque › Comprar › Fornecedores&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;No campo &lt;b&gt;Instagram do fornecedor&lt;/b&gt;, digite o perfil sem o @.&lt;/li&gt;&lt;li&gt;Ligue &lt;b&gt;Monitorar ofertas no Instagram&lt;/b&gt; na Central de Recursos.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_fornecedores"/>
+        <field name="acao_xmlid">boteco_estoque.action_boteco_fornecedores</field>
+        <field name="destacar_campo">boteco_instagram_handle</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_lista_compras" model="boteco.ajuda.artigo">
+        <field name="codigo">lista_compras</field>
+        <field name="titulo">Mandar a lista de compras pelo WhatsApp</field>
+        <field name="resumo">Tudo o que está abaixo do mínimo, separado por fornecedor, com a mensagem pronta.</field>
+        <field name="sinonimos">lista de compras, pedido ao fornecedor, comprar, faltando, whatsapp</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Comprar › Lista de compras (WhatsApp)&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Confira os itens de cada fornecedor.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;WhatsApp&lt;/b&gt;: abre a conversa com a mensagem pronta.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_lista_compras"/>
+        <field name="acao_xmlid">boteco_estoque.action_boteco_lista_compras</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_ler_orcamento" model="boteco.ajuda.artigo">
+        <field name="codigo">ler_orcamento</field>
+        <field name="titulo">Ler o orçamento do fornecedor (PDF, foto ou texto)</field>
+        <field name="resumo">Os preços vão sozinhos para o radar de preços.</field>
+        <field name="sinonimos">orcamento, cotacao, tabela de precos, pdf, foto, encarte</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Comprar › Ler orçamento (PDF / foto)&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o fornecedor e envie o PDF ou a foto, ou cole o texto do WhatsApp.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Ler&lt;/b&gt;, confira os insumos e toque em &lt;b&gt;Registrar cotações&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_importar_orcamento"/>
+        <field name="acao_xmlid">boteco_estoque.action_boteco_importar_orcamento</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">40</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_radar_precos" model="boteco.ajuda.artigo">
+        <field name="codigo">radar_precos</field>
+        <field name="titulo">Ver preços interessantes (radar de preços)</field>
+        <field name="resumo">Insumos 10% ou mais abaixo da média ficam em verde.</field>
+        <field name="sinonimos">radar, preco baixo, oportunidade, historico de precos, mais barato</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Comprar › Radar de preços&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Use o filtro &lt;b&gt;Preços interessantes&lt;/b&gt;. O Painel do dono mostra quanto economiza nas receitas.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_radar_precos"/>
+        <field name="acao_xmlid">boteco_estoque.action_boteco_historico_preco</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">50</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_entrada_nota" model="boteco.ajuda.artigo">
+        <field name="codigo">entrada_nota</field>
+        <field name="titulo">Dar entrada na nota do fornecedor (XML)</field>
+        <field name="resumo">Entrada no estoque sem digitar, com o custo atualizado.</field>
+        <field name="sinonimos">nota fiscal, xml, entrada de mercadoria, nfe, receber mercadoria</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Comprar › Dar entrada na nota (XML)&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Envie o XML da nota e toque em &lt;b&gt;Ler&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Confira os insumos e toque em &lt;b&gt;Criar entrada&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_nfe"/>
+        <field name="acao_xmlid">boteco_estoque.action_boteco_nfe_importacao</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">60</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_depara" model="boteco.ajuda.artigo">
+        <field name="codigo">depara</field>
+        <field name="titulo">Ligar o produto do fornecedor ao insumo (de-para)</field>
+        <field name="resumo">Na próxima nota do mesmo fornecedor, nada precisa ser digitado.</field>
+        <field name="sinonimos">de para, codigo do fornecedor, produto diferente, ligar produto</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Comprar › De-para de fornecedores&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Confira o código do fornecedor, o insumo e o fator (ex.: caixa com 12 = 12).&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_nfe_produtos"/>
+        <field name="acao_xmlid">boteco_estoque.action_boteco_nfe_produto</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">70</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_contagem" model="boteco.ajuda.artigo">
+        <field name="codigo">contagem</field>
+        <field name="titulo">Contar o estoque pelo celular</field>
+        <field name="resumo">Contagem com diferença e ajuste aprovado pelo gerente.</field>
+        <field name="sinonimos">contagem, inventario, contar estoque, balanco, conferir estoque</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Estoque › Contagem de estoque&lt;/b&gt; e crie uma contagem.&lt;/li&gt;&lt;li&gt;Conte pelo celular (o sistema não mostra o esperado).&lt;/li&gt;&lt;li&gt;O gerente confere a diferença e aprova o ajuste.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_contagem"/>
+        <field name="acao_xmlid">boteco_estoque.action_boteco_contagem</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">80</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_perdas" model="boteco.ajuda.artigo">
+        <field name="codigo">perdas</field>
+        <field name="titulo">Lançar uma perda (quebra, vencido, erro de preparo)</field>
+        <field name="resumo">Sai do estoque com motivo e fica na auditoria.</field>
+        <field name="sinonimos">perda, quebra, vencido, jogou fora, desperdicio</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Estoque › Perdas e quebras&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o produto, a quantidade e o motivo.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_perdas"/>
+        <field name="acao_xmlid">stock.action_stock_scrap</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">90</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_estoque_minimo" model="boteco.ajuda.artigo">
+        <field name="codigo">estoque_minimo</field>
+        <field name="titulo">Definir o estoque mínimo de um insumo</field>
+        <field name="resumo">Abaixo do mínimo, o item entra na lista de compras.</field>
+        <field name="sinonimos">estoque minimo, ponto de pedido, reposicao, minimo e maximo</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Estoque › Estoque mínimo&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o insumo, o mínimo e o máximo.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_minimos"/>
+        <field name="acao_xmlid">stock.action_orderpoint</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">100</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_fichas_tecnicas" model="boteco.ajuda.artigo">
+        <field name="codigo">fichas_tecnicas</field>
+        <field name="titulo">Montar a ficha técnica de um prato</field>
+        <field name="resumo">A venda baixa os insumos sozinha e o CMV fica certo.</field>
+        <field name="sinonimos">ficha tecnica, receita, insumos do prato, composicao, bom</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Estoque › Fichas técnicas&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o prato, tipo &lt;b&gt;Kit&lt;/b&gt;, e liste os insumos com as quantidades.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_fichas"/>
+        <field name="acao_xmlid">mrp.mrp_bom_form_action</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">110</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_cmv" model="boteco.ajuda.artigo">
+        <field name="codigo">cmv</field>
+        <field name="titulo">Ver o CMV (custo das vendas)</field>
+        <field name="resumo">Quanto custou o que foi vendido, por item e por noite.</field>
+        <field name="sinonimos">cmv, custo, margem, lucro por prato, custo da mercadoria</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Compras e estoque › Estoque › CMV (custo das vendas)&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Filtre pela noite ou pelo período.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_estoque.menu_boteco_cmv"/>
+        <field name="acao_xmlid">boteco_estoque.action_boteco_cmv</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">120</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_whatsapp_fornecedor" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_lista_compras'), ref('ajuda_instagram_fornecedor')])]"/>
+    </record>
+    <record id="ajuda_instagram_fornecedor" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_radar_precos')])]"/>
+    </record>
+    <record id="ajuda_lista_compras" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_whatsapp_fornecedor'), ref('ajuda_estoque_minimo')])]"/>
+    </record>
+    <record id="ajuda_ler_orcamento" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_radar_precos')])]"/>
+    </record>
+    <record id="ajuda_entrada_nota" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_depara')])]"/>
+    </record>
+</odoo>

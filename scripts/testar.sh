@@ -14,10 +14,10 @@ cd "$(dirname "$0")/.."
 set -a; # shellcheck disable=SC1091
 source .env; set +a
 
-TODOS="boteco_base,boteco_cardapio,boteco_pos,boteco_kds,boteco_autoatendimento,boteco_estoque,boteco_cozinha_central,boteco_b2b,boteco_painel,boteco_fiscal_export"
+TODOS="boteco_base,boteco_cardapio,boteco_pos,boteco_kds,boteco_autoatendimento,boteco_estoque,boteco_cozinha_central,boteco_b2b,boteco_painel,boteco_fiscal_export,boteco_fidelidade,boteco_reservas,boteco_conciliacao,boteco_cotacoes,boteco_checklists,boteco_escala"
 MODULOS="${1:-$TODOS}"
 BANCO="${BANCO_TESTE:-boteco_teste}"
-TAGS="${TAGS:-/boteco_base,/boteco_cardapio,/boteco_pos,/boteco_kds,/boteco_autoatendimento,/boteco_estoque,/boteco_cozinha_central,/boteco_b2b,/boteco_painel,/boteco_fiscal_export}"
+TAGS="${TAGS:-/boteco_base,/boteco_cardapio,/boteco_pos,/boteco_kds,/boteco_autoatendimento,/boteco_estoque,/boteco_cozinha_central,/boteco_b2b,/boteco_painel,/boteco_fiscal_export,/boteco_fidelidade,/boteco_reservas,/boteco_conciliacao,/boteco_cotacoes,/boteco_checklists,/boteco_escala}"
 
 docker compose up -d db >/dev/null
 for _ in $(seq 1 30); do

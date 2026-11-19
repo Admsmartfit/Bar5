@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Painel do dono: card "Cartões e Pix" (Etapa 28) -->
+    <t t-name="boteco_conciliacao.PainelDono" t-inherit="boteco_painel.PainelDono" t-inherit-mode="extension">
+        <xpath expr="//section[hasclass('pn__bloco')][last()]" position="after">
+            <section t-if="d.cartoes" class="pn__bloco">
+                <h2>Cartões e Pix</h2>
+                <div class="pn__contas">
+                    <button class="btn btn-light btn-lg" t-on-click="() => this.abrir('boteco_conciliacao.action_boteco_recebiveis')">
+                        A receber em 30 dias: <b t-esc="reais(d.cartoes.a_receber_30)"/>
+                    </button>
+                    <button class="btn btn-lg" t-att-class="d.cartoes.diferencas_semana.quantidade ? 'btn-warning' : 'btn-light'"
+                            t-on-click="() => this.abrir('boteco_conciliacao.action_boteco_conferir')">
+                        Diferenças na semana: <b t-esc="d.cartoes.diferencas_semana.quantidade"/>
+                        (<t t-esc="reais(d.cartoes.diferencas_semana.valor)"/>)
+                    </button>
+                    <button t-if="d.cartoes.conferir" class="btn btn-warning btn-lg"
+                            t-on-click="() => this.abrir('boteco_conciliacao.action_boteco_conferir_extrato')">
+                        Para conferir no extrato: <b t-esc="d.cartoes.conferir"/>
+                    </button>
+                </div>
+                <div t-if="d.cartoes.atrasados" class="alert alert-danger mt-2">
+                    <t t-esc="d.cartoes.atrasados"/> repasse(s) atrasado(s): o dinheiro não caiu na data combinada.
+                </div>
+                <div t-if="d.cartoes.taxa_mes.length" class="mt-2">
+                    <div class="text-muted">Taxa paga no mês por maquininha (base para negociar):</div>
+                    <ol class="pn__ranking">
+                        <li t-foreach="d.cartoes.taxa_mes" t-as="t" t-key="t_index">
+                            <span t-esc="t.nome"/><span t-esc="reais(t.valor)"/>
+                        </li>
+                    </ol>
+                </div>
+            </section>
+        </xpath>
+    </t>
+</templates>

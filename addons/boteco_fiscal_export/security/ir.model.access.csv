@@ -6,3 +6,9 @@ access_boteco_fiscal_layout_dono,boteco.fiscal.layout dono,model_boteco_fiscal_l
 access_boteco_fiscal_layout_coluna_dono,boteco.fiscal.layout.coluna dono,model_boteco_fiscal_layout_coluna,boteco_base.group_dono,1,1,1,1
 access_boteco_fiscal_exportacao_dono,boteco.fiscal.exportacao dono,model_boteco_fiscal_exportacao,boteco_base.group_dono,1,1,1,1
 access_boteco_fiscal_retorno_dono,boteco.fiscal.retorno dono,model_boteco_fiscal_retorno,boteco_base.group_dono,1,1,1,1
+access_boteco_fiscal_registro_contador,boteco.fiscal.registro contador,model_boteco_fiscal_registro,boteco_base.group_contador,1,1,1,0
+access_boteco_fiscal_lote_contador,boteco.fiscal.lote contador,model_boteco_fiscal_lote,boteco_base.group_contador,1,1,1,0
+access_boteco_fiscal_layout_contador,boteco.fiscal.layout contador,model_boteco_fiscal_layout,boteco_base.group_contador,1,1,1,1
+access_boteco_fiscal_layout_coluna_contador,boteco.fiscal.layout.coluna contador,model_boteco_fiscal_layout_coluna,boteco_base.group_contador,1,1,1,1
+access_boteco_fiscal_exportacao_contador,boteco.fiscal.exportacao contador,model_boteco_fiscal_exportacao,boteco_base.group_contador,1,1,1,1
+access_boteco_fiscal_retorno_contador,boteco.fiscal.retorno contador,model_boteco_fiscal_retorno,boteco_base.group_contador,1,1,1,1

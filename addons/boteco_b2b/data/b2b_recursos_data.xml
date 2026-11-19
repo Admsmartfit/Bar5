@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Etapa 34: aplica a chave "Venda a bares (B2B)" da Central de Recursos a cada instalação/atualização -->
+    <function model="res.company" name="_boteco_aplicar_b2b"/>
+</odoo>

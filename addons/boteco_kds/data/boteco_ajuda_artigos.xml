@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das telas deste módulo. Gerado; editar e regenerar. -->
+<odoo>
+    <record id="ajuda_fila_chapa" model="boteco.ajuda.artigo">
+        <field name="codigo">fila_chapa</field>
+        <field name="titulo">Usar a tela de produção (fila da chapa e do bar)</field>
+        <field name="resumo">Cada cartão é um pedido; toque para avançar.</field>
+        <field name="sinonimos">kds, tela da cozinha, fila, chapa, bar, pedido pronto, producao</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Produção › Bar e chapa › Fila da chapa&lt;/b&gt; (ou Fila do bar).&lt;/li&gt;&lt;li&gt;Toque no cartão para &lt;b&gt;Começar&lt;/b&gt;; toque de novo para &lt;b&gt;Pronto!&lt;/b&gt; (o garçom é avisado).&lt;/li&gt;&lt;li&gt;Errou? Toque em &lt;b&gt;Desfazer&lt;/b&gt; nos 5 segundos seguintes.&lt;/li&gt;&lt;li&gt;Segure o cartão para reimprimir ou voltar etapa.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_kds.menu_kds_chapa"/>
+        <field name="acao_xmlid">boteco_kds.action_kds_chapa</field>
+        <field name="perfis">chapeiro,gerente,dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_reimprimir_ticket" model="boteco.ajuda.artigo">
+        <field name="codigo">reimprimir_ticket</field>
+        <field name="titulo">Reimprimir um ticket de produção</field>
+        <field name="resumo">Quando o papel sai ruim ou some.</field>
+        <field name="sinonimos">reimprimir, imprimir de novo, segunda via, ticket perdido</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Na tela de produção, &lt;b&gt;segure&lt;/b&gt; o cartão do pedido.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Reimprimir&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_kds.menu_kds_chapa"/>
+        <field name="acao_xmlid">boteco_kds.action_kds_chapa</field>
+        <field name="perfis">chapeiro,gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_segundo_tempo" model="boteco.ajuda.artigo">
+        <field name="codigo">segundo_tempo</field>
+        <field name="titulo">Sobremesa em 2º tempo</field>
+        <field name="resumo">Sobremesa pedida junto com o prato só começa quando o prato fica pronto.</field>
+        <field name="sinonimos">sobremesa, segundo tempo, sorvete, derreter, hold</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;O cartão da sobremesa aparece com a tarja roxa &lt;b&gt;2º TEMPO&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Quando o prato principal da mesa fica pronto, a tarja some: aí é a vez da sobremesa.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">Produção › tela de produção</field>
+        <field name="perfis">chapeiro,gerente,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_prontos_entregar" model="boteco.ajuda.artigo">
+        <field name="codigo">prontos_entregar</field>
+        <field name="titulo">Ver o que está pronto para entregar</field>
+        <field name="resumo">Lista do garçom com os pedidos prontos.</field>
+        <field name="sinonimos">pronto, entregar, garcom, buscar pedido, expedicao</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Produção › Bar e chapa › Prontos para entregar&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Leve à mesa e toque em &lt;b&gt;Entregue&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_kds.menu_kds_prontos"/>
+        <field name="acao_xmlid">boteco_kds.action_kds_prontos</field>
+        <field name="perfis">garcom,gerente,dono</field>
+        <field name="sequencia">40</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_fila_impressao" model="boteco.ajuda.artigo">
+        <field name="codigo">fila_impressao</field>
+        <field name="titulo">Ticket não saiu: ver a fila de impressão</field>
+        <field name="resumo">Se a impressora cair, os tickets esperam e saem sozinhos quando ela voltar.</field>
+        <field name="sinonimos">impressora parada, nao imprimiu, fila de impressao, ticket nao saiu</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Salão e produção › Fila de impressão&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Confira a impressora (papel, energia, cabo de rede). Ao voltar, os tickets saem na ordem.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_kds.menu_impressao_fila"/>
+        <field name="acao_xmlid">boteco_kds.action_boteco_impressao_job</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">50</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_fila_chapa" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_segundo_tempo'), ref('ajuda_reimprimir_ticket')])]"/>
+    </record>
+</odoo>

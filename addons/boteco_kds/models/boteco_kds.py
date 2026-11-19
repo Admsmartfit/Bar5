@@ -15,7 +15,7 @@ ESTADOS = [
 ]
 PROXIMO = {"aguardando": "preparando", "preparando": "pronto", "pronto": "entregue"}
 ANTERIOR = {"preparando": "aguardando", "pronto": "preparando", "entregue": "pronto"}
-ROTULO_ORIGEM = {"garcom": "GARÇOM", "caixa": "CAIXA", "tablet": "TABLET", "qr": "QR CODE"}
+ROTULO_ORIGEM = {"garcom": "GARÇOM", "caixa": "CAIXA", "tablet": "TABLET", "qr": "QR CODE", "qr_bebidas": "QR BEBIDAS"}
 
 MINUTOS_ALERTA_GERENTE = 30
 

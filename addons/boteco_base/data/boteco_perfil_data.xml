@@ -81,6 +81,17 @@
             <field name="menu_ids" eval="[Command.set([ref('sale.sale_menu_root'), ref('menu_boteco_root')])]"/>
         </record>
 
+        <record id="perfil_contador" model="boteco.perfil">
+            <field name="name">Contador</field>
+            <field name="codigo">contador</field>
+            <field name="sequence">65</field>
+            <field name="group_id" ref="group_contador"/>
+            <field name="descricao">Só Finanças: exporta as vendas para emissão, importa o retorno e vê os relatórios. Entra com senha.</field>
+            <field name="permite_login_pin" eval="False"/>
+            <field name="pode_ver_financeiro" eval="True"/>
+            <field name="menu_ids" eval="[Command.set([ref('menu_boteco_root')])]"/>
+        </record>
+
         <record id="perfil_dono" model="boteco.perfil">
             <field name="name">Dono / administrador</field>
             <field name="codigo">dono</field>
@@ -103,4 +114,6 @@
             <field name="pode_sair_quiosque" eval="True"/>
         </record>
     </data>
+    <!-- Etapa 34: só o gerente vê os botões avançados do PDV (uma vez; depois o dono decide) -->
+    <function model="boteco.perfil" name="_boteco_padrao_botoes_avancados"/>
 </odoo>

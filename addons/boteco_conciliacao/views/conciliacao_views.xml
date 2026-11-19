@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Maquininhas / adquirentes -->
+    <record id="boteco_adquirente_view_list" model="ir.ui.view">
+        <field name="name">boteco.adquirente.list</field>
+        <field name="model">boteco.adquirente</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="metodo_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="boteco_adquirente_view_form" model="ir.ui.view">
+        <field name="name">boteco.adquirente.form</field>
+        <field name="model">boteco.adquirente</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" placeholder="Ex.: Stone"/></h1></div>
+                    <group string="Taxas contratadas (do contrato ou do app da maquininha)">
+                        <field name="taxa_ids" nolabel="1" colspan="2">
+                            <list editable="bottom">
+                                <field name="modalidade"/>
+                                <field name="parcelas_de"/>
+                                <field name="parcelas_ate"/>
+                                <field name="taxa_pct"/>
+                                <field name="prazo_dias"/>
+                            </list>
+                        </field>
+                    </group>
+                    <group string="Formas de pagamento do caixa que passam nesta maquininha">
+                        <field name="metodo_ids" nolabel="1" colspan="2" readonly="1">
+                            <list><field name="name"/><field name="boteco_modalidade"/></list>
+                        </field>
+                        <div class="text-muted" colspan="2">Para ligar: abra a forma de pagamento (Configuração do PDV) e escolha esta maquininha.</div>
+                    </group>
+                    <group string="Leitor do extrato (deixe em branco: o sistema reconhece o cabeçalho sozinho)">
+                        <group>
+                            <field name="coluna_data"/>
+                            <field name="coluna_bruto"/>
+                            <field name="coluna_liquido"/>
+                            <field name="coluna_taxa"/>
+                            <field name="coluna_previsao"/>
+                        </group>
+                        <group>
+                            <field name="coluna_nsu"/>
+                            <field name="coluna_bandeira"/>
+                            <field name="coluna_modalidade"/>
+                            <field name="coluna_parcelas"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boteco_adquirentes" model="ir.actions.act_window">
+        <field name="name">Maquininhas</field>
+        <field name="res_model">boteco.adquirente</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cadastre sua maquininha</p>
+            <p>Informe as taxas do contrato (débito, crédito, parcelado, Pix) e o prazo de cada uma.</p>
+        </field>
+    </record>
+
+    <!-- Recebíveis -->
+    <record id="boteco_recebivel_view_list" model="ir.ui.view">
+        <field name="name">boteco.recebivel.list</field>
+        <field name="model">boteco.recebivel</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-danger="estado in ('atrasado', 'divergente')" decoration-success="estado == 'pago'"
+                  decoration-muted="estado == 'estornado'">
+                <field name="data_venda"/>
+                <field name="order_id" optional="show"/>
+                <field name="adquirente_id"/>
+                <field name="modalidade"/>
+                <field name="valor_bruto" sum="Total"/>
+                <field name="taxa_esperada_pct" optional="show"/>
+                <field name="taxa_cobrada_pct" optional="show"/>
+                <field name="liquido_esperado" sum="Total" optional="show"/>
+                <field name="data_prevista"/>
+                <field name="valor_perdido" sum="Total" optional="show"/>
+                <field name="estado" widget="badge" decoration-success="estado in ('conferido', 'pago')"
+                       decoration-danger="estado in ('atrasado', 'divergente')" decoration-muted="estado == 'estornado'"/>
+                <field name="alerta" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="boteco_recebivel_view_search" model="ir.ui.view">
+        <field name="name">boteco.recebivel.search</field>
+        <field name="model">boteco.recebivel</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="order_id"/>
+                <field name="nsu"/>
+                <field name="adquirente_id"/>
+                <filter name="abertos" string="A receber" domain="[('estado', 'in', ('previsto', 'conferido', 'divergente', 'atrasado'))]"/>
+                <filter name="problemas" string="Diferenças e atrasos" domain="[('estado', 'in', ('divergente', 'atrasado', 'estornado'))]"/>
+                <separator/>
+                <filter name="mes" string="Este mês" domain="[('data_venda', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <group expand="0" string="Agrupar">
+                    <filter name="por_adquirente" string="Maquininha" context="{'group_by': 'adquirente_id'}"/>
+                    <filter name="por_previsao" string="Dia previsto" context="{'group_by': 'data_prevista:day'}"/>
+                    <filter name="por_estado" string="Situação" context="{'group_by': 'estado'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_boteco_recebiveis" model="ir.actions.act_window">
+        <field name="name">Recebíveis de cartão e Pix</field>
+        <field name="res_model">boteco.recebivel</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="context">{'search_default_abertos': 1, 'search_default_por_previsao': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nada a receber</p>
+            <p>Cada venda no cartão ou Pix do caixa vira um recebível com a taxa e a data em que o dinheiro deve cair.
+               Ligue a forma de pagamento à maquininha em <b>Cartões e Pix › Maquininhas</b>.</p>
+        </field>
+    </record>
+
+    <record id="action_boteco_conferir" model="ir.actions.act_window">
+        <field name="name">Diferenças e atrasos</field>
+        <field name="res_model">boteco.recebivel</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_problemas': 1}</field>
+    </record>
+
+    <!-- Fila "Conferir" do extrato -->
+    <record id="boteco_extrato_linha_view_list" model="ir.ui.view">
+        <field name="name">boteco.extrato.linha.list</field>
+        <field name="model">boteco.extrato.linha</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-warning="estado == 'conferir'" decoration-muted="estado == 'ignorado'">
+                <field name="data"/>
+                <field name="extrato_id" optional="show"/>
+                <field name="tipo_linha"/>
+                <field name="valor_bruto" sum="Total"/>
+                <field name="taxa_valor" optional="show"/>
+                <field name="nsu" optional="show"/>
+                <field name="bandeira" optional="hide"/>
+                <field name="descricao" optional="show"/>
+                <field name="motivo"/>
+                <field name="estado" widget="badge" decoration-success="estado == 'casado'" decoration-warning="estado == 'conferir'"/>
+                <button name="action_ignorar" type="object" string="Já conferi" invisible="estado != 'conferir'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_boteco_conferir_extrato" model="ir.actions.act_window">
+        <field name="name">Conferir (extrato)</field>
+        <field name="res_model">boteco.extrato.linha</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('estado', '=', 'conferir')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nada para conferir</p>
+            <p>Aqui aparece o que o extrato tem e o caixa não (ou vice-versa): Pix sem venda, venda sem registro, estorno.</p>
+        </field>
+    </record>
+
+    <!-- Extratos importados -->
+    <record id="boteco_extrato_view_list" model="ir.ui.view">
+        <field name="name">boteco.extrato.list</field>
+        <field name="model">boteco.extrato</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="create_date" string="Importado em"/>
+                <field name="tipo"/>
+                <field name="name"/>
+                <field name="n_casadas"/>
+                <field name="n_conferir" decoration-warning="n_conferir &gt; 0"/>
+                <field name="estado" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="boteco_extrato_view_form" model="ir.ui.view">
+        <field name="name">boteco.extrato.form</field>
+        <field name="model">boteco.extrato</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_importar" type="object" string="Importar e conferir" class="btn-primary"/>
+                    <field name="estado" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="tipo" widget="radio"/>
+                            <field name="adquirente_id" invisible="tipo != 'maquininha'" required="tipo == 'maquininha'"/>
+                        </group>
+                        <group>
+                            <field name="arquivo" filename="arquivo_nome"/>
+                            <field name="arquivo_nome" invisible="1"/>
+                            <field name="n_casadas" invisible="estado != 'importado'"/>
+                            <field name="n_conferir" invisible="estado != 'importado'"/>
+                        </group>
+                    </group>
+                    <div class="text-muted" invisible="estado == 'importado'">
+                        Maquininha: baixe o relatório de vendas no app ou site (CSV ou Excel). Banco: baixe o extrato em
+                        <b>OFX</b>. O sistema casa cada linha com as vendas do caixa e mostra o que não bateu.
+                    </div>
+                    <field name="linha_ids" invisible="estado != 'importado'"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boteco_extratos" model="ir.actions.act_window">
+        <field name="name">Importar extrato</field>
+        <field name="res_model">boteco.extrato</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Forma de pagamento: qual maquininha e modalidade -->
+    <record id="pos_payment_method_form_conciliacao" model="ir.ui.view">
+        <field name="name">pos.payment.method.form.boteco.conciliacao</field>
+        <field name="model">pos.payment.method</field>
+        <field name="inherit_id" ref="boteco_painel.pos_payment_method_form_boteco"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='boteco_dias_recebimento']" position="after">
+                <field name="boteco_adquirente_id"/>
+                <field name="boteco_modalidade"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Caixa: quanto do cartão/Pix já foi confirmado -->
+    <record id="pos_session_form_conciliacao" model="ir.ui.view">
+        <field name="name">pos.session.form.boteco.conciliacao</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='cash_register_balance_start']" position="before">
+                <field name="boteco_cartoes_total" invisible="not boteco_cartoes_total"/>
+                <field name="boteco_cartoes_confirmado" invisible="not boteco_cartoes_total"/>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="menu_boteco_sec_cartoes" name="Cartões e Pix" parent="boteco_base.menu_boteco_top_financas" sequence="25"
+              groups="boteco_base.group_gerente,boteco_base.group_contador"/>
+    <menuitem id="menu_boteco_recebiveis" name="A receber" parent="menu_boteco_sec_cartoes" action="action_boteco_recebiveis" sequence="10"/>
+    <menuitem id="menu_boteco_conferir" name="Diferenças e atrasos" parent="menu_boteco_sec_cartoes" action="action_boteco_conferir" sequence="20"/>
+    <menuitem id="menu_boteco_conferir_extrato" name="Conferir (extrato)" parent="menu_boteco_sec_cartoes" action="action_boteco_conferir_extrato" sequence="30"/>
+    <menuitem id="menu_boteco_extratos" name="Importar extrato" parent="menu_boteco_sec_cartoes" action="action_boteco_extratos" sequence="40"/>
+    <menuitem id="menu_boteco_adquirentes" name="Maquininhas" parent="menu_boteco_sec_cartoes" action="action_boteco_adquirentes" sequence="50"
+              groups="boteco_base.group_gerente"/>
+</odoo>

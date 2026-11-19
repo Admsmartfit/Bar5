@@ -1,11 +1,11 @@
-# PRD — Recursos Avançados (equivalentes ao Odoo Enterprise) e Ajuda Rápida
+# PRD — Recursos Avançados, Ajuda Rápida, Primeiros Passos e Simplificação
 
-## Ecossistema Boteco Raiz (`Bar5` — Odoo 18 Community) — Etapas 26 a 32
+## Ecossistema Boteco Raiz (`Bar5` — Odoo 18 Community) — Etapas 26 a 36
 
 | Atributo | Detalhamento |
 | :--- | :--- |
 | **Projeto alvo** | `Bar5` — Odoo 18 **Community** (imagem `boteco-odoo:18`), módulos `boteco_*` |
-| **Origem** | Avaliação dos recursos pagos do Odoo Enterprise que trariam mais retorno a um bar com cozinha central, e pedido do dono por uma **ajuda rápida pesquisável** ("busco *cadastrar WhatsApp* e ele me mostra o caminho e a tela"). |
+| **Origem** | (1) Avaliação dos recursos pagos do Odoo Enterprise que trariam mais retorno a um bar com cozinha central; (2) pedido do dono por uma **ajuda rápida pesquisável** ("busco *cadastrar WhatsApp* e ele me mostra o caminho e a tela"); (3) **manual passo a passo na primeira entrada** ("vamos primeiro cadastrar a empresa…"); (4) PRDs incorporados em 18/11/2026: **Simplificação do PDV e Automação de Cotações** e **QR Code Expresso de Bebidas**. |
 | **Restrição** | **Nada pode depender do Odoo Enterprise.** Os recursos pagos ficam escondidos na tela (feito em 18/11/2026); aqui eles são reconstruídos no Community, sob medida para o boteco. |
 | **Governança** | Cada recurso tem chave na **Central de Recursos** (`Configuração → Sistema → Liga / desliga recursos`) e o código confere `company.boteco_recurso_ativo("<codigo>")` antes de agir — igual às Etapas 11 a 25. |
 | **Modo de execução** | Interativo (human-in-the-loop): antes de cada etapa, o agente apresenta o resumo e pergunta *Implementar ativo / Implementar desativado / Pular*. Ao terminar, roda a suíte de testes e reporta. |
@@ -34,6 +34,10 @@
 | **30** | **Checklists APPCC e manutenção preventiva** | Quality + Maintenance (Maintenance é gratuito) | Fiscalização da Vigilância Sanitária (RDC 216) e chopeira/freezer sem parar. | 5 – Média |
 | **31** | **Fidelidade / cashback** | — (gratuito: `loyalty` + `pos_loyalty`) | Só configurar e integrar ao tablet e à régua de clientes. | 6 – Baixa (rápida) |
 | **32** | **Desligar e esconder o OdooBot** | — | O OdooBot não ajuda o boteco e confunde a equipe; a ajuda rápida o substitui. | Junto com a 26 |
+| **33** | **Assistente de primeira configuração (Primeiros passos)** | — (o Odoo só tem um painel de onboarding genérico) | Leva o dono da instalação até uma venda de teste, sem esquecer nada. | **1 – Alta** |
+| **34** | **Simplificação do PDV e isolamento por perfil** | — | Menos botões e menus para garçom/caixa = atendimento mais rápido. | **2 – Alta** |
+| **35** | **Cotações automáticas: WhatsApp e coletor de sites/Instagram** | — | Preço de fornecedor entra sozinho; robôs fora do servidor do PDV. | 4 – Média |
+| **36** | **QR Code expresso de bebidas** | — | Repetir a rodada com 1 toque aumenta o giro de bebida, que é a maior margem. | **2 – Alta** |
 
 ### Novas chaves da Central de Recursos
 
@@ -48,6 +52,11 @@
 | `boteco_flag_checklists_appcc` | Checklists de abertura/fechamento e APPCC | Desligado |
 | `boteco_flag_manutencao_preventiva` | Manutenção preventiva (chopeira, freezers, gás) | Desligado |
 | `boteco_flag_fidelidade` | Fidelidade / cashback no PDV e no tablet | Desligado |
+| `boteco_flag_assistente_implantacao` | Primeiros passos (assistente de configuração) | **Ligado** |
+| `boteco_flag_vendas_b2b` | Venda a bares (B2B): menus, card e pedidos recorrentes | Desligado |
+| `boteco_flag_cotacoes_whatsapp` | Receber cotações dos fornecedores pelo WhatsApp | Desligado |
+| `boteco_flag_coletor_ofertas` | Coletor externo de ofertas (sites e Instagram) | Desligado |
+| `boteco_flag_qr_bebidas` | QR Code expresso de bebidas (2º QR por mesa, sempre disponível) | **Ligado** |
 
 ---
 
@@ -305,6 +314,238 @@ Hoje não existe menu de fornecedores dentro do Boteco. Criar `Compras e estoque
 
 ---
 
+# ETAPA 33 — ASSISTENTE DE PRIMEIRA CONFIGURAÇÃO ("PRIMEIROS PASSOS")
+
+> **🤖 CHECKPOINT:** *"Na Etapa 33 vamos criar o assistente de primeira configuração: na primeira vez que o dono entra, o sistema abre a tela **Primeiros passos** — vamos cadastrar a empresa, depois a equipe, o salão, o cardápio, o caixa — até fazer uma venda de teste e abrir a casa. Implementar ativo, desativado ou pular?"*
+
+## 33.1. Problema
+* Hoje a configuração inicial é feita pelo instalador (`instalar.sh` → `scripts/configurar_empresa.py`), que cria empresa, armazéns, PDV, formas de pagamento e 20 mesas com valores padrão. Depois disso **o dono não sabe o que falta** para o boteco funcionar de verdade (cardápio, impressoras, equipe com PIN, taxa, fornecedores…).
+* As telas existem, mas espalhadas por 7 menus; não há ordem nem indicação do que é obrigatório.
+
+## 33.2. Boas práticas aplicadas (pesquisa)
+| Prática | Origem | Como entra no Bar5 |
+| :--- | :--- | :--- |
+| **Assistente (wizard) só para o que bloqueia**; o resto vira **lista de primeiros passos persistente**, feita ao longo dos dias | Kompassify (onboarding wizard guide) | Assistente curto só com a **empresa** (o mínimo para o sistema funcionar). Todo o resto fica na tela **Primeiros passos**, que dá para fazer aos poucos. |
+| Wizards servem para **processos raros e para quem não conhece o assunto** — exatamente a configuração inicial | NN/g (Wizards), PatternFly | Um passo por tela, em ordem, com "Voltar" e "Próximo". |
+| **Trabalhar com dados reais, não com tutorial de mentira** | Microsoft (User Assistance guidelines) | Cada passo abre a **tela de verdade** (cadastro de pessoas, mesas, cardápio) já filtrada; o que for preenchido fica valendo. |
+| Lista curta de **3 a 5 marcos com resultado**, não uma dúzia de tarefas soltas | saasui.design | Os passos são agrupados em **4 fases**; dentro delas, poucos itens obrigatórios. |
+| Lista que **some quando termina** e **não reaparece** à força | saasui.design | Ao concluir, vira só um selo "Implantação concluída" no Início; pode ser reaberta pelo menu. |
+| Foco no **primeiro resultado** (time-to-value) | Supademo, Appcues | A fase 4 termina com uma **venda de teste de ponta a ponta** no modo treinamento — o dono vê o boteco funcionando. |
+| Usuário **não lê texto longo** dentro de wizard | LogRocket, NN/g | Cada passo: 1 frase de explicação + o que preencher + "Ver ajuda" (artigo da Etapa 26). |
+| Implantação de PDV de restaurante: **cardápio → hardware (impressoras/KDS) → mesas → equipe e perfis → teste e treino por função** | Lightspeed, SkyTab/Shift4, Lavu, Platter | Mesma lógica nas fases; treino por perfil com o tour de 3 passos que já existe. |
+
+## 33.3. O que vamos construir
+
+### a) Assistente curto (só o que bloqueia) — primeira entrada do dono
+Tela cheia, 3 telas, com barra de progresso:
+1. **Sua empresa:** nome fantasia, razão social, CNPJ, endereço, telefone/WhatsApp, logo (vai no ticket e no tablet). Já vem preenchido com o que o instalador recebeu (`EMPRESA_NOME`, `EMPRESA_CNPJ`, `EMPRESA_CIDADE`).
+2. **Como é o seu negócio:** só o bar · bar + cozinha central (mesmo CNPJ ou outro) — liga/desliga os recursos ligados a isso na Central de Recursos.
+3. **Pronto para começar:** mostra as fases da lista de primeiros passos e leva para ela.
+
+### b) Tela **Primeiros passos** (lista persistente, em `Início › Primeiros passos`)
+Abre como **tela inicial do dono** até a implantação terminar; barra de progresso no topo ("Faltam 4 passos para abrir a casa").
+
+| Fase | Passo | Obrigatório | Concluído quando… (verificação automática) |
+| :--- | :--- | :--- | :--- |
+| **1. Sua empresa** | Dados da empresa e logo | ✅ | CNPJ e endereço preenchidos |
+| | Rede do Wi-Fi dos clientes e da equipe | — | redes preenchidas (Etapa 4) |
+| **2. Sua equipe** | Cadastrar as pessoas com perfil e PIN | ✅ | ≥ 1 gerente/caixa e ≥ 1 garçom com PIN |
+| | Revisar permissões por perfil | — | aberto pelo menos uma vez |
+| **3. Seu salão e cardápio** | Plantas e mesas (lugares de cada mesa) | ✅ | ≥ 1 planta com mesas e lugares |
+| | Setores e impressoras — **imprimir teste** | ✅ | cada setor com impressora que imprimiu o teste |
+| | Cardápio: categorias e itens (ou **importar planilha**) | ✅ | ≥ 10 itens à venda com setor |
+| | Classificar consumo e utensílios (Etapa 12) | — | itens com tipo de consumo |
+| | Dados fiscais dos itens | — | nenhum item em "Itens sem dados fiscais" |
+| | Formas de pagamento, taxa de serviço e couvert | ✅ | ≥ 1 forma além de dinheiro |
+| | Imprimir os **QR Codes das mesas** | — | relatório gerado |
+| **4. Testar e abrir** | **Venda de teste** no modo treinamento: abrir caixa → pedido na mesa → sai no bar e na chapa → pagar → fechar caixa | ✅ | venda de teste concluída (registro do modo treinamento) |
+| | Treinar a equipe por função (tour de 3 passos de cada perfil) | — | cada pessoa viu o tour (`boteco_tour_visto`) |
+| | **Abrir a casa** 🎉 | ✅ | botão final: confirma e encerra a implantação |
+| **Depois de abrir** | Fornecedores (WhatsApp/Instagram) e lista de compras | — | ≥ 1 fornecedor com celular |
+| | Fichas técnicas dos itens principais e estoque inicial (contagem) | — | ≥ 1 ficha técnica; 1 contagem aprovada |
+| | Cozinha central: receitas, capacidade e freezers | — | (só se tiver cozinha central) |
+| | Revisar a Central de Recursos | — | aberta pelo menos uma vez |
+| | Configurar backup na nuvem | — | último backup na nuvem há menos de 48 h (página Saúde) |
+
+Cada passo tem: **o que é e por que importa** (1 frase), botão **Fazer agora** (abre a tela real), **Ver ajuda** (artigo da Etapa 26), **Pular por enquanto** (passos não obrigatórios) e marca ✅ sozinho quando a verificação passa — não depende de a pessoa lembrar de marcar.
+
+### c) Regras
+* Só o **dono** vê o assistente e a lista; os demais perfis continuam com o tour curto de 3 passos que já existe.
+* Pode sair a qualquer momento e **continuar de onde parou**; o progresso fica na empresa.
+* Instalação que **já está em uso** (como o banco atual): na atualização, as verificações rodam e marcam como concluído tudo o que já existe — o dono só vê o que realmente falta, e o assistente da primeira entrada não abre.
+* "Abrir a casa" com passo obrigatório pendente pede confirmação explícita (pode abrir, mas fica registrado na auditoria).
+
+### d) Modelo de dados e arquivos
+* `boteco.implantacao.passo` (dados versionados): `codigo`, `fase`, `sequencia`, `titulo`, `explicacao`, `obrigatorio`, `action_id`, `artigo_ajuda_id`, `metodo_verificacao` (nome do método Python que devolve True/False), `so_com_cozinha_central`.
+* `boteco.implantacao.estado` (por empresa): passo, `situacao` (`pendente`, `feito`, `pulado`), quem/quando.
+* `res.company.boteco_implantacao_concluida` (Boolean) e `boteco_implantacao_concluida_em`.
+* `boteco_base/static/src/implantacao/` (assistente e lista em OWL), `views/boteco_implantacao_views.xml`, `data/boteco_implantacao_passos.xml`.
+* O `configurar_empresa.py` continua: ele prepara o terreno; o assistente confirma e completa com o dono.
+
+## 33.4. Critérios de aceite
+1. Banco novo: na primeira entrada do dono abre o assistente (3 telas); depois cai na lista **Primeiros passos**.
+2. Cadastrar 10 itens com setor marca o passo "Cardápio" como feito, sem clicar em "marcar como feito".
+3. Imprimir o teste numa impressora marca o passo "Impressoras".
+4. A venda de teste é feita no **modo treinamento** e não aparece no faturamento real.
+5. Banco já em uso (o atual): após atualizar, a lista mostra concluídos os passos já atendidos e o assistente não abre.
+6. Garçom/caixa nunca veem o assistente nem a lista.
+7. Flag `assistente_implantacao` desligada: a lista some do Início e nada é exibido.
+
+---
+
+# ETAPA 34 — SIMPLIFICAÇÃO DO PDV E ISOLAMENTO POR PERFIL
+
+> **🤖 CHECKPOINT:** *"Na Etapa 34 vamos enxugar o que cada perfil vê: esconder a Venda a bares (B2B) e o Fiscal de quem não usa, impedir a instalação de frete/Correios, deixar a Cozinha central só para quem produz e tirar do PDV os botões que garçom e caixa não usam. Implementar ativo, desativado ou pular cada item?"*
+
+*Origem: PRD "Simplificação do PDV e Automação de Cotações de Fornecedores", seção 2 (incorporado em 18/11/2026).*
+
+## 34.1. Objetivo
+A interface do salão/caixa tem funções demais, o que confunde e atrasa o atendimento. Esta etapa é sobretudo **configuração e permissões** (pouco código novo).
+
+## 34.2. Venda a bares (B2B) — esconder, **não desinstalar**
+* ⚠️ **Divergência com o PRD de origem**, que pedia desinstalar o `boteco_b2b`: o **Painel do dono** (`boteco_painel`) e o **Fiscal** (`boteco_fiscal_export`) **dependem** dele — desinstalar removeria os dois junto, com dados.
+* **Construir:** chave `boteco_flag_vendas_b2b` (padrão **desligado**). Desligada: menus de "Venda a bares (B2B)" e o card de metas B2B do painel somem; pedidos recorrentes não são gerados; os dados ficam guardados. Ligar de novo traz tudo de volta.
+* Se no futuro o B2B for mesmo abandonado, a desinstalação exige antes separar as dependências (tarefa própria).
+
+## 34.3. Fiscal — só Contabilidade e dono
+* Criar o **perfil "Contador"** (grupo `boteco_base.group_contador`): vê só `Finanças › Fiscal` e `Finanças › Relatórios`, sem PDV, salão ou estoque.
+* Telas de exportação/retorno, lotes e layouts do arquivo fiscal: visíveis **só para Contador e Dono** (hoje: só dono). Gerente de salão continua sem acesso.
+
+## 34.4. Frete e Correios — impedir
+* Os módulos de frete (`delivery`, `stock_delivery`) **não estão instalados** no banco atual. Esconder nas Configurações as opções que os instalariam ("Métodos de entrega", "Sistema de gerenciamento de despacho"), do mesmo jeito que as opções pagas foram escondidas, e bloqueá-los na lista de Aplicativos.
+* O **delivery próprio** continua (está no `boteco_pos`: bairros, entregas e acerto de motoboys — Etapa 22). *Obs.: o PRD de origem cita `boteco_delivery`; esse módulo não existe — o recurso fica no `boteco_pos`.*
+
+## 34.5. Cozinha central só para quem produz
+* Hoje `Produção › Cozinha central` aparece para **Cozinheiro e Gerente**. Passa a aparecer **só para o perfil Cozinheiro (gerente de cozinha/produção) e o Dono**. Gerente de salão perde o acesso a: plano de produção, ordens de produção, separação, lotes e rastreio.
+* **Garçom/caixa veem só o produto final.** Padrão de cadastro (com artigo de ajuda e conferência automática):
+  * **"Bolinho de bacalhau congelado (para levar)"** → produto **sem setor**: a venda **só baixa o estoque** do congelado.
+  * **"Porção de bolinho de bacalhau (frita)"** → produto com **setor Chapa** e **ficha técnica tipo kit** que consome o congelado: a venda **baixa o estoque do congelado e manda para o KDS** do chapeiro.
+  * Isso já funciona com o que existe (`pos_mrp` + setor do produto, Etapas 5 e 6). A etapa entrega: modelo pronto nos dados de exemplo, aviso no cadastro quando um item "frito/preparado" não tem setor ou ficha, e teste automático dos dois caminhos.
+
+## 34.6. PDV enxuto por perfil
+* Levantar os botões do PDV (barra de controle, tela de pagamento, ações da conta) e definir, **por perfil**, quais aparecem. Padrão sugerido: **garçom** — abrir mesa, pedir, enviar, dividir, transferir, pedir conta; **caixa** — + receber, CPF na nota, sangria/reforço, fechar caixa; o resto (lista de preços, reembolso, nota de crédito, cliente avançado…) só para gerente.
+* Configurável na tela **Permissões por perfil** (Etapa 1), não no código.
+
+## 34.7. Critérios de aceite
+1. Com a chave B2B desligada, nenhum menu, card ou cron de B2B aparece/roda; ligando, tudo volta com os dados.
+2. Usuário Contador vê só Finanças (Fiscal e Relatórios).
+3. Não é possível instalar frete/Correios pelas Configurações nem pelos Aplicativos.
+4. Gerente de salão não vê `Produção › Cozinha central`; Cozinheiro vê.
+5. Venda de "bolinho congelado" só baixa estoque; venda de "porção frita" baixa o congelado **e** cria ticket na chapa.
+6. Garçom não vê botões de reembolso/lista de preços no PDV.
+
+---
+
+# ETAPA 35 — AUTOMAÇÃO DE COTAÇÕES: WHATSAPP E COLETOR DE SITES/INSTAGRAM
+
+> **🤖 CHECKPOINT:** *"Na Etapa 35 vamos receber as tabelas de preço que os fornecedores mandam no WhatsApp direto no sistema e criar um coletor externo que lê sites e Instagram dos fornecedores, sem pesar no PDV. Implementar ativo, desativado ou pular cada item?"*
+
+*Origem: PRD "Simplificação do PDV e Automação de Cotações de Fornecedores", seções 3 e 4 (incorporado em 18/11/2026).*
+
+## 35.1. O que já existe (Etapa 18) e o que muda
+| Já existe | Muda nesta etapa |
+| :--- | :--- |
+| Leitor de orçamento por **PDF, foto ou texto colado** (`boteco.importar.orcamento`), com parser próprio e leitura de foto por IA de visão | Passa a receber **automaticamente** pelo WhatsApp, sem ninguém colar nada |
+| Leitura do **Instagram** dentro do Odoo (cron 8h e 14h, `instaloader`) | ⚠️ Migra para o **coletor externo** (regra do PRD de origem: robôs não rodam no servidor do PDV) e passa a rodar **1 vez por dia** (decisão do dono, 18/11/2026), às **8:00** (horário configurável). |
+| **Radar de preços** (`boteco.historico.preco`), economia nos congelados e fornecedor mais barato na lista de compras | Recebe as novas origens (`whatsapp`, `site`) e mostra tudo "mastigado" na **Lista de compras** |
+
+## 35.2. Leitor de cotações pelo WhatsApp
+
+### a) Conectar o WhatsApp lendo um QR Code (decisão do dono, 18/11/2026)
+Funciona como o **WhatsApp Web**: o sistema mostra um QR Code e o dono adiciona o Bar5 como **dispositivo conectado** no próprio WhatsApp. Não precisa de número novo nem da API oficial paga.
+
+* **Serviço de conexão:** contêiner **Evolution API** (código aberto, baseado em Baileys — já citado no PRD Master) no `docker-compose`, perfil opcional, só na rede interna (sem porta exposta para a internet); o Odoo conversa com ele por token.
+* **Tela `Configuração › Sistema › WhatsApp (conectar)`** (só dono):
+  1. Botão **Conectar WhatsApp** → o Odoo pede ao Evolution API uma sessão e **mostra o QR Code** na tela (atualiza sozinho quando expira, a cada ~40 s).
+  2. Instruções ao lado, com imagens: *no celular, abra o WhatsApp › ⋮ (ou Configurações) › **Dispositivos conectados** › **Conectar um dispositivo** › aponte para este QR Code*.
+  3. Conectou → mostra **"Conectado: (11) 9xxxx-xxxx"**, desde quando, e o botão **Desconectar**.
+  4. Situação sempre visível (conectado / desconectado / celular sem internet); se cair, aviso no Painel do dono e na página **Saúde do sistema**, com botão **Conectar de novo** (novo QR).
+* **O que ele lê:** só as mensagens recebidas de números **cadastrados como fornecedor** (abaixo). Mensagens de clientes, família e grupos são **descartadas na hora, sem gravar** — o sistema nunca mostra nem guarda conversas que não sejam de fornecedor. Nada é enviado pelo sistema sem o dono pedir.
+* **Riscos (registrar no checkpoint):** conexão não oficial pode ser desconectada ou, em casos raros, gerar bloqueio do número pelo WhatsApp; se o celular ficar muitos dias sem internet, a sessão cai e precisa ler o QR de novo. **Decidido (18/11/2026): conectar o WhatsApp do bar**, não o número pessoal do dono — se a conexão cair ou for bloqueada, o número pessoal não é afetado.
+
+### b) Leitura das cotações
+* **Gatilho:** mensagem recebida de um número **cadastrado como celular de fornecedor** (`res.partner`, número normalizado com DDI). Número desconhecido é ignorado sem gravar o conteúdo (só aparece "1 número não cadastrado mandou mensagem com preços", se o parser achar preço, para o dono cadastrar o fornecedor se quiser).
+* **Processamento:** texto → parser de linhas (o mesmo da Etapa 18); PDF → texto do PDF; foto → leitura por IA de visão (chave configurada pelo dono). Itens casados com o insumo pelo **de-para do fornecedor** (que aprende sozinho).
+* **Ação final:** grava em `boteco.historico.preco` (origem `whatsapp`) e atualiza o preço do fornecedor no produto (`product.supplierinfo`). Itens que não casaram ficam numa fila **"Cotações para revisar"**, com 1 toque para ligar ao insumo.
+* **Endpoint:** `POST /boteco/compras/whatsapp/<token>` (webhook que o Evolution API chama a cada mensagem recebida) com resposta imediata e processamento **em fila** (job assíncrono), para não segurar o servidor.
+
+## 35.3. Coletor de sites e Instagram (serviço externo)
+* **Serviço separado** `boteco-coletor` (contêiner próprio no `docker-compose`, perfil opcional), em Python com **Playwright** (sites com JavaScript) e a leitura de Instagram que hoje está no Odoo.
+* **Fontes:** por fornecedor — URL do site/encarte, perfil do Instagram e **palavras-chave** (ex.: "Cerveja 600ml", "Oferta", "R$"). Cadastradas no Odoo; o coletor busca a lista pela API.
+* **Agenda:** Instagram **1 vez por dia** (padrão 8:00); sites **2 vezes por semana** (padrão seg e qui, 8:00). Horários configuráveis na tela.
+* **Envio:** `POST /boteco/compras/api/cotacoes` com os itens extraídos (produto, preço, unidade, fonte, link, data). O Odoo aplica o mesmo casamento e o radar.
+* **Resultado:** relatório **Compras inteligentes › Ofertas encontradas** e coluna **"Melhor preço encontrado (onde)"** na Lista de compras.
+
+## 35.4. Requisitos não funcionais
+* **Segurança:** cada integração tem **token próprio** (gerado e trocável na tela, guardado como parâmetro protegido); a API aceita só HTTPS; valida que a origem é **fornecedor cadastrado e marcado como confiável**; limite de requisições por minuto; tudo registrado (quem enviou, quando, quantos itens).
+* **Estabilidade:** robôs e leitura de imagem rodam **fora do processo do PDV** (contêiner do coletor e fila de jobs); falha de um fornecedor não para os outros; tempo máximo por fonte.
+* **Usabilidade:** o comprador nunca vê robô, código ou log — só a Lista de compras com o melhor preço e de onde veio, e a fila curta "Cotações para revisar".
+* **LGPD:** guardar só o necessário da mensagem (itens e preços); o arquivo original fica 30 dias e é apagado.
+* **Riscos:** raspagem de Instagram pode violar os termos e ser bloqueada a qualquer momento (já registrado na Etapa 18); a conexão do WhatsApp por QR Code é não oficial (ver 35.2.a).
+
+## 35.5. Critérios de aceite
+1. A tela **WhatsApp (conectar)** mostra o QR Code; depois de ler no celular (Dispositivos conectados), a tela passa a mostrar "Conectado" com o número.
+2. Fornecedor cadastrado manda "Cebola kg 3,50" no WhatsApp do bar → em até 1 min aparece no Radar de preços com origem WhatsApp.
+3. Mensagem de número não cadastrado (cliente, grupo, família) não gera preço e **não fica gravada**.
+4. Celular desconectado → aviso na Saúde do sistema e no Painel do dono em até 10 min.
+5. Chamada à API sem token ou com token errado é recusada (401) e registrada.
+6. Coletor fora do ar ou site lento não afeta o tempo de resposta do PDV (teste de carga simples).
+7. A Lista de compras mostra o melhor preço encontrado e a fonte.
+8. Instagram é lido 1 vez por dia, no horário configurado.
+
+---
+
+# ETAPA 36 — QR CODE EXPRESSO DE BEBIDAS (REPETIR COM 1 TOQUE)
+
+> **🤖 CHECKPOINT:** *"Na Etapa 36 vamos criar um segundo QR Code em cada mesa, só de bebidas: o cliente vê as bebidas que a mesa já pediu (cada uma separada), repete só a que quiser com 1 toque, ou escolhe outra no cardápio de bebidas, e o pedido vai direto para o bar. Implementar ativo, desativado ou pular?"*
+
+*Origem: PRD "QR Code Expresso de Bebidas" (incorporado em 18/11/2026), ajustado aos nomes reais do código.*
+
+## 36.1. Identificação das bebidas
+* **Sem campo novo `is_bebida`**: o cadastro já tem o **tipo de consumo** (Etapa 12). Bebida = `boteco_tipo_consumo` em (`bebida_giro`, `garrafa`, `agua`). Criar só o campo calculado e armazenado `boteco_e_bebida` (com opção de marcar à mão quando o tipo não estiver preenchido), usado no filtro.
+* Subcategorias do cardápio de bebidas = **Categorias do tablet** já existentes (Cervejas, Chopes, Drinks, Sem álcool…).
+* **Fechada × preparada** (decisão do dono, 18/11/2026) — novo campo no produto `boteco_bebida_preparada` (Sim/Não):
+  * **Fechada** (cerveja long neck/600 ml, lata, refrigerante, água): o garçom **abre na frente do cliente**; se vier a mais, **a mercadoria volta para o estoque**. → **sem teto**.
+  * **Preparada** (caipirinha, drinks, doses, suco natural e **chope** — decidido pelo dono: é tirado na hora e não volta): → **com teto** por envio (36.3).
+  * Preenchimento automático na primeira vez: categoria/tipo de consumo `bebida_giro` com setor Bar e ficha técnica (kit) ou nome contendo "chope", "caipi", "drink", "dose", "suco" = preparada; o resto = fechada. O dono confere e ajusta item a item no cadastro.
+
+## 36.2. Dois QR Codes por mesa (`boteco_cardapio/report/qr_mesas_report.xml`)
+* O cartão de cada mesa passa a ter **dois códigos identificados visualmente**: **"Cardápio completo"** e **"🍺 Bebidas rápido"**.
+* O 2º usa o **mesmo endereço do autoatendimento da mesa** com o parâmetro `modo=bebidas`. (O PRD de origem cita `/mesa/<token_mesa>`; no sistema, a mesa é identificada pelo `table_identifier` do autoatendimento do Odoo — manter esse formato.)
+
+## 36.3. Regras no servidor (`boteco_autoatendimento`)
+* `controllers/mesa.py`: com `modo=bebidas`, devolver duas listas:
+  1. **Suas bebidas na mesa** — cada bebida já pedida na sessão atual da mesa, **uma linha por bebida**, com a **última quantidade pedida** (ex.: Chope 300 ml — último pedido: 2 · Caipirinha — último pedido: 1). Amplia o "Pedir de novo" que já existe (hoje mostra só o produto, sem a última quantidade).
+  2. **Cardápio de bebidas** — só itens com `boteco_e_bebida`, agrupados por categoria do tablet.
+* **Envio direto, sem quarentena:** pedido com origem `qr_bebidas` **não passa pelo motor N+X** (Etapa 14) e vai **direto para o bar** (ticket na impressora do setor Bar e KDS), entrando na conta da mesa.
+* **Regras decididas pelo dono (18/11/2026):**
+  * **QR de bebidas sempre disponível, sem liberação do garçom:** nenhum celular precisa ser liberado para pedir pelo QR de bebidas (diferente do QR do cardápio completo, Etapa 4). Continuam valendo as travas que não dependem do garçom: o pedido só sai **de dentro da rede Wi-Fi do bar** e o QR só vale para a **mesa aberta e a sessão atual** (código de sessão que muda a cada abertura — foto antiga do QR não pede).
+  * **Bebida fechada (cerveja, lata, refrigerante, água): sem teto** — o garçom abre na frente do cliente e o que sobrar volta ao estoque.
+  * **Bebida preparada (drinks, caipirinhas, doses, chope): com teto por envio.** Acima do teto, **só as preparadas daquele envio** esperam a confirmação do garçom (tela de conferência da Etapa 16); as fechadas do mesmo envio saem na hora. Teto padrão = o limite de bebidas da Etapa 14 (`max(4, 2 × pessoas + 2)`), configurável na Central de Recursos (ex.: "no máximo 6 drinks por envio").
+  * **Anti-toque repetido e trava de envio duplo** (`anti_burst.js`, Etapa 16) — **mantém**.
+  * **Confirmação de idade (+18)** na primeira bebida alcoólica da mesa — **mantém** (obrigação legal; o pedido espera o garçom só nessa primeira vez da mesa, não a cada pedido).
+
+## 36.4. Tela do cliente (`boteco_mesa.js` / `boteco_mesa.xml`)
+* Com `modo=bebidas`, abre direto na visão de bebidas:
+  * **Seção 1 — "Suas bebidas na mesa"** (só se já houve bebida): uma linha por bebida com o atalho **"+2"** (a última quantidade) e o seletor **– / +**. O cliente toca só no que quer repetir.
+  * **Seção 2 — "Todas as bebidas"**: catálogo filtrado (sem comidas, porções e sobremesas), com busca rápida e **– / +**.
+  * **Barra fixa embaixo:** resumo do que foi escolhido e botão **"Enviar para o bar"** (1 toque).
+* Respeita tema, letra grande, ofertas relâmpago e happy hour já existentes.
+
+## 36.5. Critérios de aceite
+1. O PDF de QR Codes gera os **dois códigos** por mesa, identificados.
+2. Mesa que pediu 2× Chope e 1× Caipirinha: ao ler o QR de bebidas, as duas aparecem **separadas**; dá para repetir só a caipirinha (1 toque + enviar) ou só os 2 chopes.
+3. Só bebidas aparecem no cardápio desse QR.
+4. **"Enviar para o bar"** não cai na tela de conferência do garçom (quarentena), sai na impressora do bar e entra na conta da mesa.
+5. A primeira bebida alcoólica da mesa ainda pede a confirmação de idade.
+6. Dois toques rápidos em "Enviar" geram **um** pedido só.
+7. Celular novo pede pelo QR de bebidas **sem** o garçom liberar; fora da rede do bar ou com foto de uma sessão antiga, não pede.
+8. Mesa de 4 pessoas pede **20 latas** de refrigerante de uma vez: sai direto para o bar (sem teto).
+9. Mesa de 4 pessoas pede **12 caipirinhas** (teto padrão 10): as caipirinhas esperam a confirmação do garçom; as cervejas do mesmo envio saem na hora.
+10. Flag `qr_bebidas` desligada: o PDF volta a ter um código só e `modo=bebidas` abre o cardápio normal.
+
+---
+
 # PARTE 2 — ITENS DESCARTADOS (E POR QUÊ)
 
 | Recurso pago | Decisão | Motivo |
@@ -313,6 +554,8 @@ Hoje não existe menu de fornecedores dentro do Boteco. Criar `Compras e estoque
 | KDS do Odoo (Preparation Display) | Não desenvolver | O KDS próprio (Etapas 5, 15 e 21) é mais completo. |
 | WhatsApp oficial (Enterprise) | Não desenvolver agora | Links `wa.me` resolvem sem custo; integração com provedor fica para quando houver contrato. |
 | Studio, Sign, Documents | Não desenvolver | Não resolvem dor do boteco hoje. |
+| Desinstalar o `boteco_b2b` (PRD de simplificação) | Trocado por **esconder com chave** | Painel do dono e Fiscal dependem dele; desinstalar removeria os dois com dados (Etapa 34.2). |
+| Campo novo `is_bebida` (PRD do QR de bebidas) | Trocado pelo **tipo de consumo** que já existe | Evita cadastro duplicado (Etapa 36.1). |
 
 ---
 
@@ -321,11 +564,46 @@ Hoje não existe menu de fornecedores dentro do Boteco. Criar `Compras e estoque
 | Ordem | Etapa | Esforço estimado |
 | :--- | :--- | :--- |
 | 1 | 26 + 32 Ajuda rápida e OdooBot | Médio (painel, busca, 40 artigos, script de fotos) |
-| 2 | 31 Fidelidade | Pequeno (configuração + integração) |
-| 3 | 27 Reservas | Grande |
-| 4 | 28 Conferência de cartões e Pix | Grande (leitores de extrato por adquirente) |
-| 5 | 30 Checklists e manutenção | Médio |
-| 6 | 29 Escala e ponto | Grande |
+| 2 | 33 Primeiros passos (usa os artigos da 26) | Médio |
+| 3 | 34 Simplificação do PDV e perfis | Pequeno/Médio (configuração e permissões) |
+| 4 | 36 QR Code expresso de bebidas | Médio |
+| 5 | 31 Fidelidade | Pequeno (configuração + integração) |
+| 6 | 27 Reservas | Grande |
+| 7 | 28 Conferência de cartões e Pix | Grande (leitores de extrato por adquirente) |
+| 8 | 35 Cotações por WhatsApp e coletor externo | Grande (serviço externo + fila) |
+| 9 | 30 Checklists e manutenção | Médio |
+| 10 | 29 Escala e ponto | Grande |
+
+### Decisões do dono (18/11/2026)
+| Etapa | Decisão |
+| :--- | :--- |
+| 35 | **Instagram 1 vez por dia** (padrão 8:00); sites 2 vezes por semana. |
+| 35 | **WhatsApp conectado por QR Code** (como o WhatsApp Web: *Dispositivos conectados*), via Evolution API; lê só mensagens de fornecedores cadastrados. |
+| 36 | **QR de bebidas sempre disponível, sem liberação do garçom** (continua exigindo a rede do bar e a sessão atual da mesa). |
+| 36 | **Sem teto** para bebida fechada (cerveja, lata, refrigerante, água — o garçom abre na frente e o que sobra volta); **com teto** para bebida preparada (drinks, caipirinhas, doses, chope). |
+| 35 | **Conectar o WhatsApp do bar** (número do bar), não o número pessoal do dono. |
+| 36 | **Chope conta como bebida preparada** (com teto): é tirado na hora e não volta ao estoque. |
+
+### Situação da implementação (18–19/11/2026)
+Todas as etapas foram implementadas **ativas** (chave ligada na Central de Recursos), com testes automáticos (265 passando) e conferência no navegador.
+
+| Etapa | Módulo | Observação |
+| :--- | :--- | :--- |
+| 26 + 32 | `boteco_base` (+ artigos em cada módulo) | Ajuda rápida (F1 / Ctrl+K), OdooBot desligado |
+| 33 | `boteco_base` | Primeiros passos |
+| 34 | vários | B2B escondido por chave; contador; PDV enxuto |
+| 36 | `boteco_autoatendimento`, `boteco_cardapio` | QR de bebidas. Corrigido junto: pedido do celular não muda mais o nº de pessoas da mesa |
+| 31 | `boteco_fidelidade` | Programas modelo **desligados** (o dono liga o que quiser). 10 chopes = 9 pagos + o 10º grátis, que entra sozinho |
+| 27 | `boteco_reservas` | Sinal por Pix em chave separada, **desligada** |
+| 28 | `boteco_conciliacao` | Leitor de extrato reconhece o cabeçalho sozinho (ou configurado por maquininha); banco por OFX |
+| 35 | `boteco_cotacoes` + contêineres `evolution` e `coletor` (perfis opcionais) | Ligar no servidor: `scripts/ligar_cotacoes.sh` (ver `docs/whatsapp.md`). Instagram passou para 1x por dia (8:00, configurável) |
+| 30 | `boteco_checklists` | Modelos prontos vêm **guardados** ("Usar este modelo"); planos de manutenção já criados |
+| 29 | `boteco_escala` | Ponto em `/boteco/ponto` (atalho na tela de PIN) |
+
+### Decisões em aberto (perguntar no checkpoint da etapa)
+| Etapa | Decisão | Sugestão |
+| :--- | :--- | :--- |
+| 34 | Desinstalar de vez o B2B no futuro? | Só depois de separar as dependências do Painel e do Fiscal |
 
 ---
 
@@ -376,6 +654,9 @@ Hoje não existe menu de fornecedores dentro do Boteco. Criar `Compras e estoque
 [RDC 216/2004 – Prefeitura do Rio](https://vigilanciasanitaria.prefeitura.rio/wp-content/uploads/sites/84/2023/05/RESOLUcaORDCN216ANVISA.pdf) ·
 [Cartilha de Boas Práticas – Rio](https://vigilanciasanitaria.prefeitura.rio/wp-content/uploads/sites/84/2023/06/CartilhaBoasPraticas_Livreto.pdf) ·
 [Legisweb – RDC 216](https://www.legisweb.com.br/legislacao/?id=100899)
+
+**Assistente de configuração / primeiros passos:**
+[NN/g – Wizards](https://www.nngroup.com/articles/wizards/) · [Kompassify – onboarding wizard guide](https://kompassify.com/blog/onboarding-wizard-guide) · [saasui.design – onboarding checklist](https://www.saasui.design/blog/saas-onboarding-checklist-ux-patterns) · [Microsoft – User Assistance (wizards)](https://learn.microsoft.com/en-us/previous-versions/ms997609(v=msdn.10)) · [PatternFly – wizard](https://patternfly.org/components/wizard/design-guidelines) · [LogRocket – quando não usar wizard](https://blog.logrocket.com/ux-design/creating-setup-wizard-when-you-shouldnt/) · [Appcues – onboarding checklist](https://appcues.com/blog/customer-onboarding-checklist) · [Supademo – product onboarding checklist](https://supademo.com/blog/product-onboarding-checklist) · [Lightspeed – getting started](https://k-series-support.lightspeedhq.com/hc/articles/1260805671909) · [SkyTab – POS install checklist](https://www.skytab.com/blog/pos-system-install-checklist) · [Lavu – restaurant POS setup](https://lavu.com/how-to-set-up-a-pos-system-for-a-restaurant) · [Platter – setup launch checklist](https://intercom.help/platter-management-inc/en/articles/12947684-platter-setup-launch-checklist)
 
 **OdooBot:**
 [Fórum Odoo – desligar o OdooBot](https://www.odoo.com/forum/help-1/odoo-12-get-rid-of-that-odoo-bot-144178)

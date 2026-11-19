@@ -47,6 +47,9 @@ class BotecoPinController(http.Controller):
     @http.route("/boteco/inicio", type="http", auth="user", website=False, sitemap=False)
     def inicio(self, **kw):
         """Cada perfil cai direto na tela do seu trabalho."""
+        # Etapa 33: enquanto a implantação não termina, o dono cai nos Primeiros passos
+        if request.env["boteco.implantacao"].pendente_para(request.env.user):
+            return request.redirect("/odoo/action-boteco_base.action_boteco_primeiros_passos", local=True)
         url = request.env.user._boteco_url_inicio() or "/odoo"
         return request.redirect(url, local=True)
 

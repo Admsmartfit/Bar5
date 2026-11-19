@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="loyalty_program_view_form_boteco" model="ir.ui.view">
+        <field name="name">loyalty.program.form.boteco</field>
+        <field name="model">loyalty.program</field>
+        <field name="inherit_id" ref="loyalty.loyalty_program_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='program_type']" position="after">
+                <field name="boteco_auto_resgate" invisible="program_type != 'loyalty'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_boteco_fidelidade" model="ir.actions.act_window">
+        <field name="name">Fidelidade e cashback</field>
+        <field name="res_model">loyalty.program</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('program_type', 'in', ('loyalty', 'coupons', 'promotion', 'buy_x_get_y'))]</field>
+        <field name="context">{'active_test': False, 'default_program_type': 'loyalty'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Crie um programa de fidelidade</p>
+            <p>Ex.: a cada 10 chopes, 1 grátis. O cliente é identificado pelo celular, sem cartão.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_boteco_fidelidade" name="Fidelidade e cashback" parent="boteco_base.menu_boteco_sec_delivery"
+              action="action_boteco_fidelidade" sequence="60" groups="boteco_base.group_gerente"/>
+</odoo>

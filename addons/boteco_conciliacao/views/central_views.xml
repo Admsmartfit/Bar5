@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_company_view_form_central_conciliacao" model="ir.ui.view">
+        <field name="name">res.company.form.boteco.central.conciliacao</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="boteco_base.res_company_view_form_central_recursos"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='g5']/div[hasclass('o_bt_recursos')]" position="inside">
+                <div class="o_bt_recurso">
+                    <field name="boteco_flag_conciliacao_cartoes" widget="boolean_toggle" nolabel="1"/>
+                    <div class="o_bt_recurso__texto">
+                        <label for="boteco_flag_conciliacao_cartoes" class="o_bt_recurso__nome"/>
+                        <div class="o_bt_recurso__ajuda">Cada venda no cartão/Pix vira um "a receber" com taxa e data. Importe o extrato da maquininha (CSV/Excel) e do banco (OFX): o sistema confere taxa cobrada x contratada, repasse atrasado, estorno e Pix sem venda. Card no Painel do dono.</div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

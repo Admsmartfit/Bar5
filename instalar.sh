@@ -38,7 +38,7 @@ E_LINUX=0; [[ "$(uname -s)" == "Linux" ]] && E_LINUX=1
 
 # Módulos nativos (seção 5 do PRD) + módulos próprios
 MODULOS_NATIVOS="point_of_sale,pos_restaurant,pos_self_order,stock,purchase,mrp,pos_mrp,sale_management,account,l10n_br"
-MODULOS_BOTECO="${MODULOS_BOTECO:-boteco_base,boteco_cardapio,boteco_pos,boteco_kds,boteco_autoatendimento,boteco_estoque,boteco_cozinha_central,boteco_b2b,boteco_painel,boteco_fiscal_export}"
+MODULOS_BOTECO="${MODULOS_BOTECO:-boteco_base,boteco_cardapio,boteco_pos,boteco_kds,boteco_autoatendimento,boteco_estoque,boteco_cozinha_central,boteco_b2b,boteco_painel,boteco_fiscal_export,boteco_fidelidade,boteco_reservas,boteco_conciliacao,boteco_cotacoes,boteco_checklists,boteco_escala}"
 MODULOS="${MODULOS:-$MODULOS_NATIVOS,$MODULOS_BOTECO}"
 
 # -----------------------------------------------------------------------------
@@ -158,6 +158,7 @@ if [[ "$BANCO_EXISTE" != "1" ]]; then
     < scripts/configurar_empresa.py
 else
   echo "Banco '${BOTECO_DB}' já existe. Atualizando módulos boteco_*..."
+  instalar_modulos -i "$MODULOS_BOTECO"   # módulo novo (ex.: boteco_fidelidade) é instalado
   instalar_modulos -u "$MODULOS_BOTECO"
 fi
 

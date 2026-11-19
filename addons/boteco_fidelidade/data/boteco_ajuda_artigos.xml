@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos da fidelidade (Etapa 31). -->
+<odoo>
+    <record id="ajuda_fidelidade_ligar" model="boteco.ajuda.artigo">
+        <field name="codigo">fidelidade_ligar</field>
+        <field name="titulo">Ligar a fidelidade (10 chopes = 1 grátis, cashback)</field>
+        <field name="resumo">Programas prontos que você só liga: cartão de chope, cashback de 5% e cupom de aniversário.</field>
+        <field name="sinonimos">fidelidade, cashback, pontos, cartao fidelidade, chope gratis, programa de pontos, cupom aniversario</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Confira em &lt;b&gt;Configuração › Liga / desliga recursos › Opcionais&lt;/b&gt; se &lt;b&gt;Fidelidade / cashback&lt;/b&gt; está ligado.&lt;/li&gt;&lt;li&gt;Abra &lt;b&gt;Vendas › Delivery e clientes › Fidelidade e cashback&lt;/b&gt; e, em &lt;b&gt;Filtros&lt;/b&gt;, mostre os arquivados.&lt;/li&gt;&lt;li&gt;Abra o programa (ex.: &lt;b&gt;Cartão fidelidade: 10 chopes = 1 grátis&lt;/b&gt;), confira os produtos e o prêmio e marque &lt;b&gt;Ativo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Feche e abra o caixa de novo para o PDV carregar o programa.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_fidelidade.menu_boteco_fidelidade"/>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_fidelidade_caixa" model="boteco.ajuda.artigo">
+        <field name="codigo">fidelidade_caixa</field>
+        <field name="titulo">Dar pontos de fidelidade para o cliente no caixa</field>
+        <field name="resumo">Identifique o cliente pelo celular na conta. Os pontos entram ao pagar; o prêmio entra sozinho quando completa.</field>
+        <field name="sinonimos">pontos cliente, identificar cliente, celular cliente, resgatar premio, chope gratis, saldo fidelidade</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Na conta, toque em &lt;b&gt;Cliente&lt;/b&gt; e busque pelo &lt;b&gt;celular&lt;/b&gt; (ou cadastre: nome e celular bastam).&lt;/li&gt;&lt;li&gt;Os pontos aparecem no rodapé da conta e entram quando a conta é paga.&lt;/li&gt;&lt;li&gt;Pagou 9 chopes? O 10º entra sozinho na conta com preço zero.&lt;/li&gt;&lt;li&gt;Happy hour, oferta relâmpago e consumo de funcionário não somam pontos.&lt;/li&gt;&lt;li&gt;No tablet/QR, o cliente vê o saldo em &lt;b&gt;Minha conta&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › conta › Cliente</field>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+</odoo>

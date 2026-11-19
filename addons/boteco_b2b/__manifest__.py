@@ -34,6 +34,7 @@ Programado aqui:
         "views/sale_order_views.xml",
         "report/romaneio_report.xml",
         "views/menus.xml",
+        "data/b2b_recursos_data.xml",
     ],
     "installable": True,
 }

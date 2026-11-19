@@ -6,9 +6,13 @@ import { ControlButtons } from "@point_of_sale/app/screens/product_screen/contro
 import { makeAwaitable } from "@point_of_sale/app/store/make_awaitable_dialog";
 import { SelectionPopup } from "@point_of_sale/app/utils/input_popups/selection_popup";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
-import { pedirAutorizacao } from "@boteco_pos/app/autorizacao_popup";
+import { botecoPode, pedirAutorizacao } from "@boteco_pos/app/autorizacao_popup";
 
 patch(ControlButtons.prototype, {
+    /** Etapa 34: lista de preços, reembolso e posição fiscal só para quem tem a permissão (gerente). */
+    get botecoAvancados() {
+        return botecoPode(this.pos, "pode_botoes_avancados_pdv");
+    },
     get botecoTaxaValor() {
         return this.pos.botecoValorTaxa(this.currentOrder);
     },

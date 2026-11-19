@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Gerente cuida da manutenção preventiva (módulo gratuito 'maintenance') -->
+    <record id="boteco_base.group_gerente" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('maintenance.group_equipment_manager'))]"/>
+    </record>
+</odoo>

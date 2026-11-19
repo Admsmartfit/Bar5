@@ -12,7 +12,7 @@ cd "$(dirname "$0")/.."
 set -a; # shellcheck disable=SC1091
 source .env; set +a
 DB="${BOTECO_DB:-boteco}"
-MODULOS="boteco_base,boteco_cardapio,boteco_pos,boteco_kds,boteco_autoatendimento,boteco_estoque,boteco_cozinha_central,boteco_b2b,boteco_painel,boteco_fiscal_export"
+MODULOS="boteco_base,boteco_cardapio,boteco_pos,boteco_kds,boteco_autoatendimento,boteco_estoque,boteco_cozinha_central,boteco_b2b,boteco_painel,boteco_fiscal_export,boteco_fidelidade,boteco_reservas,boteco_conciliacao,boteco_cotacoes,boteco_checklists,boteco_escala"
 
 GIT=(git -c "safe.directory=$(pwd)")
 # Versão de antes: se a atualização falhar, o código volta junto com o banco
@@ -36,9 +36,9 @@ echo "    guardado: $DUMP"
 echo "==> 2/4 Parando o Odoo"
 docker compose stop odoo
 
-echo "==> 3/4 Atualizando módulos"
+echo "==> 3/4 Atualizando módulos (módulo novo é instalado)"
 LOG="$(mktemp)"
-if docker compose run --rm -T odoo odoo -c /etc/odoo/odoo.conf -d "$DB" --workers=0 -u "$MODULOS" \
+if docker compose run --rm -T odoo odoo -c /etc/odoo/odoo.conf -d "$DB" --workers=0 -i "$MODULOS" -u "$MODULOS" \
      --stop-after-init --logfile= > "$LOG" 2>&1 && ! grep -qE " (ERROR|CRITICAL) " "$LOG"; then
   echo "==> 4/4 Subindo de novo"
   docker compose up -d odoo

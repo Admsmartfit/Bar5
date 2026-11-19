@@ -6,11 +6,11 @@
 
     <!-- Finanças > Relatórios -->
     <menuitem id="menu_boteco_relatorios" name="Relatórios" parent="boteco_base.menu_boteco_top_financas" sequence="10"
-              groups="boteco_base.group_gerente"/>
+              groups="boteco_base.group_gerente,boteco_base.group_contador"/>
     <menuitem id="menu_fechamento_dia" name="Fechamento do dia (redução Z)" parent="menu_boteco_relatorios" sequence="10"
               action="action_fechamento_dia"/>
     <menuitem id="menu_dre" name="DRE (resultado por frente)" parent="menu_boteco_relatorios" sequence="20"
-              action="action_dre" groups="boteco_base.group_dono"/>
+              action="action_dre" groups="boteco_base.group_dono,boteco_base.group_contador"/>
     <menuitem id="menu_rateio_taxa" name="Rateio da taxa de serviço" parent="menu_boteco_relatorios" sequence="30"
               action="action_boteco_rateio_taxa"/>
 

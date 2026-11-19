@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das telas deste módulo. Gerado; editar e regenerar. -->
+<odoo>
+    <record id="ajuda_abrir_caixa" model="boteco.ajuda.artigo">
+        <field name="codigo">abrir_caixa</field>
+        <field name="titulo">Abrir o caixa da noite</field>
+        <field name="resumo">Começar a vender: informar o troco que está na gaveta.</field>
+        <field name="sinonimos">abrir caixa, iniciar, comecar a vender, troco, abertura</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Entre com o seu PIN: o PDV abre sozinho.&lt;/li&gt;&lt;li&gt;Na tela de abertura, conte o dinheiro da gaveta e digite o valor.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Abrir caixa&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">Início › Minha tela</field>
+        <field name="perfis">caixa,gerente,dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_fechar_caixa" model="boteco.ajuda.artigo">
+        <field name="codigo">fechar_caixa</field>
+        <field name="titulo">Fechar o caixa (contagem cega)</field>
+        <field name="resumo">Você conta o dinheiro antes de ver quanto deveria ter.</field>
+        <field name="sinonimos">fechar caixa, fechamento, contagem cega, sobra, falta, encerrar</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;No PDV, toque no menu ☰ › &lt;b&gt;Fechar caixa&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Conte as notas e moedas e digite o que contou (sem ver o esperado).&lt;/li&gt;&lt;li&gt;Confirme. A diferença aparece em &lt;b&gt;Vendas › Salão e caixa › Fechamentos de caixa&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;O sistema não deixa fechar com mesa aberta.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_pos.menu_boteco_fechamentos"/>
+        <field name="acao_xmlid">boteco_pos.action_boteco_fechamento_caixa</field>
+        <field name="perfis">caixa,gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_sangria_reforco" model="boteco.ajuda.artigo">
+        <field name="codigo">sangria_reforco</field>
+        <field name="titulo">Fazer sangria ou reforço de caixa</field>
+        <field name="resumo">Tirar ou colocar dinheiro na gaveta, sempre com motivo.</field>
+        <field name="sinonimos">sangria, reforco, retirar dinheiro, colocar troco, gaveta</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;No PDV, toque em ☰ › &lt;b&gt;Entrada/Saída de dinheiro&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha sangria ou reforço, digite o valor e o motivo.&lt;/li&gt;&lt;li&gt;Sem permissão, o gerente digita o PIN.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › ☰ › Entrada/Saída de dinheiro</field>
+        <field name="perfis">caixa,gerente,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_tirar_taxa" model="boteco.ajuda.artigo">
+        <field name="codigo">tirar_taxa</field>
+        <field name="titulo">Tirar a taxa de serviço ou o couvert</field>
+        <field name="resumo">Só com permissão ou PIN do gerente; fica registrado.</field>
+        <field name="sinonimos">taxa de servico, 10%, gorjeta, tirar taxa, couvert, remover</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Na conta, na tela de pagamento, toque em &lt;b&gt;Tirar taxa&lt;/b&gt; (ou &lt;b&gt;Tirar couvert&lt;/b&gt;).&lt;/li&gt;&lt;li&gt;Escolha o motivo. Sem permissão, o gerente digita o PIN.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › conta › Pagamento</field>
+        <field name="perfis">caixa,gerente,dono</field>
+        <field name="sequencia">40</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_cpf_nota" model="boteco.ajuda.artigo">
+        <field name="codigo">cpf_nota</field>
+        <field name="titulo">Colocar CPF ou CNPJ na nota</field>
+        <field name="resumo">Para o cliente que pede nota com CPF.</field>
+        <field name="sinonimos">cpf, cnpj, nota, cpf na nota, documento</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Na tela de pagamento, toque em &lt;b&gt;CPF na nota&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Digite o número. O sistema confere se é válido.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › conta › Pagamento</field>
+        <field name="perfis">caixa,gerente,dono</field>
+        <field name="sequencia">50</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_dividir_conta" model="boteco.ajuda.artigo">
+        <field name="codigo">dividir_conta</field>
+        <field name="titulo">Dividir a conta</field>
+        <field name="resumo">Em partes iguais ou por item.</field>
+        <field name="sinonimos">dividir, rachar, separar conta, cada um paga</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Na tela de pagamento, toque em &lt;b&gt;Dividir igual&lt;/b&gt; e diga entre quantas pessoas.&lt;/li&gt;&lt;li&gt;Para dividir por item, use &lt;b&gt;Dividir&lt;/b&gt; na conta e escolha os itens de cada um.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › conta › Pagamento</field>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">60</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_pessoas_mesa" model="boteco.ajuda.artigo">
+        <field name="codigo">pessoas_mesa</field>
+        <field name="titulo">Ajustar quantas pessoas estão na mesa</field>
+        <field name="resumo">Esse número decide os copos na 1ª cerveja e a conferência dos pedidos do tablet.</field>
+        <field name="sinonimos">pessoas na mesa, clientes, quantidade de pessoas, chegou mais gente, convidados</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra a mesa no PDV: o número já vem com os lugares da mesa.&lt;/li&gt;&lt;li&gt;Toque no número de pessoas e ajuste se chegou ou saiu gente.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › mesa › número de pessoas</field>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">70</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_transferir_juntar" model="boteco.ajuda.artigo">
+        <field name="codigo">transferir_juntar</field>
+        <field name="titulo">Transferir ou juntar mesas</field>
+        <field name="resumo">Levar a conta para outra mesa ou unir mesas para um grupo grande.</field>
+        <field name="sinonimos">transferir mesa, juntar mesa, mudar de mesa, unir mesas, grupo grande</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;No mapa de mesas, arraste uma mesa sobre a outra para juntar.&lt;/li&gt;&lt;li&gt;Para transferir, abra a conta e toque em &lt;b&gt;Transferir&lt;/b&gt; e escolha a mesa de destino.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › mapa de mesas</field>
+        <field name="perfis">garcom,caixa,gerente,dono</field>
+        <field name="sequencia">80</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_couvert_musica" model="boteco.ajuda.artigo">
+        <field name="codigo">couvert_musica</field>
+        <field name="titulo">Programar a música e o couvert</field>
+        <field name="resumo">Nos dias de música, o couvert entra sozinho por pessoa.</field>
+        <field name="sinonimos">couvert, musica ao vivo, artista, show, agenda</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Vendas › Salão e caixa › Música e couvert&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o dia, o artista e o valor do couvert por pessoa.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_pos.menu_boteco_agenda"/>
+        <field name="acao_xmlid">boteco_pos.action_boteco_agenda_musica</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">90</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_contas_pedidos" model="boteco.ajuda.artigo">
+        <field name="codigo">contas_pedidos</field>
+        <field name="titulo">Achar uma conta ou pedido antigo</field>
+        <field name="resumo">Todas as contas, abertas e pagas.</field>
+        <field name="sinonimos">conta antiga, pedido, historico de vendas, comanda, procurar conta</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Vendas › Salão e caixa › Contas (pedidos)&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Busque pela mesa, data ou referência.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_pos.menu_boteco_contas"/>
+        <field name="acao_xmlid">point_of_sale.action_pos_pos_form</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">100</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_entregas" model="boteco.ajuda.artigo">
+        <field name="codigo">entregas</field>
+        <field name="titulo">Controlar as entregas (delivery)</field>
+        <field name="resumo">Bairro, taxa, motoboy e situação de cada entrega.</field>
+        <field name="sinonimos">delivery, entrega, motoboy, levar, bairro</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Ligue o delivery na Central de Recursos e cadastre os bairros e taxas.&lt;/li&gt;&lt;li&gt;Abra &lt;b&gt;Vendas › Delivery e clientes › Entregas&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Lance a conta, o endereço, o bairro (a taxa vem sozinha) e o motoboy.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Saiu&lt;/b&gt; e depois em &lt;b&gt;Entregue&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_pos.menu_boteco_entregas"/>
+        <field name="acao_xmlid">boteco_pos.action_boteco_entregas</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">110</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_acerto_motoboy" model="boteco.ajuda.artigo">
+        <field name="codigo">acerto_motoboy</field>
+        <field name="titulo">Fazer o acerto dos motoboys</field>
+        <field name="resumo">Quantas entregas cada um fez e quanto receber.</field>
+        <field name="sinonimos">acerto motoboy, pagar motoboy, repasse, entregas do dia</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Vendas › Delivery e clientes › Acerto de motoboys&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o período e toque em &lt;b&gt;Calcular&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_pos.menu_boteco_acerto_motoboy"/>
+        <field name="acao_xmlid">boteco_pos.action_boteco_acerto_motoboy</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">120</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_bairros_taxas" model="boteco.ajuda.artigo">
+        <field name="codigo">bairros_taxas</field>
+        <field name="titulo">Cadastrar bairros e taxas de entrega</field>
+        <field name="resumo">A taxa entra sozinha na entrega.</field>
+        <field name="sinonimos">bairro, taxa de entrega, frete, regiao</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Salão e produção › Bairros e taxas de entrega&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Adicione cada bairro com a taxa e o tempo estimado.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_pos.menu_boteco_bairros"/>
+        <field name="acao_xmlid">boteco_pos.action_boteco_bairro</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">130</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_clientes_sumidos" model="boteco.ajuda.artigo">
+        <field name="codigo">clientes_sumidos</field>
+        <field name="titulo">Chamar de volta clientes que sumiram e aniversariantes</field>
+        <field name="resumo">Lista com mensagem pronta para mandar pelo WhatsApp.</field>
+        <field name="sinonimos">cliente sumido, aniversario, aniversariante, whatsapp do cliente, fidelizar, chamar cliente</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Vendas › Delivery e clientes › Clientes sumidos e aniversariantes&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Gerar lista&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Em cada cliente, toque em &lt;b&gt;WhatsApp&lt;/b&gt;: a mensagem já vai escrita.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_pos.menu_boteco_regua_crm"/>
+        <field name="acao_xmlid">boteco_pos.action_boteco_regua_crm</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">140</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_whatsapp_cliente" model="boteco.ajuda.artigo">
+        <field name="codigo">whatsapp_cliente</field>
+        <field name="titulo">Cadastrar o WhatsApp e o aniversário de um cliente</field>
+        <field name="resumo">Para a régua de clientes sumidos e aniversariantes.</field>
+        <field name="sinonimos">whatsapp cliente, celular do cliente, zap cliente, aniversario do cliente, telefone cliente</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra o cliente (na conta do PDV ou em Contatos).&lt;/li&gt;&lt;li&gt;Preencha o &lt;b&gt;Celular&lt;/b&gt; com DDD e o &lt;b&gt;Aniversário&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Salve.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">PDV › conta › Cliente</field>
+        <field name="perfis">caixa,gerente,dono</field>
+        <field name="sequencia">150</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_motivos" model="boteco.ajuda.artigo">
+        <field name="codigo">motivos</field>
+        <field name="titulo">Cadastrar motivos de desconto e cancelamento</field>
+        <field name="resumo">A lista que aparece quando alguém cancela ou dá desconto.</field>
+        <field name="sinonimos">motivo, cancelamento, desconto, cortesia, justificativa</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Salão e produção › Motivos&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Adicione ou edite os motivos de cada tipo.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_pos.menu_boteco_motivos"/>
+        <field name="acao_xmlid">boteco_pos.action_boteco_motivo</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">160</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_portaria" model="boteco.ajuda.artigo">
+        <field name="codigo">portaria</field>
+        <field name="titulo">Conferir na saída se a comanda está paga (portaria)</field>
+        <field name="resumo">Bipa a comanda: verde paga, vermelho pendente.</field>
+        <field name="sinonimos">portaria, saida, seguranca, comanda paga, conferir saida</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Ligue o recurso na Central de Recursos.&lt;/li&gt;&lt;li&gt;Abra &lt;b&gt;Início › Portaria (validar saída)&lt;/b&gt; no aparelho da porta.&lt;/li&gt;&lt;li&gt;Bipe o código da comanda ou digite &lt;i&gt;MESA 5&lt;/i&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_pos.menu_boteco_portaria"/>
+        <field name="acao_xmlid">boteco_pos.action_boteco_portaria_url</field>
+        <field name="sequencia">170</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_maquininha_link" model="boteco.ajuda.artigo">
+        <field name="codigo">maquininha_link</field>
+        <field name="titulo">Cobrar direto na maquininha (Smart POS)</field>
+        <field name="resumo">O PDV abre o app da maquininha já com o valor.</field>
+        <field name="sinonimos">maquininha, smart pos, stone, cielo, cartao, deeplink, cobrar no cartao</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Ponto de Venda › Configuração › Formas de pagamento&lt;/b&gt; e a forma (ex.: Cartão).&lt;/li&gt;&lt;li&gt;No campo &lt;b&gt;Link da maquininha&lt;/b&gt;, cole o endereço que a empresa da maquininha informar.&lt;/li&gt;&lt;li&gt;Ligue as &lt;b&gt;Tags rápidas e DeepLink&lt;/b&gt; na Central de Recursos.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">Ponto de Venda › Configuração › Formas de pagamento</field>
+        <field name="acao_xmlid">point_of_sale.action_pos_payment_method_form</field>
+        <field name="destacar_campo">boteco_deeplink</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">180</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_abrir_caixa" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_fechar_caixa')])]"/>
+    </record>
+    <record id="ajuda_fechar_caixa" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_abrir_caixa'), ref('ajuda_sangria_reforco')])]"/>
+    </record>
+    <record id="ajuda_entregas" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_acerto_motoboy'), ref('ajuda_bairros_taxas')])]"/>
+    </record>
+    <record id="ajuda_clientes_sumidos" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_whatsapp_cliente')])]"/>
+    </record>
+</odoo>

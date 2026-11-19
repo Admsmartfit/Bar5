@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Página pública de reserva (Etapa 27): celular primeiro, letras grandes, poucos campos -->
+    <template id="estilo_reserva" name="Boteco: estilo da reserva">
+        <style>
+            .rs { max-width: 560px; margin: 0 auto; padding: 16px; font-size: 17px; }
+            .rs h1 { font-size: 26px; margin: 8px 0 4px; }
+            .rs h2 { font-size: 19px; margin: 18px 0 8px; }
+            .rs label { display: block; font-weight: 700; margin: 12px 0 4px; }
+            .rs input, .rs select, .rs textarea { width: 100%; box-sizing: border-box; font-size: 18px; padding: 12px;
+                border: 1px solid var(--bt-borda, #cbd5e1); border-radius: 10px; background: var(--bt-superficie, #fff); color: inherit; }
+            .rs .linha { display: flex; gap: 12px; } .rs .linha > div { flex: 1; }
+            .rs .faixas { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+            .rs .faixas label { margin: 0; }
+            .rs .faixas input { position: absolute; opacity: 0; width: 1px; }
+            .rs .faixas span { display: block; text-align: center; padding: 12px 0; border-radius: 10px; font-weight: 700;
+                border: 2px solid var(--bt-primaria, #0b6e4f); cursor: pointer; }
+            .rs .faixas input:checked + span { background: var(--bt-primaria, #0b6e4f); color: #fff; }
+            .rs .faixas .lotado span { border-style: dashed; opacity: .45; text-decoration: line-through; cursor: not-allowed; }
+            .rs .botao { display: block; width: 100%; margin-top: 18px; min-height: 54px; border: 0; border-radius: 14px;
+                font-size: 19px; font-weight: 800; background: var(--bt-primaria, #0b6e4f); color: #fff; text-align: center;
+                line-height: 54px; text-decoration: none; cursor: pointer; }
+            .rs .botao--sec { background: transparent; color: inherit; border: 2px solid currentColor; }
+            .rs .aviso { padding: 12px; border-radius: 10px; background: #fef3c7; color: #78350f; margin: 12px 0; }
+            .rs .ok { padding: 14px; border-radius: 12px; background: #dcfce7; color: #14532d; margin: 12px 0; font-weight: 700; }
+            .rs .politica { font-size: 15px; opacity: .8; margin-top: 14px; }
+            .rs .escondido { position: absolute; left: -5000px; }
+            .rs .pix { word-break: break-all; font-family: monospace; font-size: 13px; padding: 10px; border-radius: 8px;
+                border: 1px dashed currentColor; }
+        </style>
+    </template>
+
+    <template id="pagina_indisponivel" name="Boteco: reservas indisponíveis">
+        <t t-call="boteco_base.layout_boteco">
+            <t t-set="head"><t t-call="boteco_reservas.estilo_reserva"/></t>
+            <main class="rs">
+                <h1 t-esc="empresa.name"/>
+                <p class="aviso">Reservas indisponíveis no momento. Venha nos visitar!</p>
+            </main>
+        </t>
+    </template>
+
+    <template id="pagina_reservar" name="Boteco: reservar mesa">
+        <t t-call="boteco_base.layout_boteco">
+            <t t-set="head"><t t-call="boteco_reservas.estilo_reserva"/></t>
+            <main class="rs">
+                <h1>Reservar mesa</h1>
+                <div t-esc="empresa.name" style="opacity:.8"/>
+                <p t-if="erro" class="aviso" t-esc="erro"/>
+                <!-- 1) Dia e pessoas: recarrega os horários livres -->
+                <form method="get" action="/reservar" class="linha">
+                    <div>
+                        <label for="dia">Dia</label>
+                        <input type="date" id="dia" name="dia" t-att-value="dia" t-att-min="hoje" t-att-max="ate"
+                               onchange="this.form.submit()"/>
+                    </div>
+                    <div>
+                        <label for="pessoas">Pessoas</label>
+                        <input type="number" id="pessoas" name="pessoas" min="1" max="50" t-att-value="pessoas"
+                               onchange="this.form.submit()"/>
+                    </div>
+                </form>
+                <!-- 2) Horário e contato -->
+                <form method="post" action="/reservar">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="dia" t-att-value="dia"/>
+                    <input type="hidden" name="pessoas" t-att-value="pessoas"/>
+                    <div class="escondido" aria-hidden="true"><input type="text" name="site" tabindex="-1" autocomplete="off"/></div>
+                    <h2>Horário</h2>
+                    <t t-set="livres" t-value="[f for f in faixas if f['livre']]"/>
+                    <div t-if="faixas" class="faixas">
+                        <label t-foreach="faixas" t-as="f" t-att-class="'' if f['livre'] else 'lotado'">
+                            <input type="radio" name="faixa" t-att-value="f['faixa']" t-att-disabled="not f['livre']"
+                                   t-att-checked="f['faixa'] == livres[0]['faixa'] if livres else False"/>
+                            <span t-esc="f['faixa']"/>
+                        </label>
+                    </div>
+                    <p t-else="" class="aviso">Sem horários de reserva neste dia. Escolha outro dia.</p>
+                    <p t-if="faixas and not livres" class="aviso">Lotado para <t t-esc="pessoas"/> pessoas neste dia. Entre na lista de espera: avisamos se abrir uma mesa.</p>
+                    <label for="nome">Seu nome</label>
+                    <input id="nome" name="nome" required="required" maxlength="80" autocomplete="name"/>
+                    <label for="celular">Celular (WhatsApp)</label>
+                    <input id="celular" name="celular" required="required" inputmode="tel" maxlength="30" autocomplete="tel"
+                           placeholder="(11) 98888-7777"/>
+                    <label for="observacao">Observação (opcional)</label>
+                    <input id="observacao" name="observacao" maxlength="200" placeholder="Aniversário, cadeirinha…"/>
+                    <button t-if="livres" type="submit" class="botao">Reservar</button>
+                    <button t-if="faixas and not livres" type="submit" name="espera" value="1" class="botao botao--sec">Entrar na lista de espera</button>
+                    <p class="politica" t-esc="empresa.boteco_reserva_politica"/>
+                    <p class="politica">Usamos seu nome e celular só para esta reserva.</p>
+                </form>
+            </main>
+        </t>
+    </template>
+
+    <template id="pagina_reserva" name="Boteco: minha reserva">
+        <t t-call="boteco_base.layout_boteco">
+            <t t-set="head"><t t-call="boteco_reservas.estilo_reserva"/></t>
+            <main class="rs">
+                <h1>Sua reserva</h1>
+                <div t-esc="empresa.name" style="opacity:.8"/>
+                <div t-if="reserva.estado == 'confirmada'" class="ok">Reserva confirmada!</div>
+                <div t-elif="reserva.estado == 'pendente'" class="aviso">Falta o sinal para confirmar.</div>
+                <div t-elif="reserva.estado == 'cancelada'" class="aviso">Reserva cancelada.</div>
+                <div t-elif="reserva.estado == 'chegou'" class="ok">Bom proveito!</div>
+                <div t-else="" class="aviso">Reserva expirada.</div>
+                <p><b t-esc="quando"/> · <t t-esc="reserva.pessoas"/> pessoas · <t t-esc="reserva.cliente_nome"/></p>
+                <p t-if="reserva.observacao" t-esc="reserva.observacao"/>
+                <t t-if="pix">
+                    <h2>Sinal: R$ <t t-esc="'%.2f' % reserva.sinal_valor"/></h2>
+                    <p>Pague pelo Pix (aponte a câmera ou copie o código). O valor vira crédito na sua conta no dia.</p>
+                    <img t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=240&amp;height=240' % pix_qr"
+                         style="width:240px;height:240px;display:block;margin:0 auto;background:#fff;padding:8px;border-radius:8px" alt="QR Pix"/>
+                    <div class="pix" t-esc="pix"/>
+                </t>
+                <p t-elif="reserva.estado == 'pendente'">Vamos chamar você no WhatsApp para combinar o sinal.</p>
+                <form t-if="reserva.estado in ('pendente', 'confirmada')" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <button t-if="reserva.estado == 'confirmada'" type="submit" name="acao" value="confirmar" class="botao">Confirmo, estarei lá</button>
+                    <button type="submit" name="acao" value="cancelar" class="botao botao--sec"
+                            onclick="return confirm('Cancelar a reserva?')">Preciso cancelar</button>
+                </form>
+                <p class="politica" t-esc="empresa.boteco_reserva_politica"/>
+            </main>
+        </t>
+    </template>
+
+    <template id="pagina_espera" name="Boteco: lista de espera">
+        <t t-call="boteco_base.layout_boteco">
+            <t t-set="head"><t t-call="boteco_reservas.estilo_reserva"/></t>
+            <main class="rs">
+                <h1>Você está na lista de espera</h1>
+                <p class="ok">Obrigado, <t t-esc="nome"/>! Se abrir uma mesa, chamamos você no WhatsApp.</p>
+                <a href="/reservar" class="botao botao--sec">Voltar</a>
+            </main>
+        </t>
+    </template>
+</odoo>

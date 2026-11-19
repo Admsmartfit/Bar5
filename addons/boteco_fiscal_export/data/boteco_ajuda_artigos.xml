@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das telas deste módulo. Gerado; editar e regenerar. -->
+<odoo>
+    <record id="ajuda_exportar_fiscal" model="boteco.ajuda.artigo">
+        <field name="codigo">exportar_fiscal</field>
+        <field name="titulo">Mandar as vendas para emissão das notas</field>
+        <field name="resumo">Arquivo para o emissor fiscal ou o contador.</field>
+        <field name="sinonimos">fiscal, exportar, contador, emissao, nota fiscal, nfce</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Finanças › Fiscal › Exportar para emissão&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o período e gere o arquivo.&lt;/li&gt;&lt;li&gt;Depois, importe o retorno em &lt;b&gt;Importar retorno&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_fiscal_export.menu_fiscal_exportar"/>
+        <field name="acao_xmlid">boteco_fiscal_export.action_fiscal_exportar</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+</odoo>

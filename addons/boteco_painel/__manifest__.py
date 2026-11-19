@@ -33,6 +33,7 @@ Programado aqui:
         "report/fechamento_dia_report.xml",
         "report/dre_report.xml",
         "views/menus.xml",
+        "data/boteco_ajuda_artigos.xml",
     ],
     "assets": {
         "web.assets_backend": [

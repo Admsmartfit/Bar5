@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boteco_adquirente_gerente,adquirente gerente,model_boteco_adquirente,boteco_base.group_gerente,1,1,1,1
+access_boteco_adquirente_contador,adquirente contador,model_boteco_adquirente,boteco_base.group_contador,1,0,0,0
+access_boteco_adquirente_taxa_gerente,taxa gerente,model_boteco_adquirente_taxa,boteco_base.group_gerente,1,1,1,1
+access_boteco_adquirente_taxa_contador,taxa contador,model_boteco_adquirente_taxa,boteco_base.group_contador,1,0,0,0
+access_boteco_recebivel_gerente,recebivel gerente,model_boteco_recebivel,boteco_base.group_gerente,1,1,0,0
+access_boteco_recebivel_contador,recebivel contador,model_boteco_recebivel,boteco_base.group_contador,1,1,0,0
+access_boteco_extrato_gerente,extrato gerente,model_boteco_extrato,boteco_base.group_gerente,1,1,1,1
+access_boteco_extrato_contador,extrato contador,model_boteco_extrato,boteco_base.group_contador,1,1,1,1
+access_boteco_extrato_linha_gerente,extrato linha gerente,model_boteco_extrato_linha,boteco_base.group_gerente,1,1,1,1
+access_boteco_extrato_linha_contador,extrato linha contador,model_boteco_extrato_linha,boteco_base.group_contador,1,1,1,1

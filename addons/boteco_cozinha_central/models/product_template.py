@@ -35,6 +35,23 @@ class ProductTemplate(models.Model):
         "Reserva mínima do bar", help="Estoque que fica guardado para o salão do bar. "
         "Vendas B2B não podem consumir esta reserva. 0 = sem reserva.")
 
+    # Etapa 34: congelado (só baixa estoque) x preparado/frito (baixa o congelado e vai para o KDS)
+    boteco_aviso_producao = fields.Char("Aviso de produção", compute="_compute_boteco_aviso_producao")
+
+    @api.depends("boteco_setor_id", "boteco_produzido_cozinha", "available_in_pos", "bom_ids.type")
+    def _compute_boteco_aviso_producao(self):
+        for tmpl in self:
+            aviso = False
+            kit = any(b.type == "phantom" for b in tmpl.bom_ids)
+            if tmpl.available_in_pos and kit and not tmpl.boteco_setor_id:
+                aviso = ("Este item tem ficha técnica (kit), mas não vai para a produção: a venda só baixa o estoque, "
+                         "sem ticket na chapa. Se ele é preparado (ex.: frito), escolha em \"Vai para\" o setor.")
+            elif tmpl.available_in_pos and tmpl.boteco_produzido_cozinha and tmpl.boteco_setor_id:
+                aviso = ("Congelado da cozinha central com setor: cada venda manda ticket para a produção. "
+                         "Para vender congelado (para levar), deixe \"Vai para\" vazio; para vender frito, "
+                         "crie um item \"Porção … (frita)\" com ficha técnica (kit) que usa este congelado.")
+            tmpl.boteco_aviso_producao = aviso
+
     @api.onchange("boteco_produzido_cozinha")
     def _onchange_boteco_produzido_cozinha(self):
         if self.boteco_produzido_cozinha:

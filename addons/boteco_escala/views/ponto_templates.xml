@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="tela_ponto" name="Boteco: bater ponto">
+        <t t-call="boteco_base.layout_boteco">
+            <t t-set="head">
+                <style>
+                    .pt { max-width: 900px; margin: 0 auto; padding: 16px; }
+                    .pt h1 { font-size: 26px; }
+                    .pt .pessoas { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+                    .pt .pessoas label { display: block; }
+                    .pt .pessoas input { position: absolute; opacity: 0; width: 1px; }
+                    .pt .pessoas span { display: block; padding: 18px 8px; text-align: center; border-radius: 14px; font-weight: 700;
+                        border: 2px solid var(--bt-borda, #cbd5e1); cursor: pointer; }
+                    .pt .pessoas input:checked + span { background: var(--bt-primaria, #0b6e4f); border-color: var(--bt-primaria, #0b6e4f); color: #fff; }
+                    .pt input[type=password] { width: 100%; max-width: 320px; font-size: 28px; padding: 12px; text-align: center;
+                        letter-spacing: 8px; border-radius: 12px; border: 1px solid var(--bt-borda, #cbd5e1); }
+                    .pt .botao { min-height: 60px; min-width: 260px; border: 0; border-radius: 14px; font-size: 20px; font-weight: 800;
+                        background: var(--bt-primaria, #0b6e4f); color: #fff; margin-top: 14px; }
+                    .pt .ok { padding: 16px; border-radius: 12px; background: #dcfce7; color: #14532d; font-size: 20px; font-weight: 800; }
+                    .pt .erro { padding: 14px; border-radius: 12px; background: #fee2e2; color: #7f1d1d; font-weight: 700; }
+                </style>
+                <meta t-if="mensagem" http-equiv="refresh" content="6;url=/boteco/ponto"/>
+            </t>
+            <main class="pt">
+                <h1>Ponto · <t t-esc="empresa.name"/></h1>
+                <p t-if="not ligado" class="erro">O ponto pelo PIN está desligado.</p>
+                <p t-if="mensagem" class="ok" t-esc="mensagem"/>
+                <p t-if="erro" class="erro" t-esc="erro"/>
+                <form t-if="ligado and not mensagem" method="post" action="/boteco/ponto">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <p>Toque no seu nome e digite o PIN. Uma vez = entrada; de novo = saída.</p>
+                    <div class="pessoas">
+                        <label t-foreach="pessoas" t-as="p">
+                            <input type="radio" name="user_id" t-att-value="p['id']" required="required"/>
+                            <span><t t-esc="p['nome']"/><br/><small t-esc="p['perfil']"/></span>
+                        </label>
+                    </div>
+                    <p style="margin-top:16px"><input type="password" name="pin" inputmode="numeric" maxlength="6"
+                                                       autocomplete="off" required="required" placeholder="PIN"/></p>
+                    <button type="submit" class="botao">Registrar</button>
+                </form>
+            </main>
+        </t>
+    </template>
+
+    <!-- Atalho na tela de PIN -->
+    <template id="tela_pin_ponto" inherit_id="boteco_base.tela_pin" name="Boteco: link do ponto na tela de PIN">
+        <xpath expr="//a[@href='/web/login']" position="before">
+            <a class="bt-link" href="/boteco/ponto" style="margin-right:16px">Bater ponto</a>
+        </xpath>
+    </template>
+</odoo>

@@ -14,3 +14,6 @@ from . import ir_ui_menu
 from . import boteco_atualizacao
 from . import ir_http
 from . import res_config_settings
+from . import odoobot
+from . import boteco_ajuda
+from . import boteco_implantacao

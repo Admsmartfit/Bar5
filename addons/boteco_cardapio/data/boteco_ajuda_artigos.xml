@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das telas deste módulo. Gerado; editar e regenerar. -->
+<odoo>
+    <record id="ajuda_cardapio_item" model="boteco.ajuda.artigo">
+        <field name="codigo">cardapio_item</field>
+        <field name="titulo">Cadastrar um item do cardápio</field>
+        <field name="resumo">Foto, nome, preço e para onde vai (bar ou chapa). Leva menos de um minuto.</field>
+        <field name="sinonimos">produto, cadastrar produto, item novo, prato, bebida, preco, cardapio</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Cardápio › Itens do cardápio&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Coloque a foto, o nome e o &lt;b&gt;preço&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha a &lt;b&gt;Categoria no tablet&lt;/b&gt; e &lt;b&gt;Vai para&lt;/b&gt; (Bar ou Chapa).&lt;/li&gt;&lt;li&gt;Preencha o &lt;b&gt;tipo de consumo&lt;/b&gt; e quantas pessoas o item serve.&lt;/li&gt;&lt;li&gt;Salve. Já aparece no PDV e no tablet.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cardapio.menu_boteco_cardapio_itens"/>
+        <field name="acao_xmlid">boteco_cardapio.action_boteco_cardapio</field>
+        <field name="destacar_campo">list_price</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="telas">boteco_cardapio.action_boteco_cardapio,product.template</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_item_acabou" model="boteco.ajuda.artigo">
+        <field name="codigo">item_acabou</field>
+        <field name="titulo">Marcar que um item acabou</field>
+        <field name="resumo">Some do tablet e do QR na hora, sem apagar o produto.</field>
+        <field name="sinonimos">acabou, esgotado, sem estoque, tirar do cardapio, voltou</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Cardápio › Itens do cardápio&lt;/b&gt; e o item.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Acabou&lt;/b&gt;. Quando chegar de novo, toque em &lt;b&gt;Voltou&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cardapio.menu_boteco_cardapio_itens"/>
+        <field name="acao_xmlid">boteco_cardapio.action_boteco_cardapio</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_tipo_consumo" model="boteco.ajuda.artigo">
+        <field name="codigo">tipo_consumo</field>
+        <field name="titulo">Tipo de consumo, rendimento e utensílios do item</field>
+        <field name="resumo">Base da conferência de pedidos do tablet e dos avisos de copos, taças e pratos.</field>
+        <field name="sinonimos">tipo de consumo, serve quantas pessoas, rendimento, utensilio, copos, tacas, prato compartilhado, bebida</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra o item em &lt;b&gt;Cardápio › Itens do cardápio&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Em &lt;b&gt;Consumo e utensílios&lt;/b&gt;, escolha o tipo (prato individual, compartilhado, bebida de giro, garrafa…).&lt;/li&gt;&lt;li&gt;Diga quantas pessoas ele serve e quais utensílios mandar (copos na 1ª cerveja, taças no vinho…).&lt;/li&gt;&lt;li&gt;Salve.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cardapio.menu_boteco_cardapio_itens"/>
+        <field name="acao_xmlid">boteco_cardapio.action_boteco_cardapio</field>
+        <field name="destacar_campo">boteco_tipo_consumo</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_happy_hour" model="boteco.ajuda.artigo">
+        <field name="codigo">happy_hour</field>
+        <field name="titulo">Configurar o happy hour</field>
+        <field name="resumo">Preço especial em dias e horários definidos, que muda sozinho no tablet.</field>
+        <field name="sinonimos">happy hour, promocao horario, preco especial, desconto horario</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Cardápio › Happy hour&lt;/b&gt; e defina os dias e horários.&lt;/li&gt;&lt;li&gt;Em cada item, preencha o &lt;b&gt;Preço no happy hour&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cardapio.menu_boteco_happy_hour"/>
+        <field name="acao_xmlid">boteco_cardapio.action_boteco_happy_hour</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">40</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_oferta_relampago" model="boteco.ajuda.artigo">
+        <field name="codigo">oferta_relampago</field>
+        <field name="titulo">Criar uma oferta relâmpago</field>
+        <field name="resumo">Preço especial por pouco tempo ou até acabar a quantidade, em destaque no tablet.</field>
+        <field name="sinonimos">oferta, promocao, relampago, destaque, preco baixo</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Cardápio › Ofertas relâmpago&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o item, o preço, a quantidade e até quando vale.&lt;/li&gt;&lt;li&gt;Ative. Aparece no topo do tablet com o contador.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cardapio.menu_boteco_ofertas"/>
+        <field name="acao_xmlid">boteco_cardapio.action_boteco_oferta_relampago</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">50</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_planilha_cardapio" model="boteco.ajuda.artigo">
+        <field name="codigo">planilha_cardapio</field>
+        <field name="titulo">Cadastrar o cardápio inteiro por planilha</field>
+        <field name="resumo">Mais rápido para quem tem muitos itens.</field>
+        <field name="sinonimos">planilha, excel, importar, exportar, muitos produtos, cardapio completo</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Cardápio › Importar / exportar planilha&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Baixe o modelo, preencha no Excel e envie de volta.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cardapio.menu_boteco_planilha"/>
+        <field name="acao_xmlid">boteco_cardapio.action_boteco_cardapio_planilha</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">60</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_categorias_tablet" model="boteco.ajuda.artigo">
+        <field name="codigo">categorias_tablet</field>
+        <field name="titulo">Organizar as categorias do tablet</field>
+        <field name="resumo">As abas que o cliente vê no tablet (Cervejas, Drinks, Porções…).</field>
+        <field name="sinonimos">categoria, aba do tablet, grupo, secao do cardapio</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Cardápio › Categorias do tablet&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Crie ou renomeie as categorias e arraste para mudar a ordem.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cardapio.menu_boteco_categorias_pdv"/>
+        <field name="acao_xmlid">point_of_sale.product_pos_category_action</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">70</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_dados_fiscais" model="boteco.ajuda.artigo">
+        <field name="codigo">dados_fiscais</field>
+        <field name="titulo">Completar os dados fiscais dos itens</field>
+        <field name="resumo">NCM, CFOP e CST para a nota ser emitida depois.</field>
+        <field name="sinonimos">fiscal, ncm, cfop, cst, csosn, nota fiscal, imposto</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Cardápio › Itens sem dados fiscais&lt;/b&gt;: aparecem só os que faltam.&lt;/li&gt;&lt;li&gt;Abra cada um e preencha NCM, CFOP e CST/CSOSN (o contador informa).&lt;/li&gt;&lt;li&gt;Dica: preencha o padrão na categoria do produto para os próximos virem prontos.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cardapio.menu_boteco_sem_fiscal"/>
+        <field name="acao_xmlid">boteco_cardapio.action_boteco_produtos_sem_fiscal</field>
+        <field name="destacar_campo">boteco_ncm</field>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">80</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_mesas_plantas" model="boteco.ajuda.artigo">
+        <field name="codigo">mesas_plantas</field>
+        <field name="titulo">Cadastrar as mesas e quantos lugares cada uma tem</field>
+        <field name="resumo">O número de lugares é a base da conferência dos pedidos do tablet.</field>
+        <field name="sinonimos">mesa, planta, salao, lugares, cadeiras, layout</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Salão e produção › Mesas e plantas do salão&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Abra a planta (Salão, Área aberta) e ajuste as mesas e os &lt;b&gt;lugares&lt;/b&gt; de cada uma.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cardapio.menu_boteco_mesas"/>
+        <field name="acao_xmlid">pos_restaurant.action_restaurant_floor_form</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">90</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_qr_mesas" model="boteco.ajuda.artigo">
+        <field name="codigo">qr_mesas</field>
+        <field name="titulo">Imprimir os QR Codes das mesas</field>
+        <field name="resumo">Cartões para plastificar e deixar em cada mesa.</field>
+        <field name="sinonimos">qr code, qrcode, imprimir qr, cartao da mesa, autoatendimento</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Ponto de Venda › Configuração › Ponto de Venda&lt;/b&gt; e marque o seu PDV.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Imprimir › QR Code das mesas&lt;/b&gt;: sai um PDF com um cartão por mesa.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="caminho_manual">Ponto de Venda › Configuração › Ponto de Venda › Imprimir › QR Code das mesas</field>
+        <field name="acao_xmlid">point_of_sale.action_pos_config_kanban</field>
+        <field name="perfis">dono</field>
+        <field name="sequencia">100</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_cardapio_item" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_tipo_consumo'), ref('ajuda_item_acabou')])]"/>
+    </record>
+</odoo>

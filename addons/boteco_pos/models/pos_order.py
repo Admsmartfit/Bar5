@@ -20,7 +20,8 @@ CAMPOS_SERVIDOR_LINHA = {
     "boteco_qtd_enviada", "boteco_autorizado_por_id", "boteco_oferta_id", "boteco_preco_origem", "boteco_preco_fixado",
 }
 
-ORIGENS = [("garcom", "Garçom"), ("caixa", "Caixa"), ("tablet", "Tablet da mesa"), ("qr", "QR Code")]
+ORIGENS = [("garcom", "Garçom"), ("caixa", "Caixa"), ("tablet", "Tablet da mesa"), ("qr", "QR Code"),
+           ("qr_bebidas", "QR de bebidas")]
 PAGOS = ("paid", "done", "invoiced")
 
 
@@ -135,6 +136,8 @@ class PosOrder(models.Model):
 
     def _boteco_sincronizar_clientes_mesa(self):
         """O número de pessoas que o garçom/caixa digitou na conta vira o N da mesa (Etapa 13)."""
+        if self.env.context.get("boteco_autoatendimento"):
+            return  # pedido do tablet/QR: quem diz quantas pessoas há na mesa é o garçom, não o celular
         for pedido in self:
             if (pedido.state == "draft" and pedido.table_id and pedido.customer_count > 0
                     and pedido.boteco_origem in ("garcom", "caixa")
@@ -225,12 +228,16 @@ class PosOrder(models.Model):
         """Ponto de extensão (boteco_kds): imprime tickets e alimenta a tela de produção."""
         return True
 
-    def boteco_marcar_enviado(self):
-        """Marca tudo como enviado à produção a partir do servidor (usado pelo autoatendimento)."""
+    def boteco_marcar_enviado(self, linhas=None):
+        """Marca como enviado à produção a partir do servidor (usado pelo autoatendimento).
+
+        ``linhas``: só estas linhas (ex.: QR de bebidas manda as fechadas e segura as preparadas acima do teto).
+        """
         for pedido in self:
             snapshot = json.loads(pedido.last_order_preparation_change or "{}") or {}
             snapshot.setdefault("lines", {})
-            for linha in pedido.lines.filtered(lambda l: not l.skip_change and l.qty > 0):
+            escolhidas = pedido.lines if linhas is None else (pedido.lines & linhas)
+            for linha in escolhidas.filtered(lambda l: not l.skip_change and l.qty > 0):
                 chave = "%s - %s" % (linha.uuid, linha.note or "")
                 snapshot["lines"][chave] = {
                     "uuid": linha.uuid,

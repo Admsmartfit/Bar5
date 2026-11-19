@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos de escala e ponto (Etapa 29). -->
+<odoo>
+    <record id="ajuda_escala_montar" model="boteco.ajuda.artigo">
+        <field name="codigo">escala_montar</field>
+        <field name="titulo">Montar a escala da semana pelo movimento</field>
+        <field name="resumo">O sistema prevê os clientes por turno e sugere quantas pessoas de cada perfil; você monta e publica.</field>
+        <field name="sinonimos">escala, turno, folga, quantos garcons, custo de pessoal, publicar escala, plantao</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Configuração › Escala e ponto › Escala de turnos › Novo&lt;/b&gt; (semana começa na segunda).&lt;/li&gt;&lt;li&gt;Feriado, jogo ou show? Ponha o ajuste em &lt;b&gt;Feriado, jogo, show&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Toque em &lt;b&gt;Calcular previsão e sugestão&lt;/b&gt; e veja a aba &lt;b&gt;Previsão e sugestão&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Em &lt;b&gt;Escala&lt;/b&gt;, uma linha por pessoa e turno (ou arraste no &lt;b&gt;Escala no calendário&lt;/b&gt;). O custo e o % do faturamento aparecem no topo.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Publicar escala&lt;/b&gt;: se alguém ficou sem folga, com horas demais ou faltou gente num turno, o sistema avisa antes. Depois, toque no ícone do WhatsApp para mandar a escala de cada um.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_escala.menu_boteco_escala_semanas"/>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_escala_troca" model="boteco.ajuda.artigo">
+        <field name="codigo">escala_troca</field>
+        <field name="titulo">Ver minha escala e pedir troca de turno</field>
+        <field name="resumo">Sua escala fica em Início › Minha escala. A troca só vale depois que o gerente aprovar.</field>
+        <field name="sinonimos">minha escala, trocar turno, troca de folga, quando trabalho, horario</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Veja seus turnos em &lt;b&gt;Início › Minha escala&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Para trocar: &lt;b&gt;Início › Trocar turno › Novo&lt;/b&gt;, escolha o seu turno e quem vai assumir.&lt;/li&gt;&lt;li&gt;O gerente aprova em &lt;b&gt;Trocas de turno&lt;/b&gt;. Só depois disso a escala muda.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_escala.menu_boteco_minha_escala"/>
+        <field name="perfis">garcom,caixa,chapeiro,cozinheiro,gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_ponto" model="boteco.ajuda.artigo">
+        <field name="codigo">ponto_pin</field>
+        <field name="titulo">Bater ponto com o PIN e conferir horas</field>
+        <field name="resumo">No tablet da entrada: toque no nome e digite o PIN. O gerente vê atrasos e horas extras.</field>
+        <field name="sinonimos">ponto, bater ponto, entrada, saida, horas extras, atraso, folha de pagamento, presenca</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;No tablet (na rede do bar), abra &lt;b&gt;/boteco/ponto&lt;/b&gt; ou &lt;b&gt;Bater ponto&lt;/b&gt; na tela de PIN.&lt;/li&gt;&lt;li&gt;Toque no seu nome, digite o PIN e &lt;b&gt;Registrar&lt;/b&gt;: a 1ª vez é entrada, a 2ª é saída.&lt;/li&gt;&lt;li&gt;Gerente: &lt;b&gt;Configuração › Escala e ponto › Escalado x trabalhado&lt;/b&gt; mostra atrasos, faltas e horas extras; &lt;b&gt;Baixar CSV&lt;/b&gt; para a folha.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_escala.menu_boteco_ponto_tela"/>
+        <field name="perfis">garcom,caixa,chapeiro,cozinheiro,gerente,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+</odoo>

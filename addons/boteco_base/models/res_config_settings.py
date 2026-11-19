@@ -8,6 +8,9 @@ uma janela de propaganda ("Fazer upgrade agora"). Elas são identificadas pelo c
 from odoo import api, models
 
 WIDGET_PAGO = "upgrade_boolean"
+# Etapa 34: opções que instalariam frete/Correios/transportadora (o boteco só usa o delivery próprio)
+CAMPOS_BLOQUEADOS = ("module_delivery", "module_stock_fleet")
+PREFIXOS_BLOQUEADOS = ("module_delivery_",)
 
 
 def remover_opcoes_pagas(arch):
@@ -23,6 +26,15 @@ def remover_opcoes_pagas(arch):
         else:
             # Sub-opção paga dentro de uma opção gratuita: tira só a linha dela
             alvo = campo.getparent() if campo.getparent().tag == "div" else campo
+        if alvo.getparent() is not None:
+            alvo.getparent().remove(alvo)
+            removidas += 1
+    for campo in arch.xpath("//field[@name]"):
+        nome = campo.get("name")
+        if campo.getparent() is None or not (nome in CAMPOS_BLOQUEADOS or nome.startswith(PREFIXOS_BLOQUEADOS)):
+            continue
+        bloco = next(campo.iterancestors("setting"), None)
+        alvo = bloco if bloco is not None and bloco.xpath(".//field")[:1] == [campo] else campo
         if alvo.getparent() is not None:
             alvo.getparent().remove(alvo)
             removidas += 1

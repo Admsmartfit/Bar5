@@ -32,6 +32,8 @@ Etapa 1 do PRD: cadastros e cardápio.
         "wizard/boteco_cardapio_planilha_views.xml",
         "report/qr_mesas_report.xml",
         "views/menus.xml",
+        "data/boteco_ajuda_artigos.xml",
+        "data/boteco_bebidas_data.xml",
     ],
     "assets": {
         "point_of_sale._assets_pos": [

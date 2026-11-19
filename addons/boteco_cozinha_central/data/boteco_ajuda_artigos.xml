@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos das telas deste módulo. Gerado; editar e regenerar. -->
+<odoo>
+    <record id="ajuda_producao_dia" model="boteco.ajuda.artigo">
+        <field name="codigo">producao_dia</field>
+        <field name="titulo">Produzir na cozinha central (tela de produção)</field>
+        <field name="resumo">Iniciar, pesar e finalizar: a etiqueta sai sozinha.</field>
+        <field name="sinonimos">producao, cozinha central, congelado, fabricar, etiqueta, lote</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Produção › Cozinha central › Produção do dia&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Toque na produção para &lt;b&gt;Iniciar&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Ao terminar, digite o peso e toque em &lt;b&gt;Finalizar&lt;/b&gt;: sai a etiqueta com lote e validade.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cozinha_central.menu_tela_producao"/>
+        <field name="acao_xmlid">boteco_cozinha_central.action_tela_producao</field>
+        <field name="perfis">cozinheiro,dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_plano_producao" model="boteco.ajuda.artigo">
+        <field name="codigo">plano_producao</field>
+        <field name="titulo">Montar o plano de produção da semana</field>
+        <field name="resumo">O sistema sugere quanto produzir pela saída, pelos pedidos e pela capacidade.</field>
+        <field name="sinonimos">plano de producao, quanto produzir, sugestao, congelados, capacidade</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Produção › Cozinha central › Plano de produção&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Confira as sugestões e os avisos (capacidade, freezer, insumos faltando).&lt;/li&gt;&lt;li&gt;Ajuste as quantidades e toque em &lt;b&gt;Criar produções&lt;/b&gt;.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cozinha_central.menu_plano_producao"/>
+        <field name="acao_xmlid">boteco_cozinha_central.action_boteco_plano_producao</field>
+        <field name="perfis">cozinheiro,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_temperatura" model="boteco.ajuda.artigo">
+        <field name="codigo">temperatura</field>
+        <field name="titulo">Registrar a temperatura dos freezers</field>
+        <field name="resumo">Registro para a Vigilância Sanitária.</field>
+        <field name="sinonimos">temperatura, freezer, camara fria, appcc, vigilancia sanitaria</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Produção › Cozinha central › Temperaturas&lt;/b&gt; e clique em &lt;b&gt;Novo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Escolha o equipamento e digite a temperatura lida.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cozinha_central.menu_temperaturas"/>
+        <field name="acao_xmlid">boteco_cozinha_central.action_boteco_temperatura</field>
+        <field name="perfis">cozinheiro,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_rastreio_lote" model="boteco.ajuda.artigo">
+        <field name="codigo">rastreio_lote</field>
+        <field name="titulo">Rastrear um lote (de onde veio e para quem foi)</field>
+        <field name="resumo">Insumos usados e clientes que receberam.</field>
+        <field name="sinonimos">rastreio, lote, recall, validade, de onde veio</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Produção › Cozinha central › Rastreio de lote&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Digite o lote da etiqueta.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_cozinha_central.menu_rastreio"/>
+        <field name="acao_xmlid">boteco_cozinha_central.action_boteco_rastreio</field>
+        <field name="perfis">cozinheiro,dono</field>
+        <field name="sequencia">40</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_producao_dia" model="boteco.ajuda.artigo">
+        <field name="relacionados_ids" eval="[Command.set([ref('ajuda_plano_producao')])]"/>
+    </record>
+</odoo>

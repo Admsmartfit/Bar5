@@ -13,7 +13,11 @@ export class BotecoMesa extends Component {
 
     setup() {
         this.selfOrder = useSelfOrder();
-        this.state = useState({ painel: null, descanso: false, pin: "", erroPin: "" });
+        this.state = useState({
+            painel: null, descanso: false, pin: "", erroPin: "",
+            // QR expresso de bebidas: tela própria aberta de cara
+            bebidas: true, qtds: {}, busca: "", enviando: false,
+        });
         this.ultimoToque = Date.now();
         const tocar = () => {
             this.ultimoToque = Date.now();
@@ -129,6 +133,94 @@ export class BotecoMesa extends Component {
         }
         await this.selfOrder.addToCart(produto, 1, "", {}, {});
         this.selfOrder.notification.add(_t("%s no carrinho", produto.name), { type: "success" });
+    }
+
+    // ---------------------------------------------------------------- QR de bebidas (Etapa 36)
+    get modoBebidas() {
+        return this.selfOrder.botecoModoBebidas?.() && this.state.bebidas;
+    }
+
+    get bebidasMesa() {
+        return (this.mesa.bebidas_mesa || []).filter((b) => this.produto(b.product_id)?.self_order_available);
+    }
+
+    get gruposBebidas() {
+        const semAcento = (t) => (t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+        const termo = semAcento(this.state.busca).trim();
+        const grupos = {};
+        for (const p of this.selfOrder.models["product.product"].getAll()) {
+            if (!p.boteco_e_bebida || !p.self_order_available || p.boteco_esgotado) {
+                continue;
+            }
+            if (termo && !semAcento(p.display_name || p.name).includes(termo)) {
+                continue;
+            }
+            const categoria = p.pos_categ_ids?.[0]?.name || _t("Bebidas");
+            (grupos[categoria] ||= []).push(p);
+        }
+        return Object.entries(grupos)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([nome, produtos]) => ({ nome, produtos: produtos.sort((a, b) => a.name.localeCompare(b.name)) }));
+    }
+
+    qtd(id) {
+        return this.state.qtds[id] || 0;
+    }
+
+    mudar(id, delta) {
+        const nova = Math.max(0, this.qtd(id) + delta);
+        if (nova) {
+            this.state.qtds[id] = nova;
+        } else {
+            delete this.state.qtds[id];
+        }
+    }
+
+    get totalItens() {
+        return Object.values(this.state.qtds).reduce((a, b) => a + b, 0);
+    }
+
+    get totalValor() {
+        return Object.entries(this.state.qtds).reduce(
+            (soma, [id, q]) => soma + (this.produto(Number(id))?.lst_price || 0) * q, 0);
+    }
+
+    verCardapio() {
+        this.state.bebidas = false;
+    }
+
+    async enviarBebidas() {
+        if (!this.totalItens || this.state.enviando) {
+            return;
+        }
+        this.state.enviando = true;
+        try {
+            for (const [id, q] of Object.entries(this.state.qtds)) {
+                const produto = this.produto(Number(id));
+                if (produto) {
+                    await this.selfOrder.addToCart(produto, q, "", {}, {});
+                }
+            }
+            this.state.qtds = {};
+            // Como a página do carrinho do Odoo faz: o pedido leva a mesa do QR
+            const so = this.selfOrder;
+            if (!so.currentTable) {
+                so.currentTable = so.models["restaurant.table"].find((t) => t.identifier === so.botecoIdentificador);
+            }
+            so.currentOrder.update({ table_id: so.currentTable });
+            so.rpcLoading = true;
+            try {
+                await so.confirmOrder();
+            } finally {
+                so.rpcLoading = false;
+            }
+            if (!Object.keys(so.currentOrder?.changes || {}).length) {
+                so.notification.add(_t("Pedido recebido! Acompanhe em Minha conta."), { type: "success" });
+            }
+            this.selfOrder.botecoAtualizarStatus();
+        } finally {
+            this.state.enviando = false;
+        }
     }
 
     // ---------------------------------------------------------------- quiosque

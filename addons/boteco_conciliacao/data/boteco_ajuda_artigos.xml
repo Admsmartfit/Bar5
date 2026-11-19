@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos da conferência de cartões e Pix (Etapa 28). -->
+<odoo>
+    <record id="ajuda_maquininha_cadastrar" model="boteco.ajuda.artigo">
+        <field name="codigo">maquininha_cadastrar</field>
+        <field name="titulo">Cadastrar a maquininha e as taxas do contrato</field>
+        <field name="resumo">Informe a taxa e o prazo de cada modalidade e ligue as formas de pagamento do caixa à maquininha.</field>
+        <field name="sinonimos">maquininha, taxa cartao, stone, cielo, rede, pagseguro, mercado pago, adquirente, prazo repasse</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Finanças › Cartões e Pix › Maquininhas › Novo&lt;/b&gt; e digite o nome (ex.: Stone).&lt;/li&gt;&lt;li&gt;Em &lt;b&gt;Taxas contratadas&lt;/b&gt;, uma linha por modalidade: débito, crédito, parcelado (de/até parcelas) e Pix, com a taxa (%) e em quantos dias cai na conta.&lt;/li&gt;&lt;li&gt;Em cada forma de pagamento do caixa (Débito, Crédito, Pix), escolha a &lt;b&gt;Maquininha / banco&lt;/b&gt; e a &lt;b&gt;Modalidade&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;A partir daí, cada venda no cartão ou Pix vira um &lt;b&gt;A receber&lt;/b&gt; com a data prevista.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_conciliacao.menu_boteco_adquirentes"/>
+        <field name="perfis">gerente,dono,contador</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_conferir_cartoes" model="boteco.ajuda.artigo">
+        <field name="codigo">conferir_cartoes</field>
+        <field name="titulo">Conferir cartões e Pix (extrato da maquininha e do banco)</field>
+        <field name="resumo">Uma vez por semana: importe o extrato e veja taxa a mais, repasse atrasado, estorno e Pix sem venda.</field>
+        <field name="sinonimos">conciliacao, conferir cartao, extrato maquininha, ofx, extrato banco, repasse atrasado, taxa errada, pix sem venda, estorno, chargeback</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;No app/site da maquininha, baixe o relatório de vendas em CSV ou Excel. No banco, baixe o extrato em &lt;b&gt;OFX&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Em &lt;b&gt;Finanças › Cartões e Pix › Importar extrato › Novo&lt;/b&gt;, escolha o tipo, a maquininha e o arquivo e toque em &lt;b&gt;Importar e conferir&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Veja &lt;b&gt;Diferenças e atrasos&lt;/b&gt; (taxa acima da contratada mostra quanto você pagou a mais) e &lt;b&gt;Conferir (extrato)&lt;/b&gt; (o que o extrato tem e o caixa não).&lt;/li&gt;&lt;li&gt;Depois de resolver uma linha, toque em &lt;b&gt;Já conferi&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Se o arquivo não for reconhecido, informe os nomes das colunas no cadastro da maquininha.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_conciliacao.menu_boteco_extratos"/>
+        <field name="perfis">gerente,dono,contador</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+</odoo>

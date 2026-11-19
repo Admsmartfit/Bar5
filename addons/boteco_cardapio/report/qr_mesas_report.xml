@@ -28,9 +28,16 @@
                                     </div>
                                     <img t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=260&amp;height=260' % mesa['url']"
                                          style="width:260px;height:260px"/>
-                                    <div style="font-size:18px;font-weight:700;margin-top:6px">Aponte a câmera e peça pelo celular</div>
+                                    <div style="font-size:18px;font-weight:700;margin-top:6px">Cardápio completo: aponte a câmera e peça pelo celular</div>
                                     <div style="font-size:12px;color:#555;margin-top:4px">
                                         Conecte-se ao Wi-Fi do bar. O garçom libera seu celular no primeiro pedido.
+                                    </div>
+                                    <t t-set="url_bebidas" t-value="config._boteco_qr_bebidas(mesa['url'])"/>
+                                    <div t-if="url_bebidas" style="margin-top:10px;padding-top:10px;border-top:2px dashed #ccc">
+                                        <img t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=160&amp;height=160' % url_bebidas"
+                                             style="width:160px;height:160px"/>
+                                        <div style="font-size:18px;font-weight:700">🍺 Bebidas rápido</div>
+                                        <div style="font-size:12px;color:#555">Só bebidas, sem esperar o garçom (mesa aberta e Wi-Fi do bar).</div>
                                     </div>
                                     <div style="font-size:10px;color:#777;margin-top:6px">
                                         Privacidade: não pedimos cadastro. Telefone e CPF só se você informar, para a nota fiscal.

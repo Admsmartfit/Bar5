@@ -41,6 +41,7 @@ Programado aqui:
         "views/pos_order_views.xml",
         "report/fechamento_caixa_report.xml",
         "views/menus.xml",
+        "data/boteco_ajuda_artigos.xml",
     ],
     "assets": {
         "point_of_sale._assets_pos": [

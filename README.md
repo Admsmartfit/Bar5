@@ -61,6 +61,12 @@ docker compose run --rm -T odoo odoo shell -c /etc/odoo/odoo.conf -d boteco --no
 | `boteco_b2b` | 7 | Venda por kg a outros bares, pedido recorrente, romaneio, contratos de assessoria |
 | `boteco_painel` | 8 | Painel do dono, DRE por frente, fechamento do dia, fluxo de caixa |
 | `boteco_fiscal_export` | 9 | Controle fiscal para emissão posterior: pendentes, exportação em lotes, retorno |
+| `boteco_fidelidade` | 31 | Fidelidade e cashback (loyalty gratuito): 10 chopes = 1 grátis, saldo no tablet, cupom de aniversário |
+| `boteco_reservas` | 27 | Reserva de mesas: página /reservar, mapa do salão, lembretes, lista de espera, no-show e sinal Pix |
+| `boteco_conciliacao` | 28 | Conferência de cartões e Pix: a receber, extrato da maquininha (CSV/Excel) e do banco (OFX), taxa x contrato, atrasos |
+| `boteco_cotacoes` | 35 | Cotações pelo WhatsApp do bar (QR Code, Evolution API) e coletor externo de sites/Instagram |
+| `boteco_checklists` | 30 | Checklists de boas práticas (RDC 216) com foto e PIN, não conformidades, PDF da fiscalização, manutenção preventiva |
+| `boteco_escala` | 29 | Escala de turnos pela previsão de movimento, troca com aprovação, ponto pelo PIN e escalado x trabalhado |
 | `boteco_treinamento` | 10 | Só no banco de treino: faixa vermelha e impressão simulada |
 
 Regra de ouro do projeto: **o código do Odoo nunca é alterado**; tudo está em `addons/`.

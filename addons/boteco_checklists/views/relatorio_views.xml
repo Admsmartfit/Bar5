@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="boteco_checklist_relatorio_view_form" model="ir.ui.view">
+        <field name="name">boteco.checklist.relatorio.form</field>
+        <field name="model">boteco.checklist.relatorio</field>
+        <field name="arch" type="xml">
+            <form string="Relatório para a fiscalização">
+                <p>Junta todos os checklists do período, com as respostas, fotos, itens fora do padrão e quem assinou com o PIN.
+                   Leve junto o relatório de temperaturas da cozinha central, se usar.</p>
+                <group><field name="data_de"/><field name="data_ate"/></group>
+                <footer>
+                    <button name="action_imprimir" type="object" string="Gerar PDF" class="btn-primary"/>
+                    <button special="cancel" string="Fechar" class="btn-link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_boteco_checklist_relatorio" model="ir.actions.act_window">
+        <field name="name">Relatório para a fiscalização</field>
+        <field name="res_model">boteco.checklist.relatorio</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="report_checklists" model="ir.actions.report">
+        <field name="name">Checklists de boas práticas</field>
+        <field name="model">boteco.checklist.execucao</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">boteco_checklists.report_checklists_documento</field>
+        <field name="report_file">boteco_checklists.report_checklists_documento</field>
+        <field name="print_report_name">'Boas praticas - checklists'</field>
+        <field name="binding_model_id" ref="model_boteco_checklist_execucao"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_checklists_documento">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Registros de boas práticas (RDC 216/2004)</h2>
+                    <p><t t-esc="docs[:1].company_id.name"/> · de <t t-esc="docs[:1].data" t-options="{'widget': 'date'}"/>
+                        a <t t-esc="docs[-1:].data" t-options="{'widget': 'date'}"/></p>
+                    <t t-foreach="docs" t-as="e">
+                        <div style="page-break-inside: avoid; margin-top: 14px">
+                            <h4 style="margin-bottom:2px">
+                                <t t-esc="e.data" t-options="{'widget': 'date'}"/> · <t t-esc="e.name"/>
+                            </h4>
+                            <div t-if="e.estado == 'feito'">Assinado com PIN por <b t-esc="e.assinado_por_id.name"/>
+                                em <t t-esc="e.assinado_em" t-options="{'widget': 'datetime'}"/></div>
+                            <div t-else="" style="color:#b91c1c"><b>NÃO FEITO</b></div>
+                            <table t-if="e.resposta_ids" class="table table-sm" style="margin-top:4px">
+                                <thead><tr><th>Item</th><th>Resposta</th><th>Observação</th><th>Foto</th></tr></thead>
+                                <tbody>
+                                    <tr t-foreach="e.resposta_ids" t-as="r" t-att-style="'color:#b91c1c' if not r.conforme else ''">
+                                        <td><t t-esc="r.name"/><t t-if="r.critico"> (crítico)</t></td>
+                                        <td>
+                                            <t t-if="r.tipo == 'simnao'" t-esc="'Sim' if r.valor_bool else 'Não'"/>
+                                            <t t-elif="r.tipo == 'numero'"><t t-esc="r.valor_num"/> <t t-esc="r.item_id.unidade"/></t>
+                                            <t t-if="not r.conforme"> — fora do padrão</t>
+                                        </td>
+                                        <td t-esc="r.valor_texto or ''"/>
+                                        <td><img t-if="r.foto" t-att-src="image_data_uri(r.foto)" style="max-width:120px;max-height:90px"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

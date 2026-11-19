@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_loyalty_program_gerente,loyalty.program gerente,loyalty.model_loyalty_program,boteco_base.group_gerente,1,1,1,1
+access_loyalty_rule_gerente,loyalty.rule gerente,loyalty.model_loyalty_rule,boteco_base.group_gerente,1,1,1,1
+access_loyalty_reward_gerente,loyalty.reward gerente,loyalty.model_loyalty_reward,boteco_base.group_gerente,1,1,1,1
+access_loyalty_card_gerente,loyalty.card gerente,loyalty.model_loyalty_card,boteco_base.group_gerente,1,1,1,1

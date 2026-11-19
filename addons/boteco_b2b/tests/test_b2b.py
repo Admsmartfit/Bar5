@@ -14,6 +14,7 @@ class TestB2b(BotecoCase):
     def setUpClass(cls):
         super().setUpClass()
         company = cls.env.company
+        company.boteco_flag_vendas_b2b = True  # estes testes são da venda a bares ligada
         if not company.chart_template:
             cls.env["account.chart.template"].try_loading("generic_coa", company=company, install_demo=False)
         cls.armazem = cls.env["stock.warehouse"].search([("company_id", "=", company.id)], limit=1)

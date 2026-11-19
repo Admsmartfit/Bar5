@@ -63,6 +63,14 @@
         <field name="comment">Clientes e pedidos de outros bares, entregas.</field>
     </record>
 
+    <!-- Etapa 34: contador só vê Finanças (fiscal e relatórios) -->
+    <record id="group_contador" model="res.groups">
+        <field name="name">Contador</field>
+        <field name="category_id" ref="module_category_boteco"/>
+        <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
+        <field name="comment">Só Finanças: fiscal (exportar e importar retorno) e relatórios.</field>
+    </record>
+
     <record id="group_dono" model="res.groups">
         <field name="name">Dono / administrador</field>
         <field name="category_id" ref="module_category_boteco"/>
@@ -70,6 +78,7 @@
             Command.link(ref('group_gerente')),
             Command.link(ref('group_cozinheiro')),
             Command.link(ref('group_comercial')),
+            Command.link(ref('group_contador')),
             Command.link(ref('base.group_system')),
             Command.link(ref('base.group_erp_manager')),
             Command.link(ref('point_of_sale.group_pos_manager')),

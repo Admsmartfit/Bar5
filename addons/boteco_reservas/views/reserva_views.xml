@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_boteco_reserva" model="ir.sequence">
+        <field name="name">Reserva de mesa</field>
+        <field name="code">boteco.reserva</field>
+        <field name="prefix">R</field>
+        <field name="padding">5</field>
+    </record>
+
+    <record id="boteco_reserva_view_list" model="ir.ui.view">
+        <field name="name">boteco.reserva.list</field>
+        <field name="model">boteco.reserva</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="estado in ('cancelada', 'no_show')" decoration-success="estado == 'chegou'"
+                  decoration-warning="estado == 'pendente'">
+                <field name="data_hora" string="Quando"/>
+                <field name="cliente_nome"/>
+                <field name="pessoas"/>
+                <field name="mesas_texto"/>
+                <field name="celular" widget="phone"/>
+                <field name="observacao" optional="show"/>
+                <field name="origem" optional="hide"/>
+                <field name="lembrete_pendente" optional="show" decoration-info="lembrete_pendente"/>
+                <field name="estado" widget="badge" decoration-success="estado in ('confirmada', 'chegou')"
+                       decoration-warning="estado == 'pendente'" decoration-danger="estado == 'no_show'"/>
+                <button name="action_chegou" type="object" string="Chegou" class="btn-primary"
+                        invisible="estado not in ('pendente', 'confirmada')"/>
+                <button name="action_abrir_whatsapp" type="object" string="WhatsApp" icon="fa-whatsapp"
+                        invisible="estado not in ('pendente', 'confirmada')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="boteco_reserva_view_form" model="ir.ui.view">
+        <field name="name">boteco.reserva.form</field>
+        <field name="model">boteco.reserva</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_chegou" type="object" string="Chegou" class="btn-primary"
+                            invisible="estado not in ('pendente', 'confirmada')"/>
+                    <button name="action_sinal_recebido" type="object" string="Sinal recebido"
+                            invisible="estado != 'pendente'"/>
+                    <button name="action_abrir_whatsapp" type="object" string="Mandar lembrete (WhatsApp)"
+                            invisible="estado not in ('pendente', 'confirmada')"/>
+                    <button name="action_confirmar" type="object" string="Reativar" invisible="estado != 'cancelada'"/>
+                    <button name="action_no_show" type="object" string="Não veio"
+                            invisible="estado not in ('pendente', 'confirmada')"/>
+                    <button name="action_cancelar" type="object" string="Cancelar" confirm="Cancelar a reserva? A vaga vai para a lista de espera."
+                            invisible="estado not in ('pendente', 'confirmada')"/>
+                    <field name="estado" widget="statusbar" statusbar_visible="confirmada,chegou"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="cliente_nome" placeholder="Nome do cliente"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="data_hora"/>
+                            <field name="pessoas"/>
+                            <field name="mesa_ids" widget="many2many_tags" options="{'no_create': True}"
+                                   placeholder="Em branco: o sistema escolhe a mesa"/>
+                            <field name="observacao"/>
+                        </group>
+                        <group>
+                            <field name="celular" widget="phone"/>
+                            <field name="partner_id"/>
+                            <field name="origem"/>
+                            <field name="name" readonly="1"/>
+                            <field name="sinal_valor" invisible="not sinal_valor"/>
+                            <field name="sinal_pago" invisible="not sinal_valor"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="boteco_reserva_view_calendar" model="ir.ui.view">
+        <field name="name">boteco.reserva.calendar</field>
+        <field name="model">boteco.reserva</field>
+        <field name="arch" type="xml">
+            <calendar date_start="data_hora" date_stop="data_fim" mode="day" color="estado" quick_create="0"
+                      event_open_popup="1">
+                <field name="cliente_nome"/>
+                <field name="pessoas"/>
+                <field name="mesas_texto"/>
+                <field name="estado"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="boteco_reserva_view_pivot" model="ir.ui.view">
+        <field name="name">boteco.reserva.pivot</field>
+        <field name="model">boteco.reserva</field>
+        <field name="arch" type="xml">
+            <pivot string="Reservas" sample="1">
+                <field name="data_hora" interval="week" type="row"/>
+                <field name="estado" type="col"/>
+                <field name="pessoas" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="boteco_reserva_view_search" model="ir.ui.view">
+        <field name="name">boteco.reserva.search</field>
+        <field name="model">boteco.reserva</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="cliente_nome"/>
+                <field name="celular"/>
+                <filter name="hoje" string="Hoje"
+                        domain="[('data_hora', '&gt;=', (context_today()).strftime('%Y-%m-%d 03:00:00')), ('data_hora', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d 03:00:00'))]"/>
+                <filter name="proximas" string="Próximas" domain="[('estado', 'in', ('pendente', 'confirmada'))]"/>
+                <filter name="lembretes" string="Lembretes para mandar" domain="[('lembrete_pendente', '!=', False)]"/>
+                <separator/>
+                <filter name="no_show" string="Não vieram" domain="[('estado', '=', 'no_show')]"/>
+                <group expand="0" string="Agrupar">
+                    <filter name="por_dia" string="Dia" context="{'group_by': 'data_hora:day'}"/>
+                    <filter name="por_estado" string="Situação" context="{'group_by': 'estado'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_boteco_reservas" model="ir.actions.act_window">
+        <field name="name">Reservas</field>
+        <field name="res_model">boteco.reserva</field>
+        <field name="view_mode">list,calendar,form,pivot</field>
+        <field name="context">{'search_default_proximas': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nenhuma reserva por enquanto</p>
+            <p>Divulgue o link <b>/reservar</b> no Instagram e no WhatsApp. Reservas por telefone: toque em Novo.</p>
+        </field>
+    </record>
+
+    <record id="action_boteco_reservas_lembretes" model="ir.actions.act_window">
+        <field name="name">Lembretes para mandar</field>
+        <field name="res_model">boteco.reserva</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_lembretes': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nenhum lembrete pendente</p>
+            <p>Na véspera e 3 horas antes de cada reserva o lembrete aparece aqui. Toque em WhatsApp para mandar.</p>
+        </field>
+    </record>
+
+    <record id="action_boteco_reservas_relatorio" model="ir.actions.act_window">
+        <field name="name">Reservas e no-show</field>
+        <field name="res_model">boteco.reserva</field>
+        <field name="view_mode">pivot,list</field>
+    </record>
+
+    <!-- Lista de espera -->
+    <record id="boteco_reserva_espera_view_list" model="ir.ui.view">
+        <field name="name">boteco.reserva.espera.list</field>
+        <field name="model">boteco.reserva.espera</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" decoration-info="estado == 'oferecida'" decoration-muted="estado in ('atendida', 'desistiu')">
+                <field name="dia"/>
+                <field name="faixa"/>
+                <field name="nome"/>
+                <field name="pessoas"/>
+                <field name="celular" widget="phone"/>
+                <field name="faixa_oferecida" optional="show"/>
+                <field name="estado" widget="badge" decoration-info="estado == 'oferecida'"/>
+                <button name="action_abrir_whatsapp" type="object" string="WhatsApp" icon="fa-whatsapp"
+                        invisible="estado in ('atendida', 'desistiu')"/>
+                <button name="action_virou_reserva" type="object" string="Virou reserva"
+                        invisible="estado in ('atendida', 'desistiu')"/>
+                <button name="action_desistiu" type="object" string="Desistiu" invisible="estado in ('atendida', 'desistiu')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_boteco_reserva_espera" model="ir.actions.act_window">
+        <field name="name">Lista de espera</field>
+        <field name="res_model">boteco.reserva.espera</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('estado', 'in', ('aguardando', 'oferecida'))]</field>
+    </record>
+
+    <!-- Cliente: quantas vezes faltou -->
+    <record id="res_partner_view_form_no_show" model="ir.ui.view">
+        <field name="name">res.partner.form.boteco.no.show</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="boteco_no_shows" invisible="not boteco_no_shows" decoration-danger="boteco_no_shows &gt; 1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Mesa que não aceita reserva (ex.: balcão) -->
+    <record id="restaurant_table_view_form_reservavel" model="ir.ui.view">
+        <field name="name">restaurant.table.form.boteco.reservavel</field>
+        <field name="model">restaurant.table</field>
+        <field name="inherit_id" ref="pos_restaurant.view_restaurant_table_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='seats']" position="after">
+                <field name="boteco_reservavel"/>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="menu_boteco_sec_reservas" name="Reservas" parent="boteco_base.menu_boteco_top_vendas" sequence="15"
+              groups="boteco_base.group_garcom,boteco_base.group_caixa,boteco_base.group_gerente"/>
+    <menuitem id="menu_boteco_reservas" name="Reservas" parent="menu_boteco_sec_reservas"
+              action="action_boteco_reservas" sequence="10"/>
+    <menuitem id="menu_boteco_reservas_lembretes" name="Lembretes para mandar" parent="menu_boteco_sec_reservas"
+              action="action_boteco_reservas_lembretes" sequence="20"/>
+    <menuitem id="menu_boteco_reserva_espera" name="Lista de espera" parent="menu_boteco_sec_reservas"
+              action="action_boteco_reserva_espera" sequence="30"/>
+    <menuitem id="menu_boteco_reservas_relatorio" name="Reservas e no-show" parent="menu_boteco_sec_reservas"
+              action="action_boteco_reservas_relatorio" sequence="40" groups="boteco_base.group_gerente"/>
+</odoo>

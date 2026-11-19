@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="turno_almoco" model="boteco.turno">
+        <field name="name">Almoço</field>
+        <field name="hora_inicio">11.0</field>
+        <field name="hora_fim">16.0</field>
+    </record>
+    <record id="turno_noite" model="boteco.turno">
+        <field name="name">Noite</field>
+        <field name="hora_inicio">17.0</field>
+        <field name="hora_fim">1.0</field>
+    </record>
+    <record id="regra_garcom" model="boteco.escala.regra">
+        <field name="perfil">garcom</field><field name="clientes_por_pessoa">25</field><field name="minimo">1</field><field name="custo_hora">14.0</field>
+    </record>
+    <record id="regra_caixa" model="boteco.escala.regra">
+        <field name="perfil">caixa</field><field name="clientes_por_pessoa">80</field><field name="minimo">1</field><field name="custo_hora">15.0</field>
+    </record>
+    <record id="regra_chapeiro" model="boteco.escala.regra">
+        <field name="perfil">chapeiro</field><field name="clientes_por_pessoa">50</field><field name="minimo">1</field><field name="custo_hora">16.0</field>
+    </record>
+</odoo>

@@ -142,7 +142,59 @@ services:
     entrypoint: ["/bin/bash", "/usr/local/bin/backup-loop.sh"]
     logging: *logging
 
+  # WhatsApp do bar por QR Code (Etapa 35). Ligar: docker compose --profile whatsapp up -d (ver docs/whatsapp.md)
+  # Só na rede interna: sem porta para fora. O Odoo fala com ele por http://evolution:8080 com a chave do .env.
+  evolution:
+    image: atendai/evolution-api:v2.2.3
+    profiles: ["whatsapp"]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SERVER_URL: http://evolution:8080
+      AUTHENTICATION_API_KEY: ${EVOLUTION_API_KEY:-}
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://${POSTGRES_USER:-odoo}:${POSTGRES_PASSWORD}@db:5432/evolution?schema=public
+      DATABASE_SAVE_DATA_INSTANCE: "true"
+      DATABASE_SAVE_DATA_NEW_MESSAGE: "false"
+      DATABASE_SAVE_MESSAGE_UPDATE: "false"
+      DATABASE_SAVE_DATA_CONTACTS: "false"
+      DATABASE_SAVE_DATA_CHATS: "false"
+      CACHE_REDIS_ENABLED: "false"
+      CACHE_LOCAL_ENABLED: "true"
+      DEL_INSTANCE: "false"
+      LOG_LEVEL: ERROR,WARN
+      TZ: America/Sao_Paulo
+    volumes:
+      - evolution-data:/evolution/instances
+    logging: *logging
+
+  # Coletor de ofertas de sites e Instagram (Etapa 35), fora do Odoo. Ligar: docker compose --profile coletor up -d
+  coletor:
+    build: ./docker/coletor
+    image: boteco-coletor:1
+    profiles: ["coletor"]
+    restart: unless-stopped
+    depends_on:
+      - odoo
+    environment:
+      BOTECO_URL: http://odoo:8069
+      BOTECO_COLETOR_TOKEN: ${BOTECO_COLETOR_TOKEN:-}
+      TZ: America/Sao_Paulo
+    volumes:
+      - coletor-data:/dados
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1g
+    logging: *logging
+
 volumes:
   pgdata:
   odoo-data:
   odoo-logs:
+  evolution-data:
+  coletor-data:

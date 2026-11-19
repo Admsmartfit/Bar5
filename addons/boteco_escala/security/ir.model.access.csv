@@ -1,0 +1,27 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_es_escala_turno_garcom,escala_turno garcom,model_boteco_escala_turno,boteco_base.group_garcom,1,0,0,0
+access_es_turno_garcom,turno garcom,model_boteco_turno,boteco_base.group_garcom,1,0,0,0
+access_es_escala_semana_garcom,escala_semana garcom,model_boteco_escala_semana,boteco_base.group_garcom,1,0,0,0
+access_es_troca_garcom,troca garcom,model_boteco_escala_troca,boteco_base.group_garcom,1,1,1,0
+access_es_escala_turno_caixa,escala_turno caixa,model_boteco_escala_turno,boteco_base.group_caixa,1,0,0,0
+access_es_turno_caixa,turno caixa,model_boteco_turno,boteco_base.group_caixa,1,0,0,0
+access_es_escala_semana_caixa,escala_semana caixa,model_boteco_escala_semana,boteco_base.group_caixa,1,0,0,0
+access_es_troca_caixa,troca caixa,model_boteco_escala_troca,boteco_base.group_caixa,1,1,1,0
+access_es_escala_turno_chapeiro,escala_turno chapeiro,model_boteco_escala_turno,boteco_base.group_chapeiro,1,0,0,0
+access_es_turno_chapeiro,turno chapeiro,model_boteco_turno,boteco_base.group_chapeiro,1,0,0,0
+access_es_escala_semana_chapeiro,escala_semana chapeiro,model_boteco_escala_semana,boteco_base.group_chapeiro,1,0,0,0
+access_es_troca_chapeiro,troca chapeiro,model_boteco_escala_troca,boteco_base.group_chapeiro,1,1,1,0
+access_es_escala_turno_cozinheiro,escala_turno cozinheiro,model_boteco_escala_turno,boteco_base.group_cozinheiro,1,0,0,0
+access_es_turno_cozinheiro,turno cozinheiro,model_boteco_turno,boteco_base.group_cozinheiro,1,0,0,0
+access_es_escala_semana_cozinheiro,escala_semana cozinheiro,model_boteco_escala_semana,boteco_base.group_cozinheiro,1,0,0,0
+access_es_troca_cozinheiro,troca cozinheiro,model_boteco_escala_troca,boteco_base.group_cozinheiro,1,1,1,0
+access_es_turno_gerente,turno gerente,model_boteco_turno,boteco_base.group_gerente,1,1,1,1
+access_es_escala_regra_gerente,escala_regra gerente,model_boteco_escala_regra,boteco_base.group_gerente,1,1,1,1
+access_es_escala_semana_gerente,escala_semana gerente,model_boteco_escala_semana,boteco_base.group_gerente,1,1,1,1
+access_es_escala_ajuste_gerente,escala_ajuste gerente,model_boteco_escala_ajuste,boteco_base.group_gerente,1,1,1,1
+access_es_escala_previsao_gerente,escala_previsao gerente,model_boteco_escala_previsao,boteco_base.group_gerente,1,1,1,1
+access_es_escala_turno_gerente,escala_turno gerente,model_boteco_escala_turno,boteco_base.group_gerente,1,1,1,1
+access_es_escala_troca_gerente,escala_troca gerente,model_boteco_escala_troca,boteco_base.group_gerente,1,1,1,1
+access_es_escala_confirmar_gerente,escala_confirmar gerente,model_boteco_escala_confirmar,boteco_base.group_gerente,1,1,1,1
+access_es_escala_relatorio_gerente,escala_relatorio gerente,model_boteco_escala_relatorio,boteco_base.group_gerente,1,1,1,1
+access_es_escala_relatorio_linha_gerente,escala_relatorio_linha gerente,model_boteco_escala_relatorio_linha,boteco_base.group_gerente,1,1,1,1

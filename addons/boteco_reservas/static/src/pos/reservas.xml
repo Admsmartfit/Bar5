@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="boteco_reservas.FloorScreen" t-inherit="pos_restaurant.FloorScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('o_boteco_mesa_rodape')]" position="inside">
+            <t t-set="reserva" t-value="botecoStatusMesa(table) === 'reservada' ? botecoReserva(table) : null"/>
+            <span t-if="reserva" class="o_boteco_mesa_reserva">
+                <t t-esc="reserva.hora"/> · <t t-esc="reserva.nome"/> (<t t-esc="reserva.pessoas"/>)
+            </span>
+        </xpath>
+    </t>
+</templates>

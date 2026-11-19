@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="estilo_checklist" name="Boteco: estilo dos checklists">
+        <style>
+            .ck { max-width: 640px; margin: 0 auto; padding: 16px; font-size: 17px; }
+            .ck h1 { font-size: 24px; margin: 6px 0 12px; }
+            .ck a.cartao { display: block; padding: 16px; margin-bottom: 10px; border-radius: 14px; text-decoration: none;
+                color: inherit; border: 2px solid var(--bt-borda, #cbd5e1); }
+            .ck a.cartao.atrasado { border-color: #dc2626; background: #fef2f2; }
+            .ck .hora { font-size: 14px; opacity: .75; }
+            .ck .item { padding: 14px 0; border-bottom: 1px solid var(--bt-borda, #e5e7eb); }
+            .ck .item b { display: block; margin-bottom: 8px; }
+            .ck .critico { color: #b91c1c; font-size: 13px; font-weight: 700; }
+            .ck .simnao { display: flex; gap: 10px; }
+            .ck .simnao label { flex: 1; }
+            .ck .simnao input { position: absolute; opacity: 0; width: 1px; }
+            .ck .simnao span { display: block; text-align: center; padding: 14px 0; border-radius: 12px; font-weight: 800;
+                border: 2px solid var(--bt-borda, #94a3b8); }
+            .ck .simnao input:checked + span { background: #16a34a; border-color: #16a34a; color: #fff; }
+            .ck .simnao .nao input:checked + span { background: #dc2626; border-color: #dc2626; }
+            .ck input[type=number], .ck input[type=password], .ck input[type=text], .ck textarea {
+                width: 100%; box-sizing: border-box; font-size: 18px; padding: 12px; border-radius: 10px;
+                border: 1px solid var(--bt-borda, #cbd5e1); }
+            .ck .botao { display: block; width: 100%; margin-top: 18px; min-height: 56px; border: 0; border-radius: 14px;
+                font-size: 19px; font-weight: 800; background: var(--bt-primaria, #0b6e4f); color: #fff; }
+            .ck .erro { padding: 12px; border-radius: 10px; background: #fee2e2; color: #7f1d1d; margin: 10px 0; }
+            .ck .ok { padding: 12px; border-radius: 10px; background: #dcfce7; color: #14532d; margin: 10px 0; font-weight: 700; }
+        </style>
+    </template>
+
+    <template id="tela_lista" name="Boteco: checklists do dia">
+        <t t-call="boteco_base.layout_boteco">
+            <t t-set="head"><t t-call="boteco_checklists.estilo_checklist"/></t>
+            <main class="ck">
+                <h1>Checklists de hoje</h1>
+                <p t-if="feito" class="ok">Checklist assinado. Obrigado!</p>
+                <p t-if="not ligado" class="erro">Os checklists estão desligados na Central de Recursos.</p>
+                <p t-elif="not pendentes">Nada pendente para você hoje. 👍</p>
+                <a t-foreach="pendentes" t-as="e" t-attf-href="/boteco/checklist/#{e.id}"
+                   t-attf-class="cartao #{'atrasado' if e.atrasado else ''}">
+                    <b t-esc="e.name"/>
+                    <div class="hora">
+                        <t t-if="e.atrasado">Atrasado — </t>até
+                        <t t-esc="hora(e.hora_limite)"/>
+                        · <t t-esc="len(e.modelo_id.item_ids)"/> itens
+                    </div>
+                </a>
+                <a href="/boteco/inicio" class="botao" style="text-align:center;line-height:56px;text-decoration:none;background:#475569">Voltar</a>
+            </main>
+        </t>
+    </template>
+
+    <template id="tela_fazer" name="Boteco: fazer checklist">
+        <t t-call="boteco_base.layout_boteco">
+            <t t-set="head"><t t-call="boteco_checklists.estilo_checklist"/></t>
+            <main class="ck">
+                <h1 t-esc="execucao.name"/>
+                <p t-if="erro" class="erro" t-esc="erro"/>
+                <form method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div t-foreach="execucao.modelo_id.item_ids" t-as="item" class="item">
+                        <t t-set="chave" t-value="'item_%s' % item.id"/>
+                        <b><t t-esc="item.name"/>
+                            <span t-if="item.critico" class="critico"> · CRÍTICO</span></b>
+                        <div t-if="item.tipo == 'simnao'" class="simnao">
+                            <label><input type="radio" t-att-name="chave" value="sim" t-att-checked="valores.get(chave) == 'sim'"/><span>Sim, ok</span></label>
+                            <label class="nao"><input type="radio" t-att-name="chave" value="nao" t-att-checked="valores.get(chave) == 'nao'"/><span>Não</span></label>
+                        </div>
+                        <div t-elif="item.tipo == 'numero'">
+                            <input type="number" step="0.1" inputmode="decimal" t-att-name="chave" t-att-value="valores.get(chave)"
+                                   t-attf-placeholder="aceito de #{item.minimo} a #{item.maximo} #{item.unidade or ''}"/>
+                        </div>
+                        <div t-elif="item.tipo == 'texto'">
+                            <input type="text" t-att-name="chave" t-att-value="valores.get(chave)"/>
+                        </div>
+                        <div t-if="item.tipo == 'foto' or item.foto_obrigatoria" style="margin-top:8px">
+                            <input type="file" accept="image/*" capture="environment" t-att-name="chave + '_foto'"/>
+                        </div>
+                        <input t-if="item.tipo != 'texto'" type="text" t-att-name="chave + '_obs'" placeholder="Observação (opcional)"
+                               style="margin-top:8px;font-size:15px;padding:8px"/>
+                    </div>
+                    <label style="display:block;margin-top:16px;font-weight:700">Seu PIN para assinar</label>
+                    <input type="password" name="pin" inputmode="numeric" autocomplete="off" maxlength="6" required="required"/>
+                    <button type="submit" class="botao">Assinar checklist</button>
+                </form>
+                <a href="/boteco/checklist" class="botao" style="text-align:center;line-height:56px;text-decoration:none;background:#475569">Voltar</a>
+            </main>
+        </t>
+    </template>
+</odoo>

@@ -12,3 +12,7 @@ access_boteco_setor_dono,boteco.setor dono,model_boteco_setor,group_dono,1,1,1,1
 access_boteco_setor_public,boteco.setor publico,model_boteco_setor,base.group_public,1,0,0,0
 access_boteco_termo_dono,boteco.termo dono,model_boteco_termo,group_dono,1,1,1,1
 access_boteco_atualizacao_dono,boteco.atualizacao dono,model_boteco_atualizacao,group_dono,1,1,1,1
+access_boteco_ajuda_artigo_user,boteco.ajuda.artigo usuario,model_boteco_ajuda_artigo,base.group_user,1,0,0,0
+access_boteco_ajuda_artigo_dono,boteco.ajuda.artigo dono,model_boteco_ajuda_artigo,group_dono,1,1,1,1
+access_boteco_ajuda_busca_dono,boteco.ajuda.busca dono,model_boteco_ajuda_busca,group_dono,1,0,0,1
+access_boteco_implantacao_estado_dono,boteco.implantacao.estado dono,model_boteco_implantacao_estado,group_dono,1,1,1,1

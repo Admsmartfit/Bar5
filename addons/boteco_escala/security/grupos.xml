@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Gerente vê e acerta o ponto (hr_attendance gratuito) -->
+    <record id="boteco_base.group_gerente" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('hr_attendance.group_hr_attendance_officer'))]"/>
+    </record>
+    <!-- Troca de turno: cada um vê só as próprias; o gerente vê todas -->
+    <record id="regra_troca_propria" model="ir.rule">
+        <field name="name">Troca de turno: só as minhas</field>
+        <field name="model_id" ref="model_boteco_escala_troca"/>
+        <field name="domain_force">['|', ('pedido_por_id', '=', user.id), ('para_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('boteco_base.group_garcom')), Command.link(ref('boteco_base.group_caixa')),
+                                    Command.link(ref('boteco_base.group_chapeiro')), Command.link(ref('boteco_base.group_cozinheiro'))]"/>
+    </record>
+    <record id="regra_troca_gerente" model="ir.rule">
+        <field name="name">Troca de turno: gerente vê todas</field>
+        <field name="model_id" ref="model_boteco_escala_troca"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('boteco_base.group_gerente'))]"/>
+    </record>
+</odoo>

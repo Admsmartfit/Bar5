@@ -2,6 +2,6 @@
 <odoo>
     <!-- Aplicativos: não lista os aplicativos pagos (Enterprise), que só têm o botão "Upgrade" -->
     <record id="base.open_module_tree" model="ir.actions.act_window">
-        <field name="domain">[('to_buy', '=', False)]</field>
+        <field name="domain">[('to_buy', '=', False), '!', ('name', '=like', 'delivery%'), ('name', 'not in', ['stock_delivery', 'stock_fleet', 'website_sale_stock_delivery'])]</field>
     </record>
 </odoo>

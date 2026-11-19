@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-    <!-- Ofertas no Instagram dos fornecedores: 2x por dia, 8:00 e 14:00 (horário da empresa).
+    <!-- Ofertas no Instagram dos fornecedores: 1x por dia, 8:00 (horário da empresa, configurável). A das 14:00 fica desativada.
          Só faz algo se 'Monitorar ofertas no Instagram' estiver ligado na Central de Recursos. -->
     <record id="ir_cron_boteco_monitor_instagram" model="ir.cron">
         <field name="name">Boteco: ler ofertas no Instagram dos fornecedores (8:00)</field>
@@ -20,6 +20,6 @@
         <field name="interval_type">days</field>
         <field name="active" eval="True"/>
     </record>
-    <!-- Acerta a próxima execução para 8:00 e 14:00 no fuso da empresa -->
+    <!-- Acerta a próxima execução (ver data/instagram_agenda_data.xml, que roda a cada atualização) -->
     <function model="res.partner" name="_boteco_agendar_monitor_instagram"/>
 </odoo>

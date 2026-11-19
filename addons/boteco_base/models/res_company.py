@@ -142,6 +142,36 @@ class ResCompany(models.Model):
         string="Rateio da taxa de serviço (10%) entre garçons, cozinha/bar e casa", default=False,
     )
 
+    # Etapas 26 e 33 (PRD de recursos avançados)
+    boteco_flag_ajuda_rapida = fields.Boolean(
+        string="Ajuda rápida pesquisável (botão ?, F1 e Ctrl+K)", default=True,
+    )
+    boteco_flag_assistente_implantacao = fields.Boolean(
+        string="Primeiros passos (assistente de configuração)", default=True,
+    )
+    # Etapa 36: QR expresso de bebidas (sempre disponível, sem liberação do garçom)
+    boteco_flag_qr_bebidas = fields.Boolean(
+        string="QR Code expresso de bebidas (2º QR por mesa)", default=True,
+    )
+    boteco_teto_bebidas_preparadas = fields.Integer(
+        string="Teto de bebidas preparadas por envio (0 = automático)", default=0,
+        help="Acima disso, as preparadas (drinks, doses, chope) do envio esperam o garçom confirmar. "
+        "Automático = o limite de bebidas da mesa: o maior entre 4 e (2 × pessoas + 2).",
+    )
+
+    # Etapa 31: fidelidade / cashback (loyalty gratuito do Odoo)
+    boteco_flag_fidelidade = fields.Boolean(
+        string="Fidelidade / cashback no PDV e no tablet", default=True,
+    )
+    boteco_flag_fidelidade_com_promocao = fields.Boolean(
+        string="Fidelidade também soma pontos em happy hour e ofertas", default=False,
+    )
+
+    # Etapa 34: venda a bares escondida por padrão (os dados ficam guardados)
+    boteco_flag_vendas_b2b = fields.Boolean(
+        string="Venda a bares (B2B): menus, metas e pedidos recorrentes", default=False,
+    )
+
     def boteco_recurso_ativo(self, nome_flag):
         """True se o recurso ``nome_flag`` está ligado na Central de Recursos.
 

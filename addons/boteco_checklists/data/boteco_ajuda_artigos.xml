@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ajuda rápida (Etapa 26): artigos de checklists e manutenção (Etapa 30). -->
+<odoo>
+    <record id="ajuda_checklist_fazer" model="boteco.ajuda.artigo">
+        <field name="codigo">checklist_fazer</field>
+        <field name="titulo">Fazer o checklist do dia (abertura, fechamento)</field>
+        <field name="resumo">Pelo celular: responda cada item, tire a foto quando pedir e assine com o seu PIN.</field>
+        <field name="sinonimos">checklist, abertura, fechamento, appcc, boas praticas, temperatura, assinar pin, vigilancia sanitaria</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Início › Checklists do dia&lt;/b&gt; (ou o endereço /boteco/checklist no celular).&lt;/li&gt;&lt;li&gt;Toque no checklist. Vermelho = passou da hora.&lt;/li&gt;&lt;li&gt;Responda cada item: &lt;b&gt;Sim/Não&lt;/b&gt;, o número (ex.: temperatura) ou a foto.&lt;/li&gt;&lt;li&gt;Digite o seu &lt;b&gt;PIN&lt;/b&gt; e toque em &lt;b&gt;Assinar checklist&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Item crítico fora do padrão avisa o gerente na hora.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_checklists.menu_boteco_checklist_tela"/>
+        <field name="perfis">garcom,caixa,chapeiro,cozinheiro,gerente,dono</field>
+        <field name="sequencia">10</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_checklist_modelos" model="boteco.ajuda.artigo">
+        <field name="codigo">checklist_modelos</field>
+        <field name="titulo">Escolher e montar os checklists (base RDC 216)</field>
+        <field name="resumo">Use os modelos prontos ou crie o seu: itens, faixa de temperatura, item crítico, quem faz e até que horas.</field>
+        <field name="sinonimos">modelo checklist, rdc 216, anvisa, pop, criar checklist, item critico, faixa temperatura</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Produção › Boas práticas e manutenção › Modelos de checklist&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Nos modelos prontos (abertura, fechamento, recebimento, chopeira, pragas), toque em &lt;b&gt;Usar este modelo&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Ajuste &lt;b&gt;Quem faz&lt;/b&gt;, &lt;b&gt;Fazer até&lt;/b&gt; e os itens (marque &lt;b&gt;Crítico&lt;/b&gt; no que não pode falhar).&lt;/li&gt;&lt;li&gt;Para a fiscalização: &lt;b&gt;Relatório para a fiscalização&lt;/b&gt; gera o PDF do período.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_checklists.menu_boteco_checklist_modelos"/>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">20</field>
+        <field name="padrao" eval="True"/>
+    </record>
+    <record id="ajuda_manutencao" model="boteco.ajuda.artigo">
+        <field name="codigo">manutencao_preventiva</field>
+        <field name="titulo">Manutenção preventiva (chopeira, filtro, extintor, gás)</field>
+        <field name="resumo">Cada equipamento tem o seu plano; o Painel do dono avisa 3 dias antes e quando vence.</field>
+        <field name="sinonimos">manutencao, chopeira, limpeza chopeira, extintor, filtro de agua, gas, coifa, freezer, equipamento</field>
+        <field name="passos">&lt;ol&gt;&lt;li&gt;Abra &lt;b&gt;Produção › Boas práticas e manutenção › Manutenção preventiva&lt;/b&gt;. Já vem o plano da chopeira (7 dias), filtro (6 meses), extintores (12 meses), coifa, gás e freezers.&lt;/li&gt;&lt;li&gt;Equipamento que o bar não tem: arquive em &lt;b&gt;Equipamentos&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;Feito o serviço, mude a etapa para concluída e anote o &lt;b&gt;Custo&lt;/b&gt;: a próxima data é criada sozinha.&lt;/li&gt;&lt;/ol&gt;</field>
+        <field name="menu_id" ref="boteco_checklists.menu_boteco_manutencao"/>
+        <field name="perfis">gerente,dono</field>
+        <field name="sequencia">30</field>
+        <field name="padrao" eval="True"/>
+    </record>
+</odoo>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Etapa 32: roda em toda instalação/atualização do módulo (OdooBot desligado para todos) -->
+    <function model="res.users" name="_boteco_desligar_odoobot"/>
+</odoo>

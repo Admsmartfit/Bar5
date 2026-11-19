@@ -43,6 +43,12 @@ patch(SelfOrder.prototype, {
                 // ignora
             }
         }
+        // QR expresso de bebidas (Etapa 36): o 2º QR da mesa traz ?modo=bebidas. O servidor lê o modo
+        // por um cookie (o pedido em si não carrega campos extras). Ler o QR do cardápio desliga o modo.
+        const modoBebidas = !tablet && url.searchParams.get("modo") === "bebidas";
+        document.cookie = modoBebidas
+            ? "boteco_modo=bebidas; path=/; max-age=43200; SameSite=Lax"
+            : "boteco_modo=; path=/; max-age=0; SameSite=Lax";
         this.botecoTabletToken = tablet || null;
         this.botecoIdentificador = identificador;
         this.botecoMesa = {
@@ -52,11 +58,16 @@ patch(SelfOrder.prototype, {
             pedir_de_novo: [],
             aguardandoLiberacao: false,
             semRede: false,
+            modo: modoBebidas ? "bebidas" : null,
+            bebidas_mesa: [],
         };
         if (!identificador || this.config.self_ordering_mode !== "mobile") {
             return;
         }
         await this.botecoEntrar();
+        if (this.botecoModoBebidas()) {
+            this.botecoAtualizarStatus();
+        }
         setInterval(() => this.botecoAtualizarStatus(), STATUS_MS);
         this.data.connectWebSocket("BOTECO_MESA", (dados) => this.botecoAoMudarMesa(dados));
         this.data.connectWebSocket("BOTECO_DISPOSITIVO", (dados) => {
@@ -116,6 +127,17 @@ patch(SelfOrder.prototype, {
         } catch {
             this.botecoMesa.semRede = !navigator.onLine;
         }
+    },
+
+    /** Modo "Bebidas rápido": só vale com o recurso ligado na Central de Recursos. */
+    botecoModoBebidas() {
+        return this.botecoMesa?.modo === "bebidas" && Boolean(this.botecoMesa?.qr_bebidas_ativo);
+    },
+
+    botecoSoBebidasNoCarrinho() {
+        // Celular não liberado só pediu pelo QR de bebidas: todas as linhas da conta dele são bebidas
+        const linhas = this.currentOrder?.lines || [];
+        return linhas.length > 0 && linhas.every((l) => l.product_id?.boteco_e_bebida);
     },
 
     botecoRecurso(codigo) {
@@ -236,7 +258,23 @@ patch(SelfOrder.prototype, {
             });
             return false;
         }
-        if (mesa.estado !== "aprovado") {
+        if (mesa.estado !== "aprovado" && this.botecoModoBebidas()) {
+            // QR de bebidas: sem liberação do garçom, só bebidas e com a mesa aberta
+            if (!mesa.mesa_aberta) {
+                this.notification.add(_t("A mesa ainda não foi aberta. Peça ao garçom para abrir a mesa."), {
+                    type: "warning",
+                    sticky: true,
+                });
+                return false;
+            }
+            if (!this.botecoSoBebidasNoCarrinho()) {
+                this.notification.add(
+                    _t("Pelo QR de bebidas dá para pedir só bebidas. Para comida, use o QR do cardápio."),
+                    { type: "warning", sticky: true }
+                );
+                return false;
+            }
+        } else if (mesa.estado !== "aprovado") {
             const resposta = await rpc("/boteco/mesa/solicitar", {
                 access_token: this.access_token,
                 table_identifier: this.botecoIdentificador,
